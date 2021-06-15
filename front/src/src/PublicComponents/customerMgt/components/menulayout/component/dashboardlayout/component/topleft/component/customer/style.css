@@ -1,0 +1,4 @@
+@import url('~antd/dist/antd.css');
+.ant-btn ant-btn-primary{
+    width: 200px;
+}
