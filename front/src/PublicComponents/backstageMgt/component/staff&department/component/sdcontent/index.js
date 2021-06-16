@@ -20,6 +20,7 @@ class SdContent extends React.Component {
           defaultSelectedKeys={['1']}
           defaultOpenKeys={['sub1']}
           mode="inline"
+          style={{marginTop:30}}
           
         >
           <SubMenu key="sub1" title="总公司">

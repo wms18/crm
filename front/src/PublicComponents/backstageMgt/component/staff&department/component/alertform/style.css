@@ -1,0 +1,12 @@
+@import url('~antd/dist/antd.css');
+.collection-create-form_last-form-item {
+    margin-bottom: 0;
+  }
+  #form_in_modal>form{
+    display: flex;
+    justify-content: space-between;
+  }
+  #form_in_modal>form>div>input{
+        width: 202px;
+        display: inline-block;
+  }

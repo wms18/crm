@@ -1,8 +1,9 @@
-import React, { Componet } from 'react';
+import React, { Component } from 'react';
 import './style.css'
 import SdTable from '../sdtable';
-import { Layout, Menu, Button, Input, Image,Space } from 'antd';
+import { Layout, Menu, Button, Input, Image, Space, Select } from 'antd';
 import SdContent, { sdContent } from '../sdcontent'
+import Alertform from '../alertform'
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -12,8 +13,10 @@ import {
   MailOutlined,
   AudioOutlined
 } from '@ant-design/icons';
-
+import Alertmodal from '../alertform';
 const { Search } = Input;
+const { Option } = Select;
+
 
 
 
@@ -27,29 +30,32 @@ const toggle = () => {
 };
 
 const suffix = (
-<AudioOutlined
-  style={{
-    fontSize: 16,
-    color: '#1890ff',
-  }}
-/>
+  <AudioOutlined
+    style={{
+      fontSize: 16,
+      color: '#1890ff',
+    }}
+  />
 );
 
+
 const onSearch = value => console.log(value);
+
+const handleChange = value => console.log(`selected ${value}`)
 
 class Menulayout extends React.Component {
 
 
-    state = {
+  state = {
     collapsed: false,
   };
 
-  //   onSearch(e){
+  //   onSearch(e){rrrrrrrrr
   //   console.log(e);
   // }
 
 
-  
+
   render() {
     return (
       <div>
@@ -60,7 +66,7 @@ class Menulayout extends React.Component {
             style={{ height: '90vh' }}
           >
             <div className="logo" />
-            <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+            <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}  style={{marginTop:38}}>
               <Menu.Item key="1" icon={<UserOutlined />}>
                 企业首页
               </Menu.Item>
@@ -93,14 +99,32 @@ class Menulayout extends React.Component {
                 <div className='sdcontent'>
                   <SdContent style={{}}></SdContent>
                 </div>
-                <div className='table'>
-                  <div>
-                  <Search placeholder="input search text" onSearch={onSearch} style={{ width: 200 }} />
-                  </div>
-                  <div>
-                    <SdTable></SdTable>
+                <div className='table'  style={{padding:'34px 10px 0px 10px'}}>
+                  <div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <div >
+                      <Search placeholder="请输入员工名称" onSearch={onSearch} style={{ width: 262 }} />
+                    </div>
+                    
+                    <div>
+                      <span  style={{marginRight:'10px'}}>
+                        状态
+                      </span>
+                      <Select style={{ display: 'inline-block' }} placeholder="请选择" style={{ width: 120 }} onChange={handleChange}>
+                        <Option value="0">禁用</Option>
+                        <Option value="1">激活</Option>
+                        <Option value="2">未激活</Option>
+                      </Select>
+                    </div>
+                    <div>
+                      <Alertform></Alertform>
+                    </div>
 
                   </div>
+
+                  <div>
+                    <SdTable></SdTable>
+                  </div>
+
                 </div>
               </div>
 

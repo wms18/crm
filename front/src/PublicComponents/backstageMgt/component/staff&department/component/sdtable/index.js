@@ -1,37 +1,91 @@
-import React from 'react'
+import React,{Component} from 'react'
 import { Table, Button } from 'antd';
 import './style.css'
+import base from '../../../../../../axios/axios'
+import axios from 'axios'
+import  qs from 'qs'
 
 const columns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
+    title: '姓名',
+    dataIndex: 'username',
+    width:150,
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
+    title: '手机号',
+   dataIndex: 'phone',
+   width:150,
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
+    title: '性别',
+    dataIndex: 'sex',
+    width:100
   },
+  {
+    title: '邮箱',
+    dataIndex: 'email',
+    width:200
+  },
+  {
+    title: '部门',
+    dataIndex: 'department',
+    width:100
+  },
+  {
+    title: '岗位',
+    dataIndex: 'role',
+    width:100
+  },
+  {
+    title: '直属上级',
+    dataIndex: 'superEmployee',
+    width:100
+  },
+  
 ];
 
-const data = [];
-for (let i = 0; i < 100; i++) {
-  data.push({
-    key: i,
-    name: `Edward King ${i}`,
-    age: 32,
-    address: `London, Park Lane no. ${i}`,
-  });
-}
+// const data = [];
+// for (let i = 0; i < 100; i++) {
+//   data.push({
+//     key: i,
+//     name: `Edward King${i}`,
+//     phone: `109870${i}`,
+//     gender: `女`,
+//     email:`xxxx${i}@outstanding.com`,
+//     dep:`dep${i}`,
+//     post:`post${i}`,
+//     superior:`superior${i}`
+//   });
+// }
 
 class sdTable extends React.Component {
   state = {
     selectedRowKeys: [], // Check here to configure the default column
     loading: false,
+    data:[]
   };
+
+  componentDidMount(){
+    this.getEmployee()
+  }
+  
+
+  getEmployee=()=>{
+      axios.get(`${base.realtimebus}/employee/getEmployee`)
+      .then((res)=>{
+        console.log(res);
+        if(res.data.code==='ERROR'){
+
+        }else{
+          this.setState({
+            data:res.data.data
+          })
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
 
   start = () => {
     this.setState({ loading: true });
@@ -60,7 +114,7 @@ class sdTable extends React.Component {
       <div>
         <div style={{ marginBottom: 16 }}>
         </div>
-        <Table rowSelection={rowSelection} columns={columns} dataSource={data}  pagination={{ pageSize: 50 }} scroll={{ y: 240 }} />
+        <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.data}  pagination={{ pageSize: 50 }} scroll={{x:900, y:240 }} />
       </div>
     );
   }
