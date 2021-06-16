@@ -1,14 +1,13 @@
 import  React from 'react'
-// import CustomerMgt from './PublicComponents/customerMgt'
 import BackstageMgt from './PublicComponents/backstageMgt'
-
+import PersonalInfo  from './PublicComponents/personInfo';
+import ReceptionTop from './PublicComponents/top';
 function App  () {
 
         return (
             <div className="App">
-                    {/* <CustomerMgt></CustomerMgt> */}
-                    <BackstageMgt></BackstageMgt>
-               
+                    <PersonalInfo></PersonalInfo>
+                    <ReceptionTop></ReceptionTop>
             </div>
         );
 

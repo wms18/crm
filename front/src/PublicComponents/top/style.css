@@ -1,0 +1,46 @@
+@import url('~antd/dist/antd.css');
+
+body{
+    background-color: #f5f6f9;
+}
+.ReceptionTop{
+    height: 60px;
+    min-height: 60px;
+    background-color: #fff;
+    display: flex;
+    padding: 0 30px;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+}
+
+.topicon>div{
+    margin-right: 40px;
+    display: inline-block;
+    line-height: 60px;
+    height: 60px;
+    vertical-align: sub;
+}
+.topicon>div>span{
+    vertical-align: bottom;
+}
+.topicon>div>span:nth-child(1){
+    font-size: 20px;
+    margin-right: 10px;
+}
+.topicon>div>span:nth-child(2){
+    font-size: 16px;
+}
+.personalName{
+    --width:30px;
+    border-radius: 50%;
+    height: var(--width);
+    width: var(--width);
+    background-color: #2486e4;
+    line-height: var(--width);
+    display: inline-block;
+    text-align: center;
+    color: white;
+    font-size: 12px;
+}
+

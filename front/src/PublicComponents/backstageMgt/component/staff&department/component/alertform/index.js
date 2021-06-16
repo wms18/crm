@@ -82,9 +82,9 @@ const CollectionCreateForm = ({visible, onCreate, onCancel}) => {
                         label="性別"
 
                     >
-                        <Select style={{width: 200}} onChange={handleChange}>
-                            <Option>男</Option>
-                            <Option>女</Option>
+                        <Select style={{width: 200}} onChange={handleChange}  placeholder='请选择性别'>
+                            <Option value='男'>男</Option>
+                            <Option value='女'>女</Option>
                         </Select>
                     </Form.Item>
                 </Form>
@@ -110,16 +110,16 @@ const CollectionCreateForm = ({visible, onCreate, onCancel}) => {
 
                     >
                         <Select placeholder='请选择' style={{width: 200}}  onChange={handleChange}>
-                            <Option>
+                            <Option value='总公司'>
                                 总公司
-                            </Option>
-                            <Option>
+                            </Option >
+                            <Option value='直营部'> 
                                 直营部
                             </Option>
-                            <Option>
+                            <Option value='业务经理'>
                                 业务经理
                             </Option>
-                            <Option>
+                            <Option  value='业务人员'>
                                 业务人员
                             </Option>
                         </Select>
@@ -142,13 +142,13 @@ const CollectionCreateForm = ({visible, onCreate, onCancel}) => {
 
                     >
                         <Select placeholder='请选择' style={{width: 200}} onChange={handleChange}>
-                            <Option>
+                            <Option  value='销售经理'>
                                 销售经理
                             </Option>
-                            <Option>
-                                南京区域经理
+                            <Option  value='南京区域'>
+                                南京区域
                             </Option>
-                            <Option>
+                            <Option  value='总公司'>
                                 总公司
                             </Option>
                         </Select>
