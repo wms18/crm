@@ -41,7 +41,7 @@ function Tablelist() {
     }
     return(
         <div>
-            <Table columns={columns}  dataSource={data}  scroll={{ y: 360 }} />
+            <Table columns={columns}  dataSource={data}  scroll={{ y:'calc(100vh - 400px)' }} />
             <Pagination
                 className={'pagination'}
                 total={85}

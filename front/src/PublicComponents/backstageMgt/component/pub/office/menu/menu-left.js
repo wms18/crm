@@ -1,7 +1,9 @@
 import {Layout, Menu} from 'antd';
 import 'antd/dist/antd.css';
 import Middle from "../middle/middle";
-import Right from "../right/right";
+import Right from "./right/right";
+import Index from "../righ";
+import '../righ/index.css'
 import {
     DesktopOutlined,
     CarryOutOutlined,
@@ -46,11 +48,12 @@ function MenuLeft() {
                     </Menu.Item>
                 </Menu>
             </Sider>
-            <Layout className="site-layout">
-                <Content style={{margin: '16px'}}>
-                    <Middle/>
-                </Content>
-            </Layout>
+            <div className="site">
+                <Middle/>
+            </div>
+            <div className="site1">
+                <Index></Index>
+            </div>
         </Layout>
     )
 }

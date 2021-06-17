@@ -4,6 +4,7 @@ import SdTable from '../sdtable';
 import { Layout, Menu, Button, Input, Image, Space, Select } from 'antd';
 import SdContent, { sdContent } from '../sdcontent'
 import Alertform from '../alertform'
+import Jurisdiction from "../../../pub/jurisdiction";
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -63,7 +64,7 @@ class Menulayout extends React.Component {
         <Layout
         >
           <Sider trigger={null} collapsible collapsed={this.state.collapsed}
-            style={{ height: '90vh' }}
+            style={{  }}
           >
             <div className="logo" />
             <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}  style={{marginTop:38}}>
@@ -81,54 +82,54 @@ class Menulayout extends React.Component {
               </SubMenu>
             </Menu>
           </Sider>
-          <Layout className="site-layout" style={{ height: '90vh' }} >
-            <Header className="site-layout-background" style={{ padding: 0, fontSize: 18, backgroundColor: '#F5F6F9', }}>
-              {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-                className: 'trigger',
-                onClick: this.toggle,
-              })}
-              员工与部门管理
-            </Header>
+          <Layout className="site-layout"  >
+            {/*<Header className="site-layout-background" style={{ padding: 0, fontSize: 18, backgroundColor: '#F5F6F9', }}>*/}
+            {/*  {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {*/}
+            {/*    className: 'trigger',*/}
+            {/*    onClick: this.toggle,*/}
+            {/*  })}*/}
+            {/*  员工与部门管理*/}
+            {/*</Header>*/}
             {/* <div>企业首页</div> */}
-            <Content
-              className="site-layout-background"
-              style={{
-              }}
-            >
-              <div className='content'>
-                <div className='sdcontent'>
-                  <SdContent style={{}}></SdContent>
-                </div>
-                <div className='table'  style={{padding:'34px 10px 0px 10px'}}>
-                  <div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <div >
-                      <Search placeholder="请输入员工名称" onSearch={onSearch} style={{ width: 262 }} />
-                    </div>
-                    
-                    <div>
-                      <span  style={{marginRight:'10px'}}>
-                        状态
-                      </span>
-                      <Select style={{ display: 'inline-block' }} placeholder="请选择" style={{ width: 120 }} onChange={handleChange}>
-                        <Option value="0">禁用</Option>
-                        <Option value="1">激活</Option>
-                        <Option value="2">未激活</Option>
-                      </Select>
-                    </div>
-                    <div>
-                      <Alertform></Alertform>
-                    </div>
+            {/*<Content*/}
+            {/*  className="site-layout-background"*/}
+            {/*  style={{*/}
+            {/*  }}*/}
+            {/*>*/}
+              {/*<div className='content'>*/}
+              {/*  <div className='sdcontent'>*/}
+              {/*    <SdContent style={{}}></SdContent>*/}
+              {/*  </div>*/}
+              {/*  <div className='table'  style={{padding:'34px 10px 0px 10px'}}>*/}
+              {/*    <div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>*/}
+              {/*      <div >*/}
+              {/*        <Search placeholder="请输入员工名称" onSearch={onSearch} style={{ width: 262 }} />*/}
+              {/*      </div>*/}
 
-                  </div>
+              {/*      <div>*/}
+              {/*        <span  style={{marginRight:'10px'}}>*/}
+              {/*          状态*/}
+              {/*        </span>*/}
+              {/*        <Select style={{ display: 'inline-block' }} placeholder="请选择" style={{ width: 120 }} onChange={handleChange}>*/}
+              {/*          <Option value="0">禁用</Option>*/}
+              {/*          <Option value="1">激活</Option>*/}
+              {/*          <Option value="2">未激活</Option>*/}
+              {/*        </Select>*/}
+              {/*      </div>*/}
+              {/*      <div>*/}
+              {/*        <Alertform></Alertform>*/}
+              {/*      </div>*/}
 
-                  <div>
-                    <SdTable></SdTable>
-                  </div>
+              {/*    </div>*/}
 
-                </div>
-              </div>
+              {/*    <div>*/}
+              {/*      <SdTable></SdTable>*/}
+              {/*    </div>*/}
 
-            </Content>
+              {/*  </div>*/}
+              {/*</div>*/}
+              <Jurisdiction></Jurisdiction>
+            {/*</Content>*/}
           </Layout>
         </Layout>
       </div>

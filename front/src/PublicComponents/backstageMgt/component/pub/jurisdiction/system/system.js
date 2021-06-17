@@ -7,44 +7,84 @@ import {TreeSelect} from 'antd';
 import axios from "axios";
 import base from '../../../../../../axios/axios'
 
-import { Layout, Menu } from 'antd';
-import {
-    MenuUnfoldOutlined,
-    MenuFoldOutlined,
-    UserOutlined,
-    VideoCameraOutlined,
-    UploadOutlined,
-} from '@ant-design/icons';
-const { Header, Sider, Content } = Layout;
 function System() {
-
-    let [collapsed,setCollapsed] = useState(false)
-    let toggle = () => {
-        setCollapsed(!collapsed)
-    };
-
-
+    let token = window.localStorage.getItem('token')
+    let [arr, setArr] = useState([])
+    let [activeInxex, setActiveIndex] = useState(0)
+    const [visible, setVisible] = React.useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    let [text, setText] = useState('')
+    let [num, setNum] = useState('')
+    let ul = document.getElementsByClassName('ul')[0]
+    let [hidden, setHidden] = useState('none')
     useEffect(() => {
         if (isModalVisible === false) {
             setValue([])
         }
-        // axios({
-        //     method: 'get',
-        //     url: base.url+'/manager/sys-manager',
-        //     param: {
-        //         classifyRoleId: 1,
-        //         currentPage: 1,
-        //         limit: 10,
-        //         total: 10,
-        //         totalPage: 10
-        //     }
-        // }).then((response) => {
-        //     console.log('response', response)
-        // }).catch((error) => {
-        //     alert(error)
-        // })
-    }, [])
+        //添加角色
+        axios({
+            method: 'post',
+            url: base.url + '/manager/add',
+            params: {
+                token:token,
+                classifyRoleId: 1,
+                roleName: text,
+            }
+        }).then((response) => {
+            // console.log(response)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+        //获取角色列表
+        axios({
+            method: 'get',
+            url: base.url + '/manager/roles',
+            params: {
+                token:token,
+                classifyRoleId: 1
+            }
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+            } else {
+                setArr(response.data.data)
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+        //获取员工
+        axios({
+            method: 'get',
+            url: base.url + '/employee/getEmployee',
+        }).then((response) => {
+            // console.log(response)
+        }).catch((error) => {
+            alert(error)
+        })
+    }, [text])
     const {SHOW_PARENT} = TreeSelect;
+    //删除角色
+    let deleteRole = (id) =>{
+        axios({
+            method:'post',
+            url:base.url+'/manager/deleteRole',
+            params:{
+                token:token,
+                roleId:id,
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code === 'ERROR'){
+                alert(response.data.message)
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+    }
     //添加员工
     const treeData = [
         {
@@ -94,14 +134,7 @@ function System() {
         setIsModalVisible(false);
     };
 
-    let [arr, setArr] = useState(['超级管理员角色'])
-    let [activeInxex, setActiveIndex] = useState(0)
-    const [visible, setVisible] = React.useState(false);
-    const [confirmLoading, setConfirmLoading] = useState(false);
-    let [text, setText] = useState('')
-    let [num, setNum] = useState('')
-    let ul = document.getElementsByClassName('ul')[0]
-    let [hidden, setHidden] = useState('none')
+
     //新建角色
     const showModal = () => {
         setVisible(true);
@@ -109,10 +142,8 @@ function System() {
     //点击确定
     const handleOk = () => {
         setVisible(false);
-        arr = [...arr, text]
-        arr = new Set(arr)
-        setArr([...arr])
-        setText('')
+
+        // setText('')
     };
     //点击取消
     const handleCancel = () => {
@@ -135,108 +166,93 @@ function System() {
         }
     }
     return (
-        <Layout>
-            <Sider trigger={null} collapsible collapsed={collapsed}>
-                <div className="logo" />
-                <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-                    <Menu.Item key="1" icon={<UserOutlined />}>
-                        nav 1
-                    </Menu.Item>
-                    <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-                        nav 2
-                    </Menu.Item>
-                    <Menu.Item key="3" icon={<UploadOutlined />}>
-                        nav 3
-                    </Menu.Item>
-                </Menu>
-            </Sider>
-
-
-        <div className={'system'}>
-            <div className={'system1'}>系统管理角色</div>
-            <div className={'system2'}>
-                <div className={'system_right'}>
-                    <div className={'system_new'}>
-                        <div className={'system_new1'}>
-                            <div type="primary" onClick={showModal}>
-                                新建角色
+            <div className={'system'}>
+                <div className={'system1'}>系统管理角色</div>
+                <div className={'system2'}>
+                    <div className={'system_right'}>
+                        <div className={'system_new'}>
+                            <div className={'system_new1'}>
+                                <div type="primary" onClick={showModal}>
+                                    新建角色
+                                </div>
+                                <Modal
+                                    cancelText={'取消'}
+                                    okText={'确定'}
+                                    title="新建角色"
+                                    visible={visible}
+                                    onOk={handleOk}
+                                    confirmLoading={confirmLoading}
+                                    onCancel={handleCancel}
+                                >
+                                    <p>角色名称</p>
+                                    <input type="text" value={text} onChange={(e) => {
+                                        handlePeople(e.target.value)
+                                    }}/>
+                                </Modal>
                             </div>
-                            <Modal
-                                cancelText={'取消'}
-                                okText={'确定'}
-                                title="新建角色"
-                                visible={visible}
-                                onOk={handleOk}
-                                confirmLoading={confirmLoading}
-                                onCancel={handleCancel}
-                            >
-                                <p>角色名称</p>
-                                <input type="text" value={text} onChange={(e) => {
-                                    handlePeople(e.target.value)
-                                }}/>
-                            </Modal>
                         </div>
-                    </div>
-                    <div className={'right1'}>
-                        <div className={'right2'}>
-                            <div className={'system_item'}>
-                                {arr.map((item, index) => {
-                                    return (
-                                        <div key={index}
-                                             className={index === activeInxex ? 'activeIndex system_item1' : 'system_item1'}
-                                             onClick={() => {
-                                                 setActiveIndex(index)
-                                                 setHidden('none')
-                                             }}
-                                        >
+                        <div className={'right1'}>
+                            <div className={'right2'}>
+                                <div className={'system_item'}>
+                                    {arr.map((item, index) => {
+                                        return (
+                                            <div key={index}
+                                                 className={index === activeInxex ? 'activeIndex system_item1' : 'system_item1'}
+                                                 onClick={() => {
+                                                     setActiveIndex(index)
+                                                     setHidden('none')
+                                                 }}
+                                            >
                                     <span
-                                    >{item}</span>
-                                            <span className={index === 0 ? 'hidden' : ''}>
+                                    >{item.name}</span>
+                                                <span className={index === 0 ? 'hidden' : ''}>
                                         <i className="fa fa-angle-down" aria-hidden="true" onClick={(e) => {
                                             handleEdit(index, e)
                                         }}></i>
                                         <span style={{display: hidden}}>
-                                            <ul className={'ul'} style={{top: `${210 + num * 40}px`}}>
+                                            <ul className={'ul'} style={{top: `${270 + num * 40}px`}}>
                                             <li>复制</li>
                                             <li>编辑</li>
-                                            <li>删除</li>
+                                            <li onClick={()=>{
+                                                console.log('id',item.id)
+                                                deleteRole(item.id)
+                                            }}>删除</li>
                                         </ul>
                                         </span>
                                     </span>
-                                        </div>
-                                    )
-                                })}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className={'system_left'}>
-                    <div style={{padding: '0 20px'}}>
-                        <div className={'system_top'}>
-                            <span>角色员工</span>
+                    <div className={'system_left'}>
+                        <div style={{padding: '0 20px'}}>
+                            <div className={'system_top'}>
+                                <span>角色员工</span>
+                            </div>
                         </div>
-                    </div>
-                    <div className={'system_concat'}>
-                        <div className={'system_concat1'}>
-                            <Button type="primary" onClick={showModal1}>
-                                关联员工
-                            </Button>
-                        </div>
-                        <Modal title=" 关联员工" cancelText={'取消'}
-                               okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
-                            <p>选择员工</p>
+                        <div className={'system_concat'}>
+                            <div className={'system_concat1'}>
+                                <Button type="primary" onClick={showModal1}>
+                                    关联员工
+                                </Button>
+                            </div>
+                            <Modal title=" 关联员工" cancelText={'取消'}
+                                   okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
+                                <p>选择员工</p>
+                                <div>
+                                    <TreeSelect {...tProps}  />
+                                </div>
+                            </Modal>
                             <div>
-                                <TreeSelect {...tProps}  />
+                                <Tablelist></Tablelist>
                             </div>
-                        </Modal>
-                        <div>
-                            <Tablelist></Tablelist>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        </Layout>
     )
 }
 
