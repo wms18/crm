@@ -9,9 +9,9 @@ function  Jurisdiction() {
     return(
         <div>
             <System></System>
-            {/*<Office></Office>*/}
-            {/*<Customer></Customer>*/}
-            {/*<Office></Office>*/}
+            {/* <Office></Office> */}
+            {/* <Customer></Customer> */}
+            {/* <Project></Project> */}
         </div>
     )
 }

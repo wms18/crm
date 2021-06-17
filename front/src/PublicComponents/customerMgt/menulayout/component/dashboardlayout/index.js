@@ -1,7 +1,7 @@
 import { Layout, Button, Select } from 'antd';
 import React from 'react';
 import './style.css';
-import Alertmodal from '../../../Alertmodal'
+import Alertmodal from '../../../components/Alertmodal'
 import { AlignCenterOutlined, HomeOutlined } from '@ant-design/icons';
 import Topleft from './component/topleft'
 import Toprightt from './component/topright'

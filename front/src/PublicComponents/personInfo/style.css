@@ -1,1 +1,44 @@
 @import url('~antd/dist/antd.css');
+.personalinfoMain {
+    height: 85vh;
+    width: 900px;
+    min-width: 900px;
+    margin: 0 auto;
+    border: 1px solid #e6e6e6;
+    background-color: #fff;
+    border-radius: 2px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+.perinfoBtn{
+    padding: 10px 30px;
+}
+.perinfoBtn>button {
+    margin-left: 20px;
+}
+
+.perinfoRow3 {
+    padding: 30px 80px;
+    border-top: 8px solid #F5F6F9;
+    background-color: #fff;
+}
+
+.ant-card-body>div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.ant-card-body>div>div {
+    width: 190px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 8px;
+}
+.ant-card-body>div>div>span:nth-child(1){
+    margin-right: 20px;
+    color: #777;
+
+}

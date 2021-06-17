@@ -1,0 +1,29 @@
+@import url('~antd/dist/antd.css');
+.ant-modal-body>div:nth-child(1) {
+    display: flex;
+    justify-content: space-between;
+    width: 300px;
+    margin: 0 0 15px 0;
+}
+
+.ant-modal-body>div:nth-child(3) {
+    display: flex;
+    justify-content: space-between;
+    width: 363px;
+    margin: 0 0 15px 0;
+}
+
+.ant-modal-body>div:nth-child(2) {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.ant-modal-body>div:nth-child(4) {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.ant-modal-body>div:nth-child(2)>input {
+    width: 200px;
+}
+

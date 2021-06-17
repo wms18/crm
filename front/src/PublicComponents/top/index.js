@@ -1,4 +1,4 @@
-import { react } from "module";
+import react,{useState} from "react";
 import './style.css'
 import { Popover, Button } from 'antd';
 import icon from './imgs/alibabaicon.jpeg'
@@ -11,6 +11,7 @@ const content = (
     </div>
 );
 function ReceptionTop() {
+    let [username,setusername]=useState(['dd'])
     return (
         <div className='ReceptionTop'>
             <div>
@@ -38,9 +39,9 @@ function ReceptionTop() {
 
             </div>
             <div>
-                <span className='personalName'>dd</span>
-                <Popover placement="bottomRight" title={text} content={content} trigger="hover">
-                    <span className='iconfont icon-up'   ></span>
+                <span className='personalName'>{username}</span>
+                <Popover placement="bottomRight" title={text} content={content} trigger="hover" >
+                    <span className='iconfont icon-xiala'    style={{fontSize:'15px',color:'#aaa',marginLeft:'10px'}}></span>
                 </Popover>
             </div>
         </div>

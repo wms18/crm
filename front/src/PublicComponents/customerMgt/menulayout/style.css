@@ -4,6 +4,6 @@
     margin: 16px;
     background: rgba(255, 255, 255, 0.2);
   }
-/* .Creatpopover{
-  background-color: #fff;
-} */
+  .site-layout-background>div{
+    display: block !important;
+  }
