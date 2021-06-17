@@ -124,6 +124,7 @@ function Index() {
                                           >
 
                                               <Form
+                                                  layout="vertical"
                                                   labelAlign={'left'}
                                                   {...layout}
                                                   name="basic"

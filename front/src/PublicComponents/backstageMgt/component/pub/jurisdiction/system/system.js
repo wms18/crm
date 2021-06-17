@@ -20,6 +20,7 @@ import {
 const { Header, Sider, Content } = Layout;
 
 function System() {
+    let token = window.localStorage.getItem('token')
     let [arr, setArr] = useState([])
     let [activeInxex, setActiveIndex] = useState(0)
     const [visible, setVisible] = React.useState(false);
@@ -185,4 +186,4 @@ function System() {
     )
 }
 
-export default System
+export default System;

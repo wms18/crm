@@ -22,6 +22,7 @@ function Login() {
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
+                window.localStorage.setItem('token',response.data.data.token)
                 alert('登录成功')
             }
         }).catch((error) => {

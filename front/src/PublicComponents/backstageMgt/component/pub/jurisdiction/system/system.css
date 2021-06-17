@@ -34,6 +34,9 @@
     color:#fff;
     text-align: center;
 }
+.site-layout{
+    padding: 10px !important;
+}
 .system_new .system_new1{
     background-color: #4ab8b8;
     width: 140px;
@@ -79,7 +82,9 @@
     position: absolute;
     left: 330px;
     background-color: #fff;
+    background-color: #f7f7f7;
     padding: 0 10px;
+    cursor: pointer;
 }
 ul{
     list-style: none;
