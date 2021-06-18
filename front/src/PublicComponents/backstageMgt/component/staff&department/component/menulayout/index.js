@@ -5,6 +5,7 @@ import { Layout, Menu, Button, Input, Image, Space, Select } from 'antd';
 import SdContent, { sdContent } from '../sdcontent'
 import Alertform from '../alertform'
 import Jurisdiction from "../../../pub/jurisdiction";
+import SystemMgt from '../../../pub/jurisdiction/system/components/systemMgt';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -17,7 +18,6 @@ import {
 import Alertmodal from '../alertform';
 const { Search } = Input;
 const { Option } = Select;
-
 
 
 
@@ -59,9 +59,11 @@ class Menulayout extends React.Component {
 
   render() {
     return (
-      <div>
+      <Layout>
+        <Content>
+          <div>
 
-        <Layout
+            {/* <Layout
         >
           <Sider trigger={null} collapsible collapsed={this.state.collapsed}
             style={{  }}
@@ -82,7 +84,7 @@ class Menulayout extends React.Component {
               </SubMenu>
             </Menu>
           </Sider>
-          <Layout className="site-layout"  >
+          <Layout className="site-layout"  > */}
             {/*<Header className="site-layout-background" style={{ padding: 0, fontSize: 18, backgroundColor: '#F5F6F9', }}>*/}
             {/*  {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {*/}
             {/*    className: 'trigger',*/}
@@ -96,43 +98,59 @@ class Menulayout extends React.Component {
             {/*  style={{*/}
             {/*  }}*/}
             {/*>*/}
-              {/*<div className='content'>*/}
-              {/*  <div className='sdcontent'>*/}
-              {/*    <SdContent style={{}}></SdContent>*/}
-              {/*  </div>*/}
-              {/*  <div className='table'  style={{padding:'34px 10px 0px 10px'}}>*/}
-              {/*    <div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>*/}
-              {/*      <div >*/}
-              {/*        <Search placeholder="请输入员工名称" onSearch={onSearch} style={{ width: 262 }} />*/}
-              {/*      </div>*/}
+            {/*<div className='content'>*/}
+            {/*  <div className='sdcontent'>*/}
+            {/*    <SdContent style={{}}></SdContent>*/}
+            {/*  </div>*/}
+            {/*  <div className='table'  style={{padding:'34px 10px 0px 10px'}}>*/}
+            {/*    <div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>*/}
+            {/*      <div >*/}
+            {/*        <Search placeholder="请输入员工名称" onSearch={onSearch} style={{ width: 262 }} />*/}
+            {/*      </div>*/}
 
-              {/*      <div>*/}
-              {/*        <span  style={{marginRight:'10px'}}>*/}
-              {/*          状态*/}
-              {/*        </span>*/}
-              {/*        <Select style={{ display: 'inline-block' }} placeholder="请选择" style={{ width: 120 }} onChange={handleChange}>*/}
-              {/*          <Option value="0">禁用</Option>*/}
-              {/*          <Option value="1">激活</Option>*/}
-              {/*          <Option value="2">未激活</Option>*/}
-              {/*        </Select>*/}
-              {/*      </div>*/}
-              {/*      <div>*/}
-              {/*        <Alertform></Alertform>*/}
-              {/*      </div>*/}
+            {/*      <div>*/}
+            {/*        <span  style={{marginRight:'10px'}}>*/}
+            {/*          状态*/}
+            {/*        </span>*/}
+            {/*        <Select style={{ display: 'inline-block' }} placeholder="请选择" style={{ width: 120 }} onChange={handleChange}>*/}
+            {/*          <Option value="0">禁用</Option>*/}
+            {/*          <Option value="1">激活</Option>*/}
+            {/*          <Option value="2">未激活</Option>*/}
+            {/*        </Select>*/}
+            {/*      </div>*/}
+            {/*      <div>*/}
+            {/*        <Alertform></Alertform>*/}
+            {/*      </div>*/}
 
-              {/*    </div>*/}
+            {/*    </div>*/}
 
-              {/*    <div>*/}
-              {/*      <SdTable></SdTable>*/}
-              {/*    </div>*/}
+            {/*    <div>*/}
+            {/*      <SdTable></SdTable>*/}
+            {/*    </div>*/}
 
-              {/*  </div>*/}
-              {/*</div>*/}
-              <Jurisdiction></Jurisdiction>
+            {/*  </div>*/}
+            {/*</div>*/}
+            <div style={{ padding: 30, fontSize: 18 }} >
+              人员管理
+            </div>
+            <div  style={{display:'flex',justifyContent:'space-between'}}>
+              <div style={{display:'inline-block'}} >
+                <SdContent ></SdContent>
+              </div>
+              <div style={{display:'inline-block',width:'60vw'}} >
+                <SdTable ></SdTable>
+              </div>
+            </div>
+
+            {/* <Jurisdiction></Jurisdiction> */}
+            {/* <SystemMgt></SystemMgt> */}
             {/*</Content>*/}
-          </Layout>
-        </Layout>
-      </div>
+            {/* </Layout> */}
+            {/* </Layout> */}
+          </div>
+        </Content>
+      </Layout>
+
     );
   }
 }

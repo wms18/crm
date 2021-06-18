@@ -1,63 +1,90 @@
-import './style.css'
-import React, { useState } from 'react';
-import { Upload } from 'antd';
-// import ImgCrop from 'antd-img-crop';
+import React from 'react'
+import { Upload, message, Image } from 'antd';
+import { auto } from 'async';
+import icon from '../../imgs/alibabaicon.jpeg'
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
-const Uploadimg = () => {
-  //根据官方属性定制化裁剪框大小固定的裁剪组件属性
+function getBase64(img, callback) {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result));
+  reader.readAsDataURL(img);
+}
 
-  const [fileList, setFileList] = useState([
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-  ]);
+function beforeUpload(file) {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    message.error('You can only upload JPG/PNG file!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('Image must smaller than 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
+}
 
-  const onChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+class Uploadimg extends React.Component {
+  state = {
+    loading: false,
+    imgsrc: icon,
+    isimg: false
   };
 
-  const onPreview = async file => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise(resolve => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
+  handleChange = info => {
+    if (info.file.status === 'uploading') {
+      this.setState({ loading: true });
+      return;
     }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow.document.write(image.outerHTML);
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, imageUrl =>
+        this.setState({
+          imageUrl,
+          loading: false,
+        }),
+      );
+    }
   };
 
-  return (
-    // <ImgCrop rotate
-    // modalWidth={800} //裁剪宽度
-    // height={300} //裁剪高度
-    // resize={false} //裁剪是否可以调整大小
-    // resizeAndDrag={ true} //裁剪是否可以调整大小、可拖动
-    // modalTitle="上传图片" //弹窗标题
-    // modalWidth={600} //弹窗宽度
-    // >
-      <Upload
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        listType="picture-card"
-        fileList={fileList}
-        onChange={onChange}
-        onPreview={onPreview}
-      >
-        {fileList.length < 5 && '+ Upload'}
-      </Upload>
-    //  </ImgCrop>
-  );
-};
+  render() {
+    const { loading, imageUrl } = this.state;
+    const uploadButton = (
+      <div>
+        {loading ? <LoadingOutlined /> : <PlusOutlined />}
+        <div style={{ marginTop: 8 }}>Upload</div>
+      </div>
+    );
+    return (
+      <div>
+        {
+          this.props.hidden ? (
+            <Upload
+              name="avatar"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              beforeUpload={beforeUpload}
+              onChange={this.handleChange}
+            >
+              {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+            </Upload>
+          )
+            : (
+              <div style={{ display: 'inline' }}>
+                <Image
+                  width={auto}
+                  height={60}
+                  width={120}
+                  src={this.state.imgsrc}
+                />
+              </div>
+            )
 
+        }
+      </div>
 
+    );
+  }
+}
 
-
-
-export default Uploadimg
+export default Uploadimg;

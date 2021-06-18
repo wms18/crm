@@ -12,11 +12,7 @@ function BackstageMgt() {
         return(
             <div>
                 <Top></Top>
-                {/* <SystemMgt></SystemMgt> */}
-                {/*<StaffDep></StaffDep>*/}
                 <RoleControl></RoleControl>
-                <StaffDep></StaffDep>
-                {/*<HomePage></HomePage>*/}
             </div>
         )
 }
