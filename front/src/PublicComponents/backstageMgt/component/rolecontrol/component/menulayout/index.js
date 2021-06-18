@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import './style.css'
-import sdTable from "../sdtable";
+// import SdTable from '../sdtable';
 import { Layout, Menu, Button, Input, Image, Space, Select } from 'antd';
-import SdContent from "../sdcontent";
-import Alertform from '../alertform'
+// import SdContent, { sdContent } from '../sdcontent'
+// import Alertform from '../alertform'
+import Office from "../jurisdiction/office/office";
+import Project from "../jurisdiction/project/project";
+import SystemMgt from "../jurisdiction/system/components/systemMgt/index";
+import Customer from "../jurisdiction/customer/customer";
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -13,7 +17,7 @@ import {
   MailOutlined,
   AudioOutlined
 } from '@ant-design/icons';
-import Alertmodal from '../alertform';
+// import Alertmodal from '../alertform';
 const { Search } = Input;
 const { Option } = Select;
 
@@ -127,8 +131,10 @@ class Menulayout extends React.Component {
 
               {/*  </div>*/}
               {/*</div>*/}
-              {/*<Jurisdiction></Jurisdiction>*/}
             <SystemMgt></SystemMgt>
+            {/*<Office></Office>*/}
+            {/*<Project></Project>*/}
+            {/*<Customer></Customer>*/}
             {/*</Content>*/}
           </Layout>
         </Layout>

@@ -1,6 +1,10 @@
-import { Table,Pagination  } from 'antd';
+import { Table,Pagination,ConfigProvider  } from 'antd';
 import 'antd/dist/antd.css';
-
+import '../../../font-awesome-4.7.0/css/font-awesome.css'
+import zhCN from 'antd/lib/locale/zh_CN';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+moment.locale('zh-cn');
 function Tablelist() {
     const columns = [
         {
@@ -31,7 +35,7 @@ function Tablelist() {
     ];
 
     const data = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 30; i++) {
         data.push({
             key: i,
             name: `Edward King ${i}`,
@@ -43,7 +47,8 @@ function Tablelist() {
     }
     return(
         <div>
-            <Table columns={columns}  dataSource={data}  scroll={{y:'calc(100vh - 400px)'  }} />
+            <Table columns={columns}  dataSource={data}  scroll={{ y:'calc(100vh - 400px)'  }} />
+            <ConfigProvider locale={zhCN}>
             <Pagination
                 className={'pagination'}
                 total={85}
@@ -51,6 +56,7 @@ function Tablelist() {
                 showQuickJumper
                 showTotal={total => `共 ${total} 条`}
             />
+            </ConfigProvider>
         </div>
     )
 }

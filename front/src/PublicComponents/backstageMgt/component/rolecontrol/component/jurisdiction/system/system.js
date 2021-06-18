@@ -5,7 +5,7 @@ import Tablelist from './table'
 import '../../font-awesome-4.7.0/css/font-awesome.css'
 import { TreeSelect } from 'antd';
 import axios from "axios";
-import base from '../../../../../../axios/axios'
+import base from "../../../../../../../axios/axios";
 import SystemMgt from './components/systemMgt'
 
 import { Layout, Menu } from 'antd';
@@ -181,7 +181,7 @@ function System() {
 
                 {/* 系统管理组件 */}
             <SystemMgt></SystemMgt>
-           
+
         </Layout>
     )
 }

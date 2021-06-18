@@ -1,7 +1,25 @@
-import { Table,Pagination  } from 'antd';
+import { Table,Pagination,ConfigProvider  } from 'antd';
 import 'antd/dist/antd.css';
-import '../../../font-awesome-4.7.0/css/font-awesome.css'
-function Tablelist() {
+import zhCN from 'antd/lib/locale/zh_CN';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+moment.locale('zh-cn');
+import {useEffect} from 'react'
+import axios from "axios";
+import base from "../../../../../../../axios/axios";
+function Tablelist(props) {
+    // console.log(props)
+    let token = window.localStorage.getItem('token')
+    useEffect(()=>{
+        axios({
+            method:'get',
+            url:base.url+'/employee/whoami?token='+token
+        }).then((response)=>{
+            // console.log(response)
+        }).catch((error)=>{
+            alert(error)
+        })
+    })
     const columns = [
         {
             title: '姓名',
@@ -29,21 +47,21 @@ function Tablelist() {
             width: 150,
         },
     ];
-
     const data = [];
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 100; i++) {
         data.push({
             key: i,
             name: `Edward King ${i}`,
             department: '总公司',
             role:'超级管理员',
             position: '经理',
-            delete:<i className="system_delete fa fa-trash-o" aria-hidden="true"></i>
+            delete:<i className="system_delete fa fa-trash-o" aria-hidden="true"></i>,
         });
     }
     return(
         <div>
-            <Table columns={columns}  dataSource={data}  scroll={{ y:'calc(100vh - 400px)'  }} />
+            <Table columns={columns}  dataSource={data}  scroll={{ y:'calc(100vh - 400px)' }} />
+            <ConfigProvider locale={zhCN}>
             <Pagination
                 className={'pagination'}
                 total={85}
@@ -51,6 +69,7 @@ function Tablelist() {
                 showQuickJumper
                 showTotal={total => `共 ${total} 条`}
             />
+            </ConfigProvider>
         </div>
     )
 }

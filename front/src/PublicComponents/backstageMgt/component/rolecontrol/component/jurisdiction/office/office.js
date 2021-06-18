@@ -3,9 +3,12 @@ import {Modal, Button} from 'antd';
 import 'antd/dist/antd.css';
 import {Menu, Dropdown} from 'antd';
 import {DownOutlined} from '@ant-design/icons';
-import Tablelist from './component/table'
+import Tablelist from './table'
+import '../../font-awesome-4.7.0/css/font-awesome.css'
+import './office.css'
+import '../system/system.css'
 import { TreeSelect } from 'antd';
-function Customer() {
+function Office() {
     const { SHOW_PARENT } = TreeSelect;
     //添加员工
     const treeData = [
@@ -54,6 +57,9 @@ function Customer() {
     const handleCancel1 = () => {
         setIsModalVisible(false);
     };
+    let staff = ['角色员工', '角色权限']
+    let [displayStaff, setDisplayStaff] = useState('block')  // 隐藏角色员工或角色权限
+    let [activeStaff, setActiveStaff] = useState(0)      //选择角色员工或角色权限
     let [arr, setArr] = useState([])         //新建角色
     let [activeInxex, setActiveIndex] = useState(0)  //选择新建的角色
     const [visible, setVisible] = React.useState(false);
@@ -97,7 +103,7 @@ function Customer() {
     }
     return (
         <div className={'system'}>
-            <div className={'system1'}>客户管理角色</div>
+            <div className={'system1'}>办公管理角色</div>
             <div className={'system2'}>
                 <div className={'system_right'}>
                     <div className={'system_new'}>
@@ -118,7 +124,6 @@ function Customer() {
                                 <input type="text" value={text} onChange={(e) => {
                                     handlePeople(e.target.value)
                                 }}/>
-
                             </Modal>
                         </div>
                     </div>
@@ -156,7 +161,6 @@ function Customer() {
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div className={'system_left'}>
                     <div style={{padding: '0 20px'}}>
@@ -170,7 +174,6 @@ function Customer() {
                                 关联员工
                             </Button>
                         </div>
-
                         <Modal title=" 关联员工" cancelText={'取消'}
                                okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
                             <p>选择员工</p>
@@ -182,9 +185,12 @@ function Customer() {
                             <Tablelist></Tablelist>
                         </div>
                     </div>
+
                 </div>
+
             </div>
         </div>
     )
 }
-export  default  Customer;
+
+export default Office
