@@ -67,11 +67,12 @@ class sdTable extends React.Component {
 
   componentDidMount(){
     this.getEmployee()
+    console.log(`${base.url}/employee/getEmployee`);
   }
   
 
   getEmployee=()=>{
-      axios.get(`${base.realtimebus}/employee/getEmployee`)
+      axios.get(`${base.url}/employee/getEmployee`)
       .then((res)=>{
         console.log(res);
         if(res.data.code==='ERROR'){
@@ -114,7 +115,7 @@ class sdTable extends React.Component {
       <div>
         <div style={{ marginBottom: 16 }}>
         </div>
-        <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.data}  pagination={{ pageSize: 50 }} scroll={{x:900, y:240 }} />
+        <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.data}  pagination={{ pageSize: 50 }}    scroll={{x:400, y:240 }} />
       </div>
     );
   }

@@ -5,7 +5,7 @@ import './style.css';
 import Creatpopover from '../components/Creatpopover'
 import Dashbord from './component/dashboardlayout'   //仪表盘组件
 import sdTable from '../components/sdtable'
-import ProductTable  from './component/prodocutTable';
+import ProductTable from './component/prodocutTable';
 import {
   AppstoreOutlined,
   BarChartOutlined,
@@ -23,12 +23,12 @@ const { Header, Content, Footer, Sider } = Layout;
 
 function Menulayout() {
 
-let [collapsed,setcollapsed]=useState(false)
+  let [collapsed, setcollapsed] = useState(false)
 
-function toggle (){
-  collapsed=!collapsed
-  setcollapsed(collapsed)
-};
+  function toggle() {
+    collapsed = !collapsed
+    setcollapsed(collapsed)
+  };
 
 
 
@@ -36,19 +36,18 @@ function toggle (){
     <div>
       <Layout>
         <Sider
-         trigger={null} 
-         collapsible 
-         collapsed={collapsed}
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
 
-          // style={{
-          //   overflow: 'auto',
-          //   height: '100vh',
-          //   position: 'fixed',
-          //   left: 0,
-          // }}
+        // style={{
+        //   overflow: 'auto',
+        //   height: '100vh',
+        //   position: 'fixed',
+        //   left: 0,
+        // }}
         >
           <Creatpopover></Creatpopover>
-          <div className="logo" />
           <Menu className='createitem' theme="dark" mode="inline" defaultSelectedKeys={['4']} >
             <Menu.Item key="1" icon={<UserOutlined />}>
               仪表盘
@@ -82,21 +81,23 @@ function toggle (){
             </Menu.Item>
           </Menu>
         </Sider>
-       
+
         <Layout className="site-layout">
+          <div style={{ padding: 30, fontSize: 18 }} >
+            产品管理
+          </div>
           <Content
-            className="site-layout-background"
+
             style={{
-              margin: '24px 16px',
+              backgroundColor:'#fff',
               padding: 24,
               minHeight: 280,
             }}
           >
-            
-             {/* 在这里切换content的组件显示 */}
-            <div  style={{width:'100%',height:'100%'}}>
-              <ProductTable></ProductTable>
-            </div>
+
+            {/* 在这里切换content的组件显示 */}
+            <ProductTable></ProductTable>
+
           </Content>
         </Layout>
       </Layout>
