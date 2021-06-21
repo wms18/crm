@@ -19,8 +19,14 @@ import { auto } from 'async';
 const { SubMenu } = Menu
 const { Header, Sider, Content } = Layout;
 
-
+const token=window.localStorage.getItem('token')
+console.log(token);
 function Homepage() {
+
+
+    useEffect(()=>{
+        let token=window.get
+    },[])
 
 
     const content = (
@@ -58,10 +64,11 @@ function Homepage() {
                 <div
                     style={{
                         padding: '10px 30px 20px',
-                        backgroundColor: '#fff'
+                        backgroundColor: '#fff',
+                        marginLeft:'30px'
                     }}
                 >
-                    <div style={{ textAlign: 'right', width: '100%', marginBottom: 30 }}>
+                    <div style={{ textAlign: 'right', width: '100%' }}>
                         <Button type=''>保存</Button>
                     </div>
                     <div style={{ marginBottom: 30, width: '100%' }}>
@@ -71,7 +78,7 @@ function Homepage() {
                     <div>
                         <span style={{ fontSize: 12, marginBottom: '8px', display: 'block' }}>企业logo</span>
 
-                        <Uploadimg  hidden={isimg}></Uploadimg>
+                        <Uploadimg hidden={isimg}></Uploadimg>
 
                         <div ><button
                             onClick={() => {

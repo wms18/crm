@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './style.css'
 import { Layout, Menu, Button, Input, Image, Space, Select } from 'antd';
-import SystemMgt from '../components/pub/jurisdiction/system/components/systemMgt';
-import Office from '../components/pub/jurisdiction/office/office'
-import Project from '../../pub/jurisdiction/project/project';
-import Customer from '../../pub/jurisdiction/customer/customer';
+import SystemMgt from '../component/jurisdiction/system/components/systemMgt';
+import Office from '../component/jurisdiction/office/office';
+import Project from '../component/jurisdiction/project/project'
+import Customer from '../component/jurisdiction/customer/customer';
 import HomePage from '../../homepage'
 import StaffDep from '../../staff&department'
 import { HashRouter, Link, Route, Switch } from 'react-router-dom'

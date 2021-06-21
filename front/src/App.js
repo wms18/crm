@@ -5,18 +5,21 @@ import BackstageMgt from './PublicComponents/backstageMgt'
 import Top from './PublicComponents/top'
 import  PersonalInfo from './PublicComponents/personInfo';
 import  CustomerMgt from './PublicComponents/customerMgt'
-import Login from "./PublicComponents/login/login";
-import MenuLeft from "./PublicComponents/office/menu/menu-left";
+import ProductTable from './Protable'
+
+import Paging from './PublicComponents/backstageMgt/component/staff&department/component/Paging';
+
 function App() {
 
     return (
         <div className="App">
             {/*<Top></Top>*/}
             {/* <PersonalInfo></PersonalInfo> */}
-            {/*<CustomerMgt></CustomerMgt>*/}
+            {/* <CustomerMgt></CustomerMgt> */}
              <BackstageMgt></BackstageMgt>
             {/*<Login></Login>*/}
-            {/*<MenuLeft></MenuLeft>*/}
+            {/* <ProductTable></ProductTable> */}
+
         </div>
     );
 

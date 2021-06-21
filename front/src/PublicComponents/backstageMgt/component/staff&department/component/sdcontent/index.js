@@ -1,50 +1,141 @@
-import React, { Component } from 'react'
-import { Menu } from 'antd';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
-import { render } from 'react-dom'
-const { SubMenu } = Menu;
+import React, { useState } from 'react';
+import { Tree, Switch } from 'antd';
+import { CarryOutOutlined, FormOutlined } from '@ant-design/icons';
+const treeData = [
+  {
+    title: 'parent 1',
+    key: '0-0',
+    icon: <CarryOutOutlined />,
+    children: [
+      {
+        title: 'parent 1-0',
+        key: '0-0-0',
+        icon: <CarryOutOutlined />,
+        children: [
+          {
+            title: 'leaf',
+            key: '0-0-0-0',
+            icon: <CarryOutOutlined />,
+          },
+          {
+            title: (
+              <>
+                <div>multiple line title</div>
+                <div>multiple line title</div>
+              </>
+            ),
+            key: '0-0-0-1',
+            icon: <CarryOutOutlined />,
+          },
+          {
+            title: 'leaf',
+            key: '0-0-0-2',
+            icon: <CarryOutOutlined />,
+          },
+        ],
+      },
+      {
+        title: 'parent 1-1',
+        key: '0-0-1',
+        icon: <CarryOutOutlined />,
+        children: [
+          {
+            title: 'leaf',
+            key: '0-0-1-0',
+            icon: <CarryOutOutlined />,
+          },
+        ],
+      },
+      {
+        title: 'parent 1-2',
+        key: '0-0-2',
+        icon: <CarryOutOutlined />,
+        children: [
+          {
+            title: 'leaf',
+            key: '0-0-2-0',
+            icon: <CarryOutOutlined />,
+          },
+          {
+            title: 'leaf',
+            key: '0-0-2-1',
+            icon: <CarryOutOutlined />,
+            switcherIcon: <FormOutlined />,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'parent 2',
+    key: '0-1',
+    icon: <CarryOutOutlined />,
+    children: [
+      {
+        title: 'parent 2-0',
+        key: '0-1-0',
+        icon: <CarryOutOutlined />,
+        children: [
+          {
+            title: 'leaf',
+            key: '0-1-0-0',
+            icon: <CarryOutOutlined />,
+          },
+          {
+            title: 'leaf',
+            key: '0-1-0-1',
+            icon: <CarryOutOutlined />,
+          },
+        ],
+      },
+    ],
+  },
+];
 
+const SdContent = () => {
+  const [showLine, setShowLine] = useState(true);
+  const [showIcon, setShowIcon] = useState(false);
+  const [showLeafIcon, setShowLeafIcon] = useState(true);
 
-class SdContent extends React.Component {
-  handleClick = e => {
-    console.log('click ', e);
-  }
+  const onSelect = (selectedKeys, info) => {
+    console.log('selected', selectedKeys, info);
+  };
 
+  const onSetLeafIcon = (checked) => {
+    setShowLeafIcon(checked);
+    setShowLine({
+      showLeafIcon: checked,
+    });
+  };
 
-  render() {
-    return (
-      <div>
-        <Menu
-          onClick={this.handleClick}
-          style={{ width: '16vw',backgroundColor:'white' }}
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
-          mode="inline"
-          style={{marginTop:30}}
-          
-        >
-          <SubMenu key="sub1" title="总公司">
-            <SubMenu title="直营部">
-              <SubMenu key='sub8' title="业务经理 ">
-                <Menu.Item key="6">业务人员</Menu.Item >
-              </SubMenu>
-              <Menu.Item key='sub7'>维修部门
-              </Menu.Item >
-            </SubMenu>
-            <SubMenu key='sub4' title="南京区域 ">
-              <SubMenu key='sub5' title="业务经理 ">
-                <Menu.Item key="6">业务人员</Menu.Item >
-              </SubMenu>
-
-            </SubMenu>
-            <SubMenu key='sub3' title="运营一组 ">
-              <Menu.Item key="3">销售部</Menu.Item>
-            </SubMenu>
-          </SubMenu>
-        </Menu>
-      </div>
+  const onSetShowLine = (checked) => {
+    setShowLine(
+      checked
+        ? {
+            showLeafIcon,
+          }
+        : false,
     );
-  }
-}
-export default SdContent;
+  };
 
+  return (
+    <div>
+      <div
+        style={{
+          marginBottom: 16,
+        }}
+      >
+     
+      </div>
+      <Tree
+        showLine={true}
+        showIcon={true}
+        defaultExpandedKeys={['0-0-0']}
+        onSelect={onSelect}
+        treeData={treeData}
+      />
+    </div>
+  );
+};
+
+export default SdContent;

@@ -1,16 +1,17 @@
-import React, {useState, useEffect} from 'react';
-import {Modal, Button, Popover} from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Popover } from 'antd';
 import 'antd/dist/antd.css';
-import {Menu, Dropdown} from 'antd';
-import {DownOutlined} from '@ant-design/icons';
+import { Menu, Dropdown } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 import Tablelist from './table'
 import '../../font-awesome-4.7.0/css/font-awesome.css'
 import './office.css'
 import '../system/system.css'
-import {TreeSelect} from 'antd';
+import { TreeSelect,Layout } from 'antd';
 import axios from "axios";
 import base from "../../../../../../../axios/axios";
 import qs from 'qs'
+const { Content } = Layout
 
 function Office() {
     let token = window.localStorage.getItem('token')
@@ -23,7 +24,7 @@ function Office() {
     let [text, setText] = useState('')
     let [hidden, setHidden] = useState('none')
     let [collapsed, setCollapsed] = useState(false)
-    const {SHOW_PARENT} = TreeSelect;
+    const { SHOW_PARENT } = TreeSelect;
     let [value, setValue] = useState([])    //关联员工
     let toggle = () => {
         setCollapsed(!collapsed)
@@ -79,9 +80,9 @@ function Office() {
             <Modal title="编辑角色" visible={isModalVisible2} onOk={handleOk2} onCancel={handleCancel2}>
                 <p>角色名称</p>
                 <div>
-                    <input type="text" value={editRoles} style={{width: '100%'}} onChange={(e) => {
+                    <input type="text" value={editRoles} style={{ width: '100%' }} onChange={(e) => {
                         setEditRoles(e.target.value)
-                    }}/>
+                    }} />
                 </div>
             </Modal>
             <p onClick={() => {
@@ -276,7 +277,7 @@ function Office() {
                                 <p>角色名称</p>
                                 <input type="text" value={text} onChange={(e) => {
                                     handlePeople(e.target.value)
-                                }}/>
+                                }} />
                             </Modal>
                         </div>
                     </div>
@@ -286,63 +287,64 @@ function Office() {
                                 {arr.map((item, index) => {
                                     return (
                                         <div key={index}
-                                             className={index === activeInxex ? 'activeIndex system_item1' : 'system_item1'}
+                                            className={index === activeInxex ? 'activeIndex system_item1' : 'system_item1'}
 
-                                             onClick={() => {
-                                                 setActiveIndex(index)
-                                                 setHidden('none')
-                                                 setRoleId(item.id)
-                                             }}
+                                            onClick={() => {
+                                                setActiveIndex(index)
+                                                setHidden('none')
+                                                setRoleId(item.id)
+                                            }}
                                         >
-                                    <span
-                                    >{item.name}</span>
+                                            <span
+                                            >{item.name}</span>
                                             <span>
-                                        <span>
-                                        <Popover placement="bottom"
-                                                 content={content}
-                                                 onClick={() => {
-                                                     //角色id和角色
-                                                     setSelectedRoleId(item.id)
-                                                     setEditRoles(item.name)
-                                                 }}
-                                                 trigger="click">
-                                                    <div><i className="fa fa-angle-down" aria-hidden="true"></i></div>
-                                                  </Popover>
-                                        </span>
-                                    </span>
+                                                <span>
+                                                    <Popover placement="bottom"
+                                                        content={content}
+                                                        onClick={() => {
+                                                            //角色id和角色
+                                                            setSelectedRoleId(item.id)
+                                                            setEditRoles(item.name)
+                                                        }}
+                                                        trigger="click">
+                                                        <div><i className="fa fa-angle-down" aria-hidden="true"></i></div>
+                                                    </Popover>
+                                                </span>
+                                            </span>
                                         </div>
                                     )
                                 })}
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className={'system_left'}>
-                    <div style={{padding: '0 20px'}}>
-                        <div className={'system_top'}>
-                            <span className={'system_active'}>角色员工</span>
-                        </div>
-                    </div>
-                    <div className={'system_concat'}>
-                        <div className={'system_concat1'}>
-                            <Button type="primary" onClick={showModal1}>
-                                关联员工
-                            </Button>
-                        </div>
-                        <Modal title=" 关联员工" cancelText={'取消'}
-                               okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
-                            <p>选择员工</p>
-                            <div>
-                                <TreeSelect {...tProps} />
+                        <div className={'system_left'}>
+                            <div style={{ padding: '0 20px' }}>
+                                <div className={'system_top'}>
+                                    <span className={'system_active'}>角色员工</span>
+                                </div>
                             </div>
-                        </Modal>
-                        <div>
-                            <Tablelist roleId={roleId}></Tablelist>
+                            <div className={'system_concat'}>
+                                <div className={'system_concat1'}>
+                                    <Button type="primary" onClick={showModal1}>
+                                        关联员工
+                                    </Button>
+                                </div>
+                                <Modal title=" 关联员工" cancelText={'取消'}
+                                    okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
+                                    <p>选择员工</p>
+                                    <div>
+                                        <TreeSelect {...tProps} />
+                                    </div>
+                                </Modal>
+                                <div>
+                                    <Tablelist></Tablelist>
+                                </div>
+                            </div>
+                            <div>
+                                <Tablelist roleId={roleId}></Tablelist>
+                            </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     )

@@ -1,48 +1,70 @@
-import React ,{component} from 'react'
-
+import React, { useState } from 'react'
+import {
+  UserAddOutlined
+}
+  from '@ant-design/icons'
 import "./style.css"
-
-import { Drawer, Button } from 'antd';
+import { Drawer, Button, Input } from 'antd';
 import Alerttable from './component/alerttable';
-class Customer extends React.Component {
-  state = { visible: false };
 
-  showDrawer = () => {
-    this.setState({
-      visible: true,
-    });
+
+const { Search } = Input
+
+function Customer() {
+
+  let [visible, setVisible] = useState(false)
+
+  const showDrawer = () => {
+    setVisible(true)
   };
 
-  onClose = () => {
-    this.setState({
-      visible: false,
-    });
+  const onClose = () => {
+    setVisible(false)
   };
 
-  render() {
-    return (
-      <div className="site-drawer-render-in-current-wrapper">
-        <div style={{ marginTop: 16 }}>
-          <Button type="primary" onClick={this.showDrawer} style={{width:180}}>
-            Open
-          </Button>
-        </div>
-        <Drawer
-          title="客户"
-          placement="right"
-          closable={false}
-          onClose={this.onClose}
-          visible={this.state.visible}
-          getContainer={false}
-          style={{ position: 'absolute'}}
-          width={'100vw'}
-          closable={true}
-        >
-         <Alerttable></Alerttable>
-        </Drawer>
+  return (
+
+    // <>
+    //   <Button type="primary" onClick={showDrawer}>
+    //     Open
+    //   </Button>
+    //   <Drawer
+    //     title="Basic Drawer"
+    //     placement="right"
+    //     closable={false}
+    //     onClose={onClose}
+    //     visible={visible}
+    //   >
+    //     <p>Some contents...</p>
+    //     <p>Some contents...</p>
+    //     <p>Some contents...</p>
+    //   </Drawer>
+    // </>
+
+    <div className="site-drawer-render-in-current-wrapper">
+      <div style={{ marginTop: 16 }}>
+        <Button type="primary"  icon={<UserAddOutlined />}  onClick={showDrawer} style={{width:180}}>
+          客戶
+        </Button>
       </div>
-    );
-  }
+      <Drawer
+        title="销售简报-新增客户"
+        placement="right"
+        closable={false}
+        onClose={onClose}
+        visible={visible}
+        width={'100vw'}
+        getContainer={false}
+        closable={true}
+        destroyOnClose={true}
+        bodyStyle={{padding:'0 30px 30px'}}
+      >
+
+        
+       <Alerttable></Alerttable>
+      </Drawer>
+    </div>
+  );
 }
 
 export default Customer

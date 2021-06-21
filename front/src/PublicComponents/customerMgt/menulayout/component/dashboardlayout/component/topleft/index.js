@@ -4,7 +4,7 @@ import Customer from './component/customer'
 
 function Topleft() {
     return (
-        <div className='topleft'>
+        <div style={{ marginRight: '20px' }} className='topleft'>
             <div  >
                 <i className='iconfont icon-xiaoshou'>销售简报</i>
             </div>
@@ -12,13 +12,18 @@ function Topleft() {
 
                 <div>
                     <Customer></Customer>
-                </div>
-
-                <div>
-                  
+                    <Customer></Customer>
                 </div>
                 <div>
-                 
+                    <Customer></Customer>
+                    <Customer></Customer>
+                </div>
+                <div>
+                    <Customer></Customer>
+                    <Customer></Customer>
+                </div>
+                <div>
+                    <Customer></Customer>
                 </div>
 
             </div>
