@@ -1,9 +1,13 @@
-import { Table, Button } from 'antd';
+import { Table, Button, Select, Input, Pagination,Layout } from 'antd';
 import axios from 'axios';
 import React, { Component } from "react";
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
+
+const { Option } = Select
+const { Search } = Input
+const {Content,Footer,Header} =Layout
 const data = [];
 for (let i = 0; i < 100; i++) {
   data.push({
@@ -16,7 +20,7 @@ for (let i = 0; i < 100; i++) {
 
 const columns = [
   {
-    width:100,
+    width: 100,
     title: '产品名称',
     dataIndex: 'productName',
     sorter: {
@@ -26,7 +30,7 @@ const columns = [
   },
   {
     title: '产品类别',
-    width:100,
+    width: 100,
     dataIndex: 'category',
     sorter: {
       compare: (a, b) => a.category - b.category,
@@ -34,7 +38,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '产品编码',
     dataIndex: 'code',
     sorter: {
@@ -43,7 +47,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '是否上架',
     dataIndex: 'IsPutOnShelves',
     sorter: {
@@ -52,7 +56,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '产品价格',
     dataIndex: 'price',
     sorter: {
@@ -61,7 +65,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '库存数量',
     dataIndex: 'quanity',
     sorter: {
@@ -70,7 +74,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '创建人',
     dataIndex: 'createPerson',
     sorter: {
@@ -79,7 +83,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '更新时间',
     dataIndex: 'updateTime',
     sorter: {
@@ -88,7 +92,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '创建时间',
     dataIndex: 'createTime',
     sorter: {
@@ -97,7 +101,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '更新时间',
     dataIndex: 'updateTime',
     sorter: {
@@ -106,7 +110,7 @@ const columns = [
     },
   },
   {
-    width:100,
+    width: 100,
     title: '负责人',
     dataIndex: 'personInCharge',
     sorter: {
@@ -118,6 +122,8 @@ const columns = [
 
 class ProductTable extends Component {
 
+
+
   componentDidMount() {
 
     axios.post(`${base.url}/employee/login?password=` + 123456 + `&phone=` + 18888888888, {
@@ -128,9 +134,9 @@ class ProductTable extends Component {
 
           //获取产品列表
           axios.get(`${base.url}/produce/getProduce?currentPage=1&limit=10`, {
-            params:{
-             token: res.data.data.token,
-             keyWord :"1"
+            params: {
+              token: res.data.data.token,
+              keyWord: "1"
             }
           })
             .then((res) => {
@@ -139,6 +145,11 @@ class ProductTable extends Component {
         }
 
       })
+  }
+
+  onChange(pageNumber) {
+    console.log('Page: ', pageNumber);
+
   }
 
 
@@ -172,7 +183,30 @@ class ProductTable extends Component {
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <div>
-        <Table rowSelection={rowSelection} columns={columns} dataSource={data}   pagination={{ pageSize: 50 }} scroll={{ x: 900, y: 300 }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
+          <span style={{ fontSize: '18px' }}>产品管理</span>
+          <Search placeholder='请输入产品名称' style={{ width: '200px' }}></Search>
+          <div>
+            <Button type='primary'>新建产品</Button>
+          </div>
+        </div>
+
+        <div>
+          <div style={{ height: 50 }}>
+
+          </div>
+          <Table
+            total={80}
+            showTotal={this.showTotal} defaultPageSize={10}
+            onChange={(page) => this.pageChange(page)}
+            current={1}
+            rowSelection={rowSelection} columns={columns} dataSource={data} pagination={{ pageSize: 50 }} scroll={{ x: 900, y: 300 }} />
+        </div>
+
+
+        <div  style={{zIndex:1}}>
+          <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={this.onChange} />
+        </div>
       </div>
     );
   }

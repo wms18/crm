@@ -64,7 +64,8 @@ function Homepage() {
                 <div
                     style={{
                         padding: '10px 30px 20px',
-                        backgroundColor: '#fff'
+                        backgroundColor: '#fff',
+                        marginLeft:'30px'
                     }}
                 >
                     <div style={{ textAlign: 'right', width: '100%' }}>

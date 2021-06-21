@@ -13,15 +13,13 @@ const { Option } = Select;
 
 function Dashboaedlayout() {
     return (
-        <Layout className="site-layout" style={{ marginLeft: 130 }}>
-
-            <Header className="site-layout-background" style={{ padding: 0 }} >
-                <div>
-                    <HomeOutlined style={{ fontSize: 30, color: '#FD8F70' }} />
-                    <span>本人及下属</span>
-                    <span>|</span>
-                    <Alertmodal   name='切换' ></Alertmodal>
-                    <Select defaultValue="本年" style={{ width: 200 }} onChange={''}>
+        <div>
+            <div style={{ display: 'flex' ,justifyContent:'space-between',marginBottom:'10px',backgroundColor:'#f5f6f9',padding:'24px'}}>
+                <div style={{display:'flex',alignItems:'center',width:'360px',justifyContent:'space-between'}}>
+                    <span >本人及下属</span>
+                    <span  >|</span>
+                    <Alertmodal    name='切换' ></Alertmodal>
+                    <Select  defaultValue="本年" style={{ width: 200 }} onChange={''}>
                         <Option value="today">今天</Option>
                         <Option value="yesterday">昨天</Option>
                         <Option value="thisweek">本周</Option>
@@ -33,49 +31,43 @@ function Dashboaedlayout() {
                         <Option value="thisyear">本年</Option>
                         <Option value="lastyear">去年</Option>
                     </Select>
-
                 </div>
+
                 <div>
-                    <Button icon={<AlignCenterOutlined />} size={'large'} >数据查重</Button>
+                    <Button icon={<AlignCenterOutlined />} width={100}  style={{backgroundColor:'#3e84e9',color:'#fff'}} >数据查重</Button>
                 </div>
-            </Header>
+            </div>
 
-            <Content style={{ overflow: 'initial' }}>
-                <div className="site-layout-background2" style={{}}>
+
+            <div className="site-layout-background2" style={{    padding: 24}}>
+                <div>
+
                     <div>
+                        < Topleft></Topleft>
+                    </div>
 
-                        <div>
-                       < Topleft></Topleft>
-                        </div>
-
-                        <div>
+                    <div>
                         <Toprightt></Toprightt>
-                        </div>
+                    </div>
 
+                </div>
+
+                <div>
+
+                    <div>
+                        <Footleft></Footleft>
                     </div>
 
                     <div>
-
-                        <div>
-                        <Footleft></Footleft>
-                        </div>
-
-                        <div>
                         <Footright></Footright>
-                        </div>
-                        
                     </div>
 
                 </div>
-            </Content>
 
-            {/* <Footer >
-                <div className='footer'>
+            </div>
 
-                </div>
-                </Footer> */}
+        </div>
 
-        </Layout>
     )
 
 }

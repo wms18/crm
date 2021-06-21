@@ -1,11 +1,23 @@
 import { Layout, Menu } from 'antd';
 import React, { useState } from 'react'
-import { Hashrouter, Switch, Route } from 'react-router-dom'
+import { HashRouter, Route, Link } from 'react-router-dom'
 import './style.css';
 import Creatpopover from '../components/Creatpopover'
-import Dashbord from './component/dashboardlayout'   //仪表盘组件
 import sdTable from '../components/sdtable'
+
+
+import Dashbord from './component/dashboardlayout'   //仪表盘组件
 import ProductTable from './component/prodocutTable';
+import Bo from './component/bO'
+import Clue from './component/clue'
+import Contract from './component/contract'
+import Contacts from './component/contacts'
+import Opensea from './component/opensea'
+import Payment from './component/payment'
+import TodoList from './component/todolist'
+import Customer from './component/customer';
+
+
 import {
   AppstoreOutlined,
   BarChartOutlined,
@@ -33,75 +45,80 @@ function Menulayout() {
 
 
   return (
-    <div>
+    <HashRouter>
       <Layout>
         <Sider
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-
-        // style={{
-        //   overflow: 'auto',
-        //   height: '100vh',
-        //   position: 'fixed',
-        //   left: 0,
-        // }}
+          style={{
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+            zIndex:1
+          }}
         >
           <Creatpopover></Creatpopover>
           <Menu className='createitem' theme="dark" mode="inline" defaultSelectedKeys={['4']} >
             <Menu.Item key="1" icon={<UserOutlined />}>
-              仪表盘
+              <Link to='/' >仪表盘</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-              待办事项
+              <Link to='/todolist' >待办事项</Link>
             </Menu.Item>
             <Menu.Item key="3" icon={<UploadOutlined />}>
-              线索
+              <Link to='/clue' >线索</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<BarChartOutlined />}>
-              客户
+              <Link to='/customer' >客户</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<CloudOutlined />}>
-              联系人
+              <Link to='/contacts' >联系人</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<AppstoreOutlined />}>
-              公海
+              <Link to='/opensea' >公海</Link>
             </Menu.Item>
             <Menu.Item key="7" icon={<TeamOutlined />}>
-              商机
+              <Link to='/bO' >商机</Link>
             </Menu.Item>
             <Menu.Item key="8" icon={<ShopOutlined />}>
-              合同
+              <Link to='/contract' >合同</Link>
             </Menu.Item>
             <Menu.Item key="9" icon={<ShopOutlined />}>
-              回款
+              <Link to='/paymentr' >回款</Link>
             </Menu.Item>
             <Menu.Item key="10" icon={<ShopOutlined />}>
-              产品
+              <Link to='/product' >产品</Link>
             </Menu.Item>
           </Menu>
         </Sider>
+        <Layout className="site-layout" style={{ marginLeft: 200 }}>
+          <Content style={{ margin: '60px 16px 0', overflow: 'initial',backgroundColor:'#fff'  }}>
+            {/* <div style={{ padding: 30, fontSize: 18 }} >
+              
+            </div> */}
+            <div
+              style={{
+                backgroundColor: '#fff',
+                minHeight: 280,
+              }}
+            >
 
-        <Layout className="site-layout">
-          <div style={{ padding: 30, fontSize: 18 }} >
-            产品管理
-          </div>
-          <Content
-
-            style={{
-              backgroundColor:'#fff',
-              padding: 24,
-              minHeight: 280,
-            }}
-          >
-
-            {/* 在这里切换content的组件显示 */}
-            <ProductTable></ProductTable>
-
+              {/* 在这里切换content的组件显示 */}
+              <Route path='/' exact component={Dashbord}></Route>
+              <Route path='/todolist' component={TodoList}></Route>
+              <Route path='/clue' component={Clue}></Route>
+              <Route path='/customer' component={Customer}></Route>
+              <Route path='/contacts' component={Contacts}></Route>
+              <Route path='/opensea' component={Opensea}></Route>
+              <Route path='/bO' component={Bo}></Route>
+              <Route path='/contract' component={Contract}></Route>
+              <Route path='/payment' component={Payment}></Route>
+              <Route path='/product' component={ProductTable}></Route>
+            </div>
           </Content>
         </Layout>
-      </Layout>
-    </div>
+      </Layout >
+    </HashRouter>
+
   )
 }
 

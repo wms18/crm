@@ -1,6 +1,7 @@
-import { Table } from 'antd';
-import React,{Component} from 'react';
+import { Table,Input } from 'antd';
+import React, { Component } from 'react';
 import "./style.css"
+const {Search}  =Input
 const columns = [
   {
     title: 'Full Name',
@@ -78,11 +79,16 @@ for (let i = 0; i < 100; i++) {
   });
 }
 
-class Alerttable extends Component{
-  render(){
-    return(
+class Alerttable extends Component {
+  render() {
+    return (
       <div>
-  <Table columns={columns} dataSource={data} scroll={{ x: 1500, y: 300 }} />,
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-around',marginBottom:'20px'}}>
+          <Search style={{ width: 250 }} placeholder='请输入客户名称/手机/电话' ></Search>
+        </div>
+        <div>
+          <Table columns={columns} dataSource={data} scroll={{ x: 1500, y: 380 }} />
+        </div>
       </div>
     )
   }
