@@ -5,7 +5,7 @@ import BackstageMgt from './PublicComponents/backstageMgt'
 import Top from './PublicComponents/top'
 import  PersonalInfo from './PublicComponents/personInfo';
 import  CustomerMgt from './PublicComponents/customerMgt'
-
+import Login from "./PublicComponents/login/login";
 
 function App() {
 
@@ -14,8 +14,8 @@ function App() {
             {/*<Top></Top>*/}
             {/* <PersonalInfo></PersonalInfo> */}
             {/*<CustomerMgt></CustomerMgt>*/}
-             <BackstageMgt></BackstageMgt>
-            {/*<Login></Login>*/}
+            {/* <BackstageMgt></BackstageMgt>*/}
+            <Login></Login>
         </div>
     );
 

@@ -131,8 +131,8 @@ class Menulayout extends React.Component {
 
               {/*  </div>*/}
               {/*</div>*/}
-            <SystemMgt></SystemMgt>
-            {/*<Office></Office>*/}
+            {/*<SystemMgt></SystemMgt>*/}
+            <Office></Office>
             {/*<Project></Project>*/}
             {/*<Customer></Customer>*/}
             {/*</Content>*/}
