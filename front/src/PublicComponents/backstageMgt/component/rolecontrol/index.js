@@ -1,6 +1,6 @@
 import React from 'react'
 import './style.css'
-import Menulayout from "./component/menulayout";
+import Menulayout from "./menulayout";
 function RoleControl() {
     return (
         <div>

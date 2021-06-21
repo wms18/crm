@@ -20,10 +20,12 @@ function Login() {
                 password: password,
             })
         }).then((response) => {
+            // console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
                 alert('登录成功')
+                window.localStorage.setItem('token',response.data.data.token)
             }
         }).catch((error) => {
             alert(error)

@@ -6,7 +6,7 @@ import Top from './PublicComponents/top'
 import  PersonalInfo from './PublicComponents/personInfo';
 import  CustomerMgt from './PublicComponents/customerMgt'
 import Login from "./PublicComponents/login/login";
-
+import MenuLeft from "./PublicComponents/office/menu/menu-left";
 function App() {
 
     return (
@@ -14,8 +14,9 @@ function App() {
             {/*<Top></Top>*/}
             {/* <PersonalInfo></PersonalInfo> */}
             {/*<CustomerMgt></CustomerMgt>*/}
-            {/* <BackstageMgt></BackstageMgt>*/}
-            <Login></Login>
+             <BackstageMgt></BackstageMgt>
+            {/*<Login></Login>*/}
+            {/*<MenuLeft></MenuLeft>*/}
         </div>
     );
 

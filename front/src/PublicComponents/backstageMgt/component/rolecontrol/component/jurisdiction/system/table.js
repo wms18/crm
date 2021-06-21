@@ -26,7 +26,7 @@ function Tablelist(props) {
             method:'get',
             url:base.url+'/manager/sys-manager?token='+token,
             params:{
-                classifyRoleId:1,
+            
                 roleId:props.roleId,
                 currentPage:current,
                 limit:limit
@@ -40,6 +40,9 @@ function Tablelist(props) {
                     pagination= response.data.data.pagination
                     setPagination(pagination)
                     setMessage(response.data.data.data)
+                }else {
+                    setMessage([])
+                    setPagination([])
                 }
             }
         }).catch((error)=>{

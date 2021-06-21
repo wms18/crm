@@ -15,7 +15,7 @@ function SystemMgt() {
     let [getStaff, setGetStaff] = useState([])//关联员工获取员工数
     let [selectedRoleId, setSelectedRoleId] = useState('1') // 选中的角色id
     let [editRoles, setEditRoles] = useState('')    //选中的角色
-    let [roleId,setRoleId] = useState('1')
+    let [roleId,setRoleId] = useState('')
     let [activeInxex, setActiveIndex] = useState(0)
     const [visible, setVisible] = React.useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -123,6 +123,7 @@ function SystemMgt() {
                 alert(response.data.message)
             } else {
                 setArr(response.data.data)
+                setRoleId(response.data.data[0].id)
             }
         }).catch((error) => {
             alert(error)
@@ -219,24 +220,26 @@ function SystemMgt() {
     //点击确定
     const handleOk = () => {
         setVisible(false);
-        //添加角色
-        axios({
-            method: 'post',
-            url: base.url + '/manager/add',
-            params: {
-                token: token,
-                classifyRoleId: 1,
-                roleName: text,
-            }
-        }).then((response) => {
-            if (response.data.code === 'ERROR') {
-                alert(response.data.message)
-            } else {
-                setText('')
-            }
-        }).catch((error) => {
-            alert(error)
-        })
+        if (text !== '') {
+            //添加角色
+            axios({
+                method: 'post',
+                url: base.url + '/manager/add',
+                params: {
+                    token: token,
+                    classifyRoleId: 1,
+                    roleName: text,
+                }
+            }).then((response) => {
+                if (response.data.code === 'ERROR') {
+                    alert(response.data.message)
+                } else {
+                    setText('')
+                }
+            }).catch((error) => {
+                alert(error)
+            })
+        }
     };
     //点击取消
     const handleCancel = () => {

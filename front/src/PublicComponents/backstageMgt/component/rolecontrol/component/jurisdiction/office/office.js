@@ -17,7 +17,7 @@ function Office() {
     let [getStaff, setGetStaff] = useState([])//关联员工获取员工数
     let [selectedRoleId, setSelectedRoleId] = useState('1') // 选中的角色id
     let [editRoles, setEditRoles] = useState('')    //选中的角色
-    let [roleId, setRoleId] = useState('1')
+    let [roleId, setRoleId] = useState('')
     const [visible, setVisible] = React.useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     let [text, setText] = useState('')
@@ -122,14 +122,15 @@ function Office() {
             url: base.url + '/manager/roles',
             params: {
                 token: token,
-                classifyRoleId: 1
+                classifyRoleId: 2
             }
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
                 setArr(response.data.data)
+                setRoleId(response.data.data[0].id)
             }
         }).catch((error) => {
             alert(error)
@@ -221,13 +222,14 @@ function Office() {
     //点击确定
     const handleOk = () => {
         setVisible(false);
+        if (text !== '') {
         //添加角色
         axios({
             method: 'post',
             url: base.url + '/manager/add',
             params: {
                 token: token,
-                classifyRoleId: 1,
+                classifyRoleId: 2,
                 roleName: text,
             }
         }).then((response) => {
@@ -239,6 +241,7 @@ function Office() {
         }).catch((error) => {
             alert(error)
         })
+        }
     };
     //点击取消
     const handleCancel = () => {

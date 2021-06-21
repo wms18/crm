@@ -1,0 +1,4 @@
+.fc  {
+    width: calc(100vw - 250px) !important;
+    height: calc(100vh - 50px) !important;
+}

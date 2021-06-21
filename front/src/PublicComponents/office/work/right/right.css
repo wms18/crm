@@ -1,0 +1,44 @@
+.middle_right{
+    /*float: right;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+}
+.right_check{
+    display: inline-block;
+    width: 100%;
+    height: 30px;
+}
+.right_row Col{
+    height: 30px;
+}
+.ant-col-18{
+    height: 40px;
+}
+.right_one{
+    width:100%;
+    height: 100%;
+    overflow: hidden;
+    margin-top: 20px;
+}
+.right_two{
+    width: 100%;
+    overflow-y:scroll ;
+    overflow-x: hidden;
+    height: 180px;
+}
+.ant-card-body>div>div{
+    width: 310px !important;
+}
+.site-calendar-customize-header-wrapper {
+    width: 372px;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+}
+.right_calendar{
+    cursor: pointer;
+    margin:15px 0;
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
