@@ -14,9 +14,9 @@ function App() {
             {/*<Top></Top>*/}
             {/* <PersonalInfo></PersonalInfo> */}
             {/* <CustomerMgt></CustomerMgt> */}
-             {/* <BackstageMgt></BackstageMgt> */}
+             <BackstageMgt></BackstageMgt>
             {/*<Login></Login>*/}
-            <ProductTable></ProductTable>
+            {/* <ProductTable></ProductTable> */}
         </div>
     );
 

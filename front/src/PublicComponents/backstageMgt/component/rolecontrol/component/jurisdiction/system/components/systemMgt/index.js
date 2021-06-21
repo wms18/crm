@@ -6,22 +6,16 @@ import '../../../../font-awesome-4.7.0/css/font-awesome.css'
 import {TreeSelect} from 'antd';
 import axios from "axios";
 import base from "../../../../../../../../../axios/axios";
+import qs from 'qs'
 
-import {Layout, Menu} from 'antd';
-import {
-    MenuUnfoldOutlined,
-    MenuFoldOutlined,
-    UserOutlined,
-    VideoCameraOutlined,
-    UploadOutlined,
-} from '@ant-design/icons';
 
 function SystemMgt() {
     let token = window.localStorage.getItem('token')
     let [arr, setArr] = useState([])
     let [getStaff, setGetStaff] = useState([])//关联员工获取员工数
-    let [selectedRoleId, setSelectedRoleId] = useState('') // 选中的角色
-    let [editRoles, setEditRoles] = useState('')
+    let [selectedRoleId, setSelectedRoleId] = useState('1') // 选中的角色id
+    let [editRoles, setEditRoles] = useState('')    //选中的角色
+    let [roleId,setRoleId] = useState('1')
     let [activeInxex, setActiveIndex] = useState(0)
     const [visible, setVisible] = React.useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -138,19 +132,19 @@ function SystemMgt() {
         get()
     }, [text])
 
-    //关联员工
+    //关联员工列表
     const treeData = [];
     for (let i = 0; i < getStaff.length; i++) {
         treeData.push({
             title: getStaff[i].username,
-            value: getStaff[i].username,
+            value: getStaff[i].id,
         })
     }
+
     let onChange = value => {
-        console.log('onChange ', value);
+        console.log(value);
         setValue(value)
     };
-
     const tProps = {
         treeData,
         allowClear: true,
@@ -173,7 +167,7 @@ function SystemMgt() {
             method: 'get',
             url: base.url + '/employee/getEmployeeName?token=' + token,
         }).then((response) => {
-            console.log(response)
+            // console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
@@ -187,6 +181,29 @@ function SystemMgt() {
 
     const handleOk1 = () => {
         setIsModalVisible(false);
+        //获取选中的员工和id
+        console.log(roleId)
+        axios({
+            method:'post',
+            url:base.url+'/manager/link-employee',
+            params:{
+                token:token,
+                roleId:roleId,
+            },
+            data: qs.stringify({
+                employeeIds:value
+            })
+        }).then((response)=>{
+            // console.log(response)
+            if (response.data.code === 'ERROR'){
+                alert(response.data.message)
+            }else {
+                alert('关联成功')
+                window.location.reload()
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
     };
 
     const handleCancel1 = () => {
@@ -267,12 +284,14 @@ function SystemMgt() {
                                              onClick={() => {
                                                  setActiveIndex(index)
                                                  setHidden('none')
+                                                 setRoleId(item.id)
                                              }}>
                                             <span>{item.name}</span>
                                             <span className={index === 0 ? 'hidden' : ''}>
                                                 <Popover placement="bottom"
                                                          content={content}
                                                          onClick={() => {
+                                                             //角色id和角色
                                                              setSelectedRoleId(item.id)
                                                              setEditRoles(item.name)
                                                          }}
@@ -287,7 +306,7 @@ function SystemMgt() {
                         </div>
                     </div>
                 </div>
-                <div className={'system_table'}>
+                <div>
                     <div className={'system_left'}>
                         <div style={{padding: '0 20px'}}>
                             <div className={'system_top'}>
@@ -308,7 +327,7 @@ function SystemMgt() {
                                 </div>
                             </Modal>
                             <div>
-                                <Tablelist {...value}></Tablelist>
+                                <Tablelist roleId={roleId}></Tablelist>
                             </div>
                         </div>
                     </div>

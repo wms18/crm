@@ -19,8 +19,14 @@ import { auto } from 'async';
 const { SubMenu } = Menu
 const { Header, Sider, Content } = Layout;
 
-
+const token=window.localStorage.getItem('token')
+console.log(token);
 function Homepage() {
+
+
+    useEffect(()=>{
+        let token=window.get
+    },[])
 
 
     const content = (
