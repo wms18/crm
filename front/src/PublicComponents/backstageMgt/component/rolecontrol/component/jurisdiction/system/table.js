@@ -1,12 +1,14 @@
+import {useEffect} from 'react'
+import base from "../../../../../../../axios/axios";
+import axios from "axios";
 import { Table,Pagination,ConfigProvider  } from 'antd';
 import 'antd/dist/antd.css';
 import zhCN from 'antd/lib/locale/zh_CN';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
-import {useEffect} from 'react'
-import axios from "axios";
-import base from "../../../../../../../axios/axios";
+
+
 function Tablelist(props) {
     // console.log(props)
     let token = window.localStorage.getItem('token')

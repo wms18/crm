@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './style.css'
-import sdTable from "../sdtable";
+import SdTable from "../sdtable";
 import { Layout, Menu, Button, Input, Image, Space, Select } from 'antd';
 import SdContent from "../sdcontent";
 import Alertform from '../alertform'
