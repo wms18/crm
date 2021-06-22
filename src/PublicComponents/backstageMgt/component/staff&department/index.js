@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './style.css'
 import SdTable from "./component/sdtable";
-import { Layout, Menu, Button, Input, Image, Space, Select, TreeSelect, Modal } from 'antd';
+import { Layout, Menu, Button, Input, Image, Space, Select, TreeSelect, Modal,Form } from 'antd';
 import SdContent from "./component/sdcontent";
 import Alertform from './component/alertform';
 import Paging from './component/Paging';
@@ -160,7 +160,7 @@ class StaffDep extends Component {
                           },
                         ]}
                       >
-                        <Cascader options={options} placeholder="默认" />
+                        {/* <Cascader options={options} placeholder="默认" /> */}
                       </Form.Item>
                     </div>
 
