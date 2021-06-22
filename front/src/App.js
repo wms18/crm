@@ -6,7 +6,8 @@ import Top from './PublicComponents/top'
 import  PersonalInfo from './PublicComponents/personInfo';
 import  CustomerMgt from './PublicComponents/customerMgt'
 import ProductTable from './Protable'
-
+import { HashRouter,Route,Link } from 'react-router-dom';
+import {routes} from './router';
 import Paging from './PublicComponents/backstageMgt/component/staff&department/component/Paging';
 
 function App() {

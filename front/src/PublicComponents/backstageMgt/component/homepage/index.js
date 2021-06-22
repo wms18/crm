@@ -80,12 +80,13 @@ function Homepage() {
 
                         <Uploadimg hidden={isimg}></Uploadimg>
 
-                        <div ><button
+                        <div ><Button
+                            style={{width:100,fontSize:'12px'}}
                             onClick={() => {
                                 isimg = !isimg
                                 setisimg(!isimg)
                             }}
-                        >删除</button></div>
+                        >删除</Button></div>
                     </div>
                 </div>
             </Content>
