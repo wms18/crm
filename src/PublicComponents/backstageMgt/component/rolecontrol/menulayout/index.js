@@ -59,7 +59,7 @@ class Menulayout extends React.Component {
         <HashRouter>
           <Layout
           >
-            <Sider style={{height:'100vh'}} trigger={null} collapsible collapsed={this.state.collapsed}
+            <Sider style={{height:'calc(100vh - 60px)'}} trigger={null} collapsible collapsed={this.state.collapsed}
             >
               <div className="logo" />
               <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} style={{ marginTop: 38 }}>

@@ -7,10 +7,7 @@
 .site-layout .site-layout-background {
     background: #fff;
 }
-.left_cont{
-    display: flex;
-    justify-content: space-between;
-}
+
 .create{
     color: #fff;
     width: 200px;

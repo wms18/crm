@@ -6,11 +6,11 @@ import PersonalInfo from './PublicComponents/personInfo';
 import CustomerMgt from './PublicComponents/customerMgt'
 import ProductTable from './Protable'
 import Index from "./PublicComponents/office";
-import { HashRouter,Route,Link } from 'react-router-dom';
+import { HashRouter,Route,Link,Switch } from 'react-router-dom';
 import {routes} from './router';
 import Paging from './PublicComponents/backstageMgt/component/staff&department/component/Paging';
 import Login from "./PublicComponents/login/login";
-
+import MenuLeft from "./PublicComponents/office/menu/menu-left";
 function App() {
 
     return (
@@ -20,12 +20,11 @@ function App() {
                     {/*<Top></Top>*/}
                     {/* <PersonalInfo></PersonalInfo> */}
                     {/* <CustomerMgt></CustomerMgt> */}
-                     <BackstageMgt></BackstageMgt>
-                    {/*<Route path={'/back'} component={BackstageMgt}></Route>*/}
-                    {/*<Route exact path={'/'} component={Login}></Route>*/}
+                    {/* <BackstageMgt></BackstageMgt>*/}
                     {/*<Login></Login>*/}
                     {/* <ProductTable></ProductTable> */}
                     {/*<Index></Index>*/}
+                    <MenuLeft></MenuLeft>
                 </Switch>
             </HashRouter>
         </div>

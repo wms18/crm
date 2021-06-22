@@ -24,6 +24,7 @@ function Customer() {
     let [collapsed, setCollapsed] = useState(false)
     const {SHOW_PARENT} = TreeSelect;
     let [value, setValue] = useState([])    //关联员工
+    let [pagination,setPagination] = useState([])
     let toggle = () => {
         setCollapsed(!collapsed)
     };
@@ -137,6 +138,25 @@ function Customer() {
     useEffect(() => {
         get()
     }, [text])
+    //获取表格信息
+    let table = () =>{
+        axios({
+            method:'get',
+            url:base.url+'/manager/sys-manager?token='+token,
+            params:{
+                roleId:roleId,
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code === 'ERROR'){
+                alert(response.data.message)
+            }else {
+                setPagination(response.data.data.pagination)
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+    }
     //添加员工
     const treeData = [];
     for (let i = 0; i < getStaff.length; i++) {
@@ -200,7 +220,7 @@ function Customer() {
                 alert(response.data.message)
             } else {
                 alert('关联成功')
-                window.location.reload()
+                table()
             }
         }).catch((error) => {
             alert(error)
@@ -339,7 +359,7 @@ function Customer() {
                             </div>
                         </Modal>
                         <div>
-                            <Tablelist  roleId={roleId}></Tablelist>
+                            <Tablelist  roleId={roleId} total={pagination.total}></Tablelist>
                         </div>
                     </div>
                 </div>

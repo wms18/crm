@@ -19,14 +19,13 @@ function Tablelist(props) {
     let totals = Math.ceil(pagination.total / limit) || 0
     useEffect(()=>{
         information()
-    },[props.roleId,current,pagination.total])
+    },[props.roleId,current,props.total])
     //获取表格信息
     let information = () =>{
         axios({
             method:'get',
             url:base.url+'/manager/sys-manager?token='+token,
             params:{
-            
                 roleId:props.roleId,
                 currentPage:current,
                 limit:limit

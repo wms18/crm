@@ -3,24 +3,23 @@ import 'antd/dist/antd.css';
 import Middle from "../work/middle/middle";
 import Right from "./right/right";
 import './menu-left.css'
-import MenuRight from '../work/right/right'
 import SchedulePage from "../calendar/calendar";
 import {
     DesktopOutlined,
     CarryOutOutlined,
     MailOutlined,
     ProfileOutlined,
-    ClearOutlined   ,
+    ClearOutlined,
     TeamOutlined,
     ScheduleOutlined
 } from '@ant-design/icons';
 
-const { Content, Sider} = Layout;
+const {Content, Sider} = Layout;
 
 function MenuLeft() {
     return (
         <Layout style={{minHeight: '100vh'}}>
-            <Sider >
+            <Sider>
                 <div className="logo"/>
                 <Right/>
 
@@ -49,14 +48,10 @@ function MenuLeft() {
                     </Menu.Item>
                 </Menu>
             </Sider>
-                <div  style={{margin: '20px 20px 0 20px'}}>
-                    <div className={'left_cont'}>
-                        {/*<Middle  />*/}
-                        {/*<MenuRight></MenuRight>*/}
-                    </div>
-
-                    <SchedulePage></SchedulePage>
-                </div>
+            <div>
+                {/*<Middle/>*/}
+                <SchedulePage></SchedulePage>
+            </div>
 
 
         </Layout>

@@ -8,6 +8,7 @@
     border-top-right-radius: 10px;
     border: 1px solid #e6e6e6;
     margin-right: 20px;
+    float: left;
 }
 .middle_sp{
     width:100% ;
@@ -43,6 +44,7 @@
     height: calc(100vh - 92px);
     overflow: hidden;
     margin-top: 20px;
+
 }
 .middle_two{
     width: calc(100% + 20px);
