@@ -6,11 +6,12 @@ import RoleControl  from './component/rolecontrol'
 import  HomePage from './component/homepage'
 
 
-function BackstageMgt() {
+function BackstageMgt(props) {
+
         return(
             <div>
                 <Top></Top>
-                
+
                 <RoleControl></RoleControl>
             </div>
         )

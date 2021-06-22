@@ -7,7 +7,8 @@ import axios from "axios";
 import qs from 'qs';
 import base from "../../axios/axios";
 import './login.css'
-function Login() {
+function Login(props) {
+
     let [phone, setPhone] = useState('')
     let [password, setPassword] = useState('')
     //登录
@@ -26,6 +27,7 @@ function Login() {
             } else {
                 alert('登录成功')
                 window.localStorage.setItem('token',response.data.data.token)
+                props.history.push('/back')
             }
         }).catch((error) => {
             alert(error)
@@ -92,9 +94,8 @@ function Login() {
                         </Form.Item>
                         <Form.Item>
                             <Form.Item name="remember" valuePropName="checked" noStyle>
-                                <Checkbox style={{color: '#999', fontSize: '12px'}}> 记住账号和密码</Checkbox>
+                                <Checkbox style={{color: '#999', fontSize: '12px'}}> 记住账号</Checkbox>
                             </Form.Item>
-
                         </Form.Item>
                         <Form.Item>
                             <div>
@@ -107,7 +108,6 @@ function Login() {
                             >
                                 登录
                             </Button>
-
                         </Form.Item>
                     </Form>
                 </div>

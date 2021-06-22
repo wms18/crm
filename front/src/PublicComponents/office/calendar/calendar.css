@@ -2,3 +2,14 @@
     width: calc(100vw - 250px) !important;
     height: calc(100vh - 50px) !important;
 }
+.fc-toolbar-title{
+    display: inline-block;
+    vertical-align: bottom;
+}
+.schedule{
+    float: right;
+    background-color: #2C3E50;
+    color: #ffffff;
+    height: 30px;
+    border-radius: 5px;
+}

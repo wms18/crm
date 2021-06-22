@@ -11,7 +11,7 @@ import { TreeSelect,Layout } from 'antd';
 import axios from "axios";
 import base from "../../../../../../../axios/axios";
 import qs from 'qs'
-const { Content } = Layout
+// const { Content } = Layout
 
 function Office() {
     let token = window.localStorage.getItem('token')
@@ -316,6 +316,8 @@ function Office() {
                                 })}
                             </div>
                         </div>
+                    </div>
+                </div>
                         <div className={'system_left'}>
                             <div style={{ padding: '0 20px' }}>
                                 <div className={'system_top'}>
@@ -329,24 +331,20 @@ function Office() {
                                     </Button>
                                 </div>
                                 <Modal title=" 关联员工" cancelText={'取消'}
-                                    okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
+                                       okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
                                     <p>选择员工</p>
                                     <div>
                                         <TreeSelect {...tProps} />
                                     </div>
                                 </Modal>
                                 <div>
-                                    <Tablelist></Tablelist>
+                                    <Tablelist  roleId={roleId}></Tablelist>
                                 </div>
-                            </div>
-                            <div>
-                                <Tablelist roleId={roleId}></Tablelist>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+
     )
 }
 

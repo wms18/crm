@@ -4,7 +4,7 @@ import './style.css'
 import { Layout, Menu, Button, Input, Image, Space, Select } from 'antd';
 // import SdContent, { sdContent } from '../sdcontent'
 // import Alertform from '../alertform'
-import Office from "../jurisdiction/office/office";
+// import Office from "../jurisdiction/office/office";
 import Project from "../jurisdiction/project/project";
 import SystemMgt from "../jurisdiction/system/components/systemMgt/index";
 import Customer from "../jurisdiction/customer/customer";
@@ -131,7 +131,7 @@ class Menulayout extends React.Component {
               {/*  </div>*/}
               {/*</div>*/}
             {/*<SystemMgt></SystemMgt>*/}
-            <Office></Office>
+            {/*<Office></Office>*/}
             {/*<Project></Project>*/}
             {/*<Customer></Customer>*/}
             {/*</Content>*/}

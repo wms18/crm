@@ -59,8 +59,7 @@ class Menulayout extends React.Component {
         <HashRouter>
           <Layout
           >
-            <Sider trigger={null} collapsible collapsed={this.state.collapsed}
-              style={{}}
+            <Sider style={{height:'100vh'}} trigger={null} collapsible collapsed={this.state.collapsed}
             >
               <div className="logo" />
               <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} style={{ marginTop: 38 }}>
@@ -87,7 +86,7 @@ class Menulayout extends React.Component {
               </Menu>
             </Sider>
             <Layout className="site-layout"  >
-      
+
               {/* <Content> */}
                 <Route path='/' exact component={HomePage}></Route>
                 <Route path='/StaffDep' component={StaffDep}></Route>
@@ -95,9 +94,9 @@ class Menulayout extends React.Component {
                 <Route path='/office' component={Office}></Route>
                 <Route path='/project' component={Project}></Route>
                 <Route path='/customer' component={Customer}></Route>
-          
+
               {/* </Content> */}
-        
+
             </Layout>
           </Layout>
         </HashRouter>
