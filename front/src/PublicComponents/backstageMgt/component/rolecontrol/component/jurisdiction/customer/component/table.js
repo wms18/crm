@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react'
+import axios from "axios";
+import base from "../../../../../../../../axios/axios";
+import qs from 'qs'
 import { Table,Pagination,ConfigProvider  } from 'antd';
 import 'antd/dist/antd.css';
 import '../../../font-awesome-4.7.0/css/font-awesome.css'
@@ -5,10 +9,7 @@ import zhCN from 'antd/lib/locale/zh_CN';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
-import { useEffect, useState } from 'react'
-import axios from "axios";
-import base from "../../../../../../../../axios/axios";
-import qs from 'qs'
+
 function Tablelist(props) {
     console.log(props.roleId)
     let [message, setMessage] = useState([])     //表格信息

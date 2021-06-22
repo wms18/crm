@@ -57,15 +57,15 @@ function Menulayout() {
           }}
         >
           <Creatpopover></Creatpopover>
-          <Menu className='createitem' theme="dark" mode="inline" defaultSelectedKeys={['4']} >
+          <Menu className='createitem' theme="dark" mode="inline" defaultSelectedKeys={['1']} >
             <Menu.Item key="1" icon={<UserOutlined />}>
-              <Link to='/' >仪表盘</Link>
+              <Link to='/customerMgt/' >仪表盘</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<VideoCameraOutlined />}>
               <Link to='/todolist' >待办事项</Link>
             </Menu.Item>
             <Menu.Item key="3" icon={<UploadOutlined />}>
-              <Link to='/clue' >线索</Link>
+              <Link to='/customerMgt/clue' >线索</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<BarChartOutlined />}>
               <Link to='/customer' >客户</Link>
@@ -86,7 +86,7 @@ function Menulayout() {
               <Link to='/paymentr' >回款</Link>
             </Menu.Item>
             <Menu.Item key="10" icon={<ShopOutlined />}>
-              <Link to='/product' >产品</Link>
+              <Link to='/customerMgt/product'>产品</Link>
             </Menu.Item>
           </Menu>
         </Sider>
@@ -103,16 +103,16 @@ function Menulayout() {
             >
 
               {/* 在这里切换content的组件显示 */}
-              <Route path='/' exact component={Dashbord}></Route>
+              <Route path='/customerMgt//customerMgt/' exact component={Dashbord}></Route>
               <Route path='/todolist' component={TodoList}></Route>
-              <Route path='/clue' component={Clue}></Route>
+              <Route path='/customerMgt/clue' component={Clue}></Route>
               <Route path='/customer' component={Customer}></Route>
               <Route path='/contacts' component={Contacts}></Route>
               <Route path='/opensea' component={Opensea}></Route>
               <Route path='/bO' component={Bo}></Route>
               <Route path='/contract' component={Contract}></Route>
               <Route path='/payment' component={Payment}></Route>
-              <Route path='/product' component={ProductTable}></Route>
+              <Route path='/customerMgt/product' component={ProductTable}></Route>
             </div>
           </Content>
         </Layout>
