@@ -59,7 +59,7 @@ function Menulayout() {
           <Creatpopover></Creatpopover>
           <Menu className='createitem' theme="dark" mode="inline" defaultSelectedKeys={['1']} >
             <Menu.Item key="1" icon={<UserOutlined />}>
-              <Link to='/customerMgt/' >仪表盘</Link>
+              <Link to='/ /' >仪表盘</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<VideoCameraOutlined />}>
               <Link to='/todolist' >待办事项</Link>
@@ -103,7 +103,7 @@ function Menulayout() {
             >
 
               {/* 在这里切换content的组件显示 */}
-              <Route path='/customerMgt//customerMgt/' exact component={Dashbord}></Route>
+              <Route path='/customerMgt/' exact component={Dashbord}></Route>
               <Route path='/todolist' component={TodoList}></Route>
               <Route path='/customerMgt/clue' component={Clue}></Route>
               <Route path='/customer' component={Customer}></Route>
