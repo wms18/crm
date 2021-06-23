@@ -4,6 +4,7 @@ import Middle from "../work/middle/middle";
 import Right from "./right/right";
 import './menu-left.css'
 import SchedulePage from "../calendar/calendar";
+import Task from "../task/task";
 import {
     DesktopOutlined,
     CarryOutOutlined,
@@ -50,7 +51,8 @@ function MenuLeft() {
             </Sider>
             <div>
                 {/*<Middle/>*/}
-                <SchedulePage></SchedulePage>
+                {/*<SchedulePage></SchedulePage>*/}
+                <Task></Task>
             </div>
 
 

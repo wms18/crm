@@ -1,6 +1,6 @@
 //引入react jsx写法的必须
-import React from 'react'; 
-//引入需要用到的页面组件 
+import React from 'react';
+//引入需要用到的页面组件
 import BackstageMgt from '../PublicComponents/backstageMgt';
 import CustomerMgt from '../PublicComponents/customerMgt';
 //引入一些模块
@@ -13,7 +13,8 @@ import Customer from '../PublicComponents/backstageMgt/component/rolecontrol/com
 import Project from '../PublicComponents/backstageMgt/component/rolecontrol/component/jurisdiction/project/project';
 
 import Dashboaedlayout from '../PublicComponents/customerMgt/menulayout/component/dashboardlayout';
-import Clue from '../PublicComponents/customerMgt/menulayout/component/clue';import ProductTable from '../PublicComponents/customerMgt/menulayout/component/prodocutTable';
+import Clue from '../PublicComponents/customerMgt/menulayout/component/clue';
+import ProductTable from '../PublicComponents/customerMgt/menulayout/component/prodocutTable';
 
 const routes = [
     {

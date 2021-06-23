@@ -20,13 +20,12 @@ function App() {
         <div>
             {/*<Top></Top>*/}
             {/* <PersonalInfo></PersonalInfo> */}
-            <CustomerMgt></CustomerMgt>
+            {/*<CustomerMgt></CustomerMgt>*/}
             {/* <BackstageMgt></BackstageMgt> */}
-            {/*<Route path={'/back'} component={BackstageMgt}></Route>*/}
-            {/*<Route exact path={'/'} component={Login}></Route>*/}
             {/*<Login></Login>*/}
             {/* <ProductTable></ProductTable> */}
             {/*<Index></Index>*/}
+            <MenuLeft></MenuLeft>
         </div>
     );
 

@@ -28,7 +28,6 @@ for (let i = 0; i < 100; i++) {
     createPerson: 'jack',
     updateTime: '2021-02-11',
     createTime: '2020-09-11',
-    updateTime: '2021-04-02',
     personInCharge: 'lily',
   });
 }
@@ -54,7 +53,7 @@ class ProductTable extends Component {
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
-      
+
 
       currentPage: 1,
       limit: 10,
@@ -105,7 +104,7 @@ class ProductTable extends Component {
 
   createProduct() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    axios.post(`${base.url}/produce/create?number=` + data.number + `&price=` + data.price + `&produceCoding=` + data.produceCoding, {
+    axios.get(`${base.url}/produce/create?number=` + data.number + `&price=` + data.price + `&produceCoding=` + data.produceCoding, {
       params: {
         token: this.state.token
       },
@@ -218,7 +217,7 @@ class ProductTable extends Component {
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
-              
+
             >
 
               <Form

@@ -1,16 +1,8 @@
-import {Calendar, Badge, ConfigProvider} from 'antd';
-import zhCN from 'antd/lib/locale/zh_CN';
-import moment from 'moment';
-import 'moment/locale/zh-cn';
-import React, {useState} from 'react';
-import {Modal, Button, Input, Form} from 'antd';
-import {DatePicker, Space, TreeSelect, Popover,Table } from 'antd';
-import './calendar.css'
-import {AudioOutlined} from '@ant-design/icons';
-
-moment.locale('zh-cn');
-
-function SchedulePage() {
+import React, {useState} from "react";
+import {Button, ConfigProvider, DatePicker, Form, Input, Modal, Space, Table, TreeSelect} from "antd";
+import zhCN from "antd/lib/locale/zh_CN";
+import './newtask.css'
+function NewTask() {
     let arr = ['客户', '联系人', '商机', '合同']
     let [activeIndex1, setActiveIndex1] = useState(0)  //关联业务
     //关联业务
@@ -152,7 +144,7 @@ function SchedulePage() {
     };
     //开始时间，结束时间
     const {RangePicker} = DatePicker;
-    let onChange = (value, dateString) => {
+    let onChangeTime = (value, dateString) => {
         console.log('Selected Time: ', value);
         console.log('Formatted Selected Time: ', dateString);
     }
@@ -183,82 +175,12 @@ function SchedulePage() {
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
-    //日历
-    let getListData = (value) => {
-        let listData;
-        switch (value.date()) {
-            case 8:
-                listData = [
-                    {type: 'warning', content: 'This is warning event.'},
-                    {type: 'success', content: 'This is usual event.'},
-                ];
-                break;
-            case 10:
-                listData = [
-                    {type: 'warning', content: 'This is warning event.'},
-                    {type: 'success', content: 'This is usual event.'},
-                    {type: 'error', content: 'This is error event.'},
-                ];
-                break;
-            case 15:
-                listData = [
-                    {type: 'warning', content: 'This is warning event'},
-                    {type: 'success', content: 'This is very long usual event。。....'},
-                    {type: 'error', content: 'This is error event 1.'},
-                ];
-                break;
-            default:
-        }
-        return listData || [];
-    }
-
-    let dateCellRender = (value) => {
-        const listData = getListData(value);
-        console.log(value.month())
-        return (
-            <ul className="events">
-                {listData.map(item => (
-                    <li key={item.content}>
-                        <Badge status={item.type} text={item.content}/>
-                    </li>
-                ))}
-            </ul>
-        );
-    }
-
-    let getMonthData = (value) => {
-        if (value.month() === 8) {
-            return 1394;
-        }
-    }
-
-    let monthCellRender = (value) => {
-        const num = getMonthData(value);
-        console.log(num)
-        // return num ? (
-        //     <div className="notes-month">
-        //         <section>{num}</section>
-        //         <span>Backlog number</span>
-        //     </div>
-        // ) : null;
-    }
-    let handle = (value) => {
-        console.log(value.month())
-        setIsModalVisible(true);
-    }
-    return (
-        <div style={{margin: '20px'}}>
-            <div type="primary" onClick={showModal}>
-                <ConfigProvider locale={zhCN}>
-                    <Calendar fullscreen={false}
-                              dateCellRender={dateCellRender}
-                              onSelect={handle}
-                              monthCellRender={monthCellRender}
-                    />
-                </ConfigProvider>
-            </div>
-            <Modal title="创建日程" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} >
+    return(
+        <span>
+            <div >
                 {/*输入内容*/}
+                <div className={'newtask'}>
+                    <div>
                 <Form
                     {...layout}
                     layout="vertical"
@@ -270,8 +192,9 @@ function SchedulePage() {
                     onFinishFailed={onFinishFailed}
                 >
                     <Form.Item
-                        label="主题"
+                        label="任务名称"
                         name="username"
+                        style={{width:'350px'}}
                         rules={[
                             {
                                 required: true,
@@ -282,30 +205,43 @@ function SchedulePage() {
                         <Input/>
                     </Form.Item>
                 </Form>
+                        </div>
+                    <div>
+                        {/*参与人*/}
+                <div style={{margin:'6px 0 6px 0'}}>
+                    <span >负责人</span>
+                </div>
+                <TreeSelect {...tProps} style={{width: '253px'}}/>
+                </div>
+                    </div>
                 {/*时间*/}
-                <div style={{marginTop: '20px'}}>
+                <div style={{margin: '20px 0 5px 0'}}>
                     <span>*开始时间</span>
-                    <span>*结束时间</span>
+                    <span style={{float:'right'}}>*结束时间</span>
                 </div>
                 <Space direction="vertical" size={12}>
                     <ConfigProvider locale={zhCN}>
                         <RangePicker
-                            // bordered={false}
+                            bordered={false}
                             showTime={{format: 'HH:mm'}}
                             format="YYYY-MM-DD HH:mm"
-                            onChange={onChange}
+                            onChange={onChangeTime}
                             onOk={onOk}
-                            style={{width: '130%'}}
+                            style={{width: '183%',padding:'5px 0 10px 0'}}
                         />
                     </ConfigProvider>
                 </Space>
-                {/*参与人*/}
                 <div>
-                    <span>参与人</span>
+                    <span>优先级</span>
                 </div>
-                <TreeSelect {...tProps} />
+                <div className={'class'}>
+                    <span>高</span>
+                    <span>中</span>
+                    <span>低</span>
+                    <span>无</span>
+                </div>
                 <div style={{margin: '20px 0'}}>
-                    <span>备注</span>
+                    <span>任务描述</span>
                 </div>
                 <TextArea rows={4} placeholder={'请输入内容'}/>
                 <div style={{margin: '20px 0 0 0', color: '#3E84E9'}}>
@@ -328,10 +264,10 @@ function SchedulePage() {
                                 {arr.map((item, index) => {
                                     return (
                                         <div  className={index === activeIndex1 ? 'active1' : ''}
-                                             onClick={() => {
-                                                 setActiveIndex1(index)
-                                             }}
-                                             key={index}>{item}</div>
+                                              onClick={() => {
+                                                  setActiveIndex1(index)
+                                              }}
+                                              key={index}>{item}</div>
                                     )
                                 })}
                             </div>
@@ -349,17 +285,16 @@ function SchedulePage() {
                                 </div>
                                 <div style={{width: '675px',height:'300px'}}>
                                     <ConfigProvider locale={zhCN}>
-                                    <Table rowSelection={rowSelection} columns={columns} dataSource={data} scroll={{ x: 150, y: 200 }} />
+                                        <Table rowSelection={rowSelection} columns={columns} dataSource={data} scroll={{ x: 150, y: 200 }} />
                                     </ConfigProvider>
                                 </div>
                             </div>
                         </div>
                     </Modal>
                 </div>
-            </Modal>
+            </div>
+        </span>
 
-        </div>
     )
 }
-
-export default SchedulePage;
+export default NewTask

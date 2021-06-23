@@ -1,0 +1,15 @@
+.newtask{
+    display: flex;
+    justify-content: space-between;
+}
+.class span{
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background-color: #3e84e9;
+    line-height: 30px;
+    text-align: center;
+    margin: 10px 15px 10px 0;
+    cursor: pointer;
+}
