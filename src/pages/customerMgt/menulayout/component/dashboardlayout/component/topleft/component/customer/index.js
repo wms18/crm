@@ -24,23 +24,6 @@ function Customer() {
 
   return (
 
-    // <>
-    //   <Button type="primary" onClick={showDrawer}>
-    //     Open
-    //   </Button>
-    //   <Drawer
-    //     title="Basic Drawer"
-    //     placement="right"
-    //     closable={false}
-    //     onClose={onClose}
-    //     visible={visible}
-    //   >
-    //     <p>Some contents...</p>
-    //     <p>Some contents...</p>
-    //     <p>Some contents...</p>
-    //   </Drawer>
-    // </>
-
     <div className="site-drawer-render-in-current-wrapper">
       <div style={{ marginTop: 16 }}>
         <Button type="primary"  icon={<UserAddOutlined />}  onClick={showDrawer} style={{width:180}}>
