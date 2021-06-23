@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick="creat()">
+
+    </button>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    function creat(params) {
+        axios.post('http://47.117.138.37:8088/produce/create', {
+            params: {
+                token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZSI6IjE4ODg4ODg4ODg4IiwiaWQiOiIxIiwiZXhwIjoxNjI2MTQwMjc4fQ.yJ_7eLs4HqBfeQU--tSem1CH7WccrxYXUGZPbKWhk6k',
+
+            },
+            // data: qs.stringify({
+            //   number:Number(data.number),
+            //   price: Number(data.price),
+            //   produceCoding:data.produceCoding,
+            //   produceIntroduce: data.produceIntroduce,
+            //   produceName: data.produceName,
+            //   produceType: data.produceType,
+            //   putaway: data.putaway,
+            //   specification: data.specification,
+            // })
+        })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((res) => {
+                console.log(res);
+            })
+    }
+
+    function axiosPostRequst() {
+        let result = axios({
+            method: 'post',
+            url: 'http://47.117.138.37:8088/produce/create',
+            params: {
+                token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZSI6IjE4ODg4ODg4ODg4IiwiaWQiOiIxIiwiZXhwIjoxNjI2MTQwMjc4fQ.yJ_7eLs4HqBfeQU--tSem1CH7WccrxYXUGZPbKWhk6k',
+            },
+            data: {
+                number: 1,
+                price: 10,
+                produceCoding: '1',
+                produceIntroduce: '1',
+                produceName: '1',
+                produceType: '1',
+                putaway: '1',
+                specification: '1',
+            },
+            header: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then((res) => {
+            console.log(res); ;
+        }).catch((error) => {
+            console.log(res);
+        });
+        return result;
+    }
+
+</script>
+
+</html>

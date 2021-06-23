@@ -20,12 +20,12 @@ function App() {
         <div>
             {/*<Top></Top>*/}
             {/* <PersonalInfo></PersonalInfo> */}
-            {/*<CustomerMgt></CustomerMgt>*/}
+            <CustomerMgt></CustomerMgt>
             {/* <BackstageMgt></BackstageMgt> */}
             {/*<Login></Login>*/}
             {/* <ProductTable></ProductTable> */}
             {/*<Index></Index>*/}
-            <MenuLeft></MenuLeft>
+            {/* <MenuLeft></MenuLeft> */}
         </div>
     );
 

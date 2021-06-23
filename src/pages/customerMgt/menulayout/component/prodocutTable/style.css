@@ -5,3 +5,15 @@
     width: 420px;
     margin: 0 auto;
 }
+.ant-tabs-nav-wrap{
+    background-color: #F5F6F9 !important;
+}
+.ant-tabs-nav-list{
+    padding: 0 0 0 30px !important;
+}
+.ant-drawer-body{
+    padding: 0 !important;
+}
+.ant-tabs-content-holder{
+    padding: 0 30px 30px !important;
+}

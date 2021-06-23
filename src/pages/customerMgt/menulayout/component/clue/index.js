@@ -3,261 +3,178 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
-import { Table, Button, Select, Input, Pagination, Layout, Modal, Form, Cascader } from 'antd';
+import { Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
-import { ConfigProvider } from 'antd' 
+import { ConfigProvider } from 'antd'
+import Data from "./js/index";
+
 
 const { Option } = Select
 const { Search } = Input
 const { Content, Footer, Header } = Layout
 
-const options = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men',
-          },
-        ],
-      },
-    ],
-  },
-];
-
-
-const data = [];
-for (let i = 0; i < 100; i++) {
-  data.push({
-    key: i,
-    customerName: `Edward King ${i}`,
-    contact: `Edward Dau ${i}`,
-    phone1: 199000 + i,
-    phone2: 199000 + i,
-    sourcesOfClues:"展销会",
-    businessType:'线下订单',
-    productPrice: 100+ i,
-    customerLevel:'C',
-    remarks:'——',
-    department:'业务部们',
-    updateTime:'2021-04-11',
-    createTime:'2021-02-21',
-    personInCharge:'Jack',
-    followUpRecord:'——',
-  });
-}
-
-const columns = [
-  {
-    width: 100,
-    title: '客户名称',
-    dataIndex: 'customerName',
-    fixed: 'left',
-    key:'customerName',
-    sorter: {
-      compare: (a, b) => a.customerName - b.customerName,
-      multiple: 3,
-    },
-  },
-  {
-    title: '联系人',
-    width: 100,
-    dataIndex: 'contact',
-    key:'contact',
-    fixed: 'left',
-    sorter: {
-      compare: (a, b) => a.contact - b.contact,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '电话1',
-    dataIndex: 'phone1',
-    key:"1",
-    sorter: {
-      compare: (a, b) => a.phone1 - b.phone1,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '电话2',
-    key:"2",
-    dataIndex: 'phone2',
-    sorter: {
-      compare: (a, b) => a.phone2 - b.phone2,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '线索来源',
-    key:"3",
-    dataIndex: 'sourcesOfClues',
-    sorter: {
-      compare: (a, b) => a.sourcesOfClues - b.sourcesOfClues,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '业务类型',
-    key:"4",
-    dataIndex: 'businessType',
-    sorter: {
-      compare: (a, b) => a.businessType - b.businessType,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '产品报价',
-    dataIndex: 'productPrice',
-    key:"5",
-    sorter: {
-      compare: (a, b) => a.productPrice - b.productPrice,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '客户等级',
-    dataIndex: 'customerLevel',
-    key:"6",
-    sorter: {
-      compare: (a, b) => a.customerLevel - b.customerLevel,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '备注',
-    dataIndex: 'remarks',
-    key:"7",
-    sorter: {
-      compare: (a, b) => a.remarks - b.remarks,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '部门',
-    dataIndex: 'department',
-    key:"8",
-    sorter: {
-      compare: (a, b) => a.department - b.department,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '更新时间',
-    dataIndex: 'updateTime',
-    key:"9",
-    sorter: {
-      compare: (a, b) => a.updateTime - b.updateTime,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '创建时间',
-    dataIndex: 'createTime',
-    key:"10",
-    sorter: {
-      compare: (a, b) => a.createTime - b.createTime,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '负责人',
-    dataIndex: 'personInCharge',
-    fiexed:'right',
-    key:"personInCharge",
-    sorter: {
-      compare: (a, b) => a.personInCharge - b.personInCharge,
-      multiple: 3,
-    },
-  },
-  {
-    width: 100,
-    title: '跟进记录',
-    dataIndex: 'followUpRecord',
-    fixed: 'right',
-    sorter: {
-      compare: (a, b) => a.followUpRecord - b.followUpRecord,
-      multiple: 3,
-    },
-  },
-];
-
 class Clue extends Component {
 
-
-
   componentDidMount() {
-
-    axios.post(`${base.url}/employee/login?password=` + 123456 + `&phone=` + 18888888888, {
-    })
-      .then((res) => {
-        if (res.data.code === "SUCCESS") {
-          window.localStorage.setItem('token', res.data.data.token)
-
-          //获取产品列表
-          axios.get(`${base.url}/produce/getProduce?currentPage=1&limit=10`, {
-            params: {
-              token: res.data.data.token,
-              keyWord: "1"
-            }
-          })
-            .then((res) => {
-              console.log(res);
-            })
-        }
-
-      })
+    this.getProduct()
   }
 
   constructor(props) {
     super(props)
     this.state = {
+
+      drawerVisible: false,
+
+      token: window.localStorage.getItem('token'),
+
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
+
+      pagination:'',
+      currentPage: 1,
+      limit: 10,
+      tableArr: '',
+
+      // 表格行点击时产品信息
+      record: "",
+
+      // 搜素产品名称
+      keyWord:'',
+      
+
+      // 新增产品信息
+      number: '',
+      price: '',
+      produceCoding: '',
+      produceIntroduce: '',
+      produceName: '',
+      produceType: '',
+      putaway: "",
+      specification: ''
+
+
     }
     this.onChange = this.onChange.bind(this)
     this.setVisible = this.setVisible.bind(this)
     this.onCancel = this.onCancel.bind(this)
     this.onCreate = this.onCreate.bind(this)
+    this.submit = this.submit.bind(this)
+    this.getProduct = this.getProduct.bind(this)
+    this.createProduct = this.createProduct.bind(this)
+    this.onClose = this.onClose.bind(this)
+    this.onSearch = this.onSearch.bind(this)
+  }
+
+  getProduct() {
+    //获取产品列表
+    axios.get(`${base.url}/produce/getProduce?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+      params: {
+        token: this.state.token,
+        keyWord: this.state.keyWord
+      }
+    })
+      .then((res) => {
+        console.log(res);
+        if (!res.data.code === "SUCCESS") {
+
+        } else {
+          this.setState({
+            tableArr: res.data.data.data,
+            pagination:res.data.data.pagination
+          })
+        }
+      })
+  }
+
+
+  createProduct() {
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    if (data.number == undefined || data.produceCoding == undefined
+      || data.putaway == undefined || data.specification == undefined || data.produceType == undefined || data.produceName == undefined
+      | data.number.includes(' ') || data.produceCoding.includes(' ')
+      || data.putaway.includes(' ') || data.specification.includes(' ') || data.produceType.includes(' ') || data.produceName.includes(' ')
+    ) {
+      message.error('请填写必填选项并不要输入空格');
+    } else {
+      axios({
+        method: "post",
+        url: `${base.url}/produce/create`,
+        params: {
+          token: this.state.token,
+        },
+        // .replace(/\s+/g,'')
+        data: qs.stringify({
+          number: data.number,
+          price: data.price,
+          produceCoding: data.produceCoding,
+          produceIntroduce: data.produceIntroduce,
+          produceName: data.produceName,
+          produceType: data.produceType,
+          putaway: data.putaway,
+          specification: data.specification,
+        })
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
+          message.error('请重试');
+          this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.onCancel()
+
+          this.getProduct()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+
   }
 
 
 
-  onChange(pageNumber) {
-    console.log('Page: ', pageNumber);
+  formRef = React.createRef()
+  submit() {
+
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    console.log(data)
+    this.createProduct()
+
+  }
+
+
+  onSearch(val){
+    console.log(val);
+    this.setState({
+      keyWord:val
+    },()=>{
+      this.getProduct()
+    })
+  }
+
+
+  onClose() {
+    this.setState({
+      drawerVisible: false
+    })
+  }
+  showDrawer() {
+    this.setState({
+      drawerVisible: true
+    })
+  }
+
+  onChange(page, pageSize) {    //currentPage切换
+    console.log(page, pageSize);
+    this.setState({
+      currentPage: page,
+      limit:pageSize    
+    }, () => {      //setstate异步回调箭头函数
+      this.getProduct()
+    })
+
+
 
   }
 
@@ -306,19 +223,22 @@ class Clue extends Component {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
-          <span style={{ fontSize: '18px' }}>线索管理</span>
-          <Search placeholder='请输入线索名称' style={{ width: '200px' }}></Search>
+          <span style={{ fontSize: '18px' }}>产品管理</span>
+          <Search placeholder='请输入产品名称' style={{ width: '200px' }}   onSearch={this.onSearch}   
+            allowClear
+          ></Search>
           <div>
             <Button type='primary'
               onClick={this.setVisible}
-            >新建线索</Button>
+            >新建产品</Button>
             <Modal
               visible={this.state.visible}
-              title="新建线索"
+              title="新建产品"
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
-              onOk={() => { }}
+              onOk={this.submit}
+
             >
 
               <Form
@@ -327,10 +247,11 @@ class Clue extends Component {
                 initialValues={{
                   modifier: 'public',
                 }}
+                ref={this.formRef}
               >
                 <div>
                   <Form.Item
-                    name="productName"
+                    name="produceName"
                     label="产品名称"
                     rules={[
                       {
@@ -342,8 +263,8 @@ class Clue extends Component {
                     <Input />
                   </Form.Item>
                   <Form.Item
-
-                    name="productCategory"
+                    style={{ width: 200 }}
+                    name="produceType"
                     label="产品类别"
                     rules={[
                       {
@@ -352,14 +273,14 @@ class Clue extends Component {
                       },
                     ]}
                   >
-                    <Cascader options={options} placeholder="默认" />
+                    <Input></Input>
                   </Form.Item>
                 </div>
 
 
                 <div>
                   <Form.Item
-                    name="productStockQty"
+                    name="produceCoding"
                     label="产品编码"
                     rules={[
                       {
@@ -371,7 +292,7 @@ class Clue extends Component {
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="isPutShelves"
+                    name="putaway"
                     label="是否上架"
                     rules={[
                       {
@@ -381,8 +302,8 @@ class Clue extends Component {
                     ]}
                   >
                     <Select style={{ width: 200 }} >
-                      <Option value='未上架'>未上架</Option>
-                      <Option value='已上架'>已上架</Option>
+                      <Option value='上架'>上架</Option>
+                      <Option value='下架'>下架</Option>
                     </Select>
                   </Form.Item>
                 </div>
@@ -390,8 +311,8 @@ class Clue extends Component {
                 <div>
                   <Form.Item
                     style={{ width: 184 }}
-                    name="productSize"
-                    label="规格"
+                    name="specification"
+                    label="产品规格"
                     rules={[
                       {
                         required: true,
@@ -408,7 +329,7 @@ class Clue extends Component {
 
                   <Form.Item
                     style={{ width: 200 }}
-                    name="productPrice"
+                    name="price"
                     label="价格"
                   >
                     <Input value='0' />
@@ -418,7 +339,7 @@ class Clue extends Component {
 
                 <div>
                   <Form.Item
-                    name="productStockQty"
+                    name="number"
                     label="库存数量"
                     rules={[
                       {
@@ -430,12 +351,15 @@ class Clue extends Component {
                     <Input />
                   </Form.Item>
 
+                  <Form.Item
+                    style={{ width: 200 }}
+                    name="produceIntroduce"
+                    label="产品介绍"
+                  >
+                    <Input />
+                  </Form.Item>
+
                 </div>
-
-
-
-
-
 
               </Form>
             </Modal>
@@ -443,22 +367,64 @@ class Clue extends Component {
         </div>
 
         <div>
-          <div style={{ height: 20 }}>
-
+          <div style={{ height: 20 }}
+          onClick={()=>{
+            console.log(this.state.tableArr);
+          }}
+          >
+                      按时到达的
           </div  >
 
           <div style={{ position: 'relative' }}>
             <div>
               <Table
-                // onChange={(page) => this.pageChange(page)}
-                columns={columns}
-                dataSource={data}
+                columns={Data.columns}
+                dataSource={this.state.tableArr}
                 scroll={{ x: 1500, y: 300 }}
+                pagination={{pageSize:this.state.pagination.limit}}
+                onRow={(record) => ({
+                  onClick: () => {
+                    console.log(record);
+                    this.setState({
+                      drawerVisible: true,
+                      record: record,
+                      drawerTitle: record.productName
+
+                    })
+                  },
+                })}
+
               />
+              <Drawer
+                title={this.state.drawerTitle}
+                placement="right"
+                closable={false}
+                onClose={this.onClose}
+                visible={this.state.drawerVisible}
+              >
+                <div>
+                  <div>
+                    <span>产品类别</span>
+                    <span>产品单位</span>
+                    <span>产品价格</span>
+                    <span>产品编码</span>
+                  </div>
+                  <div>
+                    <span>{this.state.record.category}</span>
+                    <span>只/辆/千克</span>
+                    <span>{this.state.record.price}</span>
+                    <span>{this.state.record.code}</span>
+                  </div>
+                </div>
+
+
+              </Drawer>
             </div>
-            <div style={{ position: 'absolute', bottom: '-374px', right: '0px' }}>
+            <div style={{ position: 'absolute', bottom: '-374px', right: '0px'}}>
               <ConfigProvider locale={zhCN}>
-                <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={this.onChange} />
+                <Pagination  showQuickJumper    
+                defaultPageSize={10}
+                showTotal={total => `共 ${total} 项`}  defaultCurrent={1} total={this.state.pagination.total}  style={{marginLeft:'20PX'}}  onChange={this.onChange} />
               </ConfigProvider>
             </div>
 

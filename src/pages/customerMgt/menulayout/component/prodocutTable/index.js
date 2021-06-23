@@ -3,12 +3,15 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
-import { Table, Button, Select, Input, Pagination, Layout, Modal, Form, Cascader,Drawer } from 'antd';
+import {
+  Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
+  , Dropdown, Menu, ConfigProvider, Tabs
+} from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
-import { ConfigProvider } from 'antd'
-import Data from "./js";
+import Data from "./js/index";
 
-
+const { TabPane } = Tabs
 const { Option } = Select
 const { Search } = Input
 const { Content, Footer, Header } = Layout
@@ -16,25 +19,9 @@ const { Content, Footer, Header } = Layout
 
 
 
-const data = [];
-for (let i = 0; i < 100; i++) {
-  data.push({
-    key: i,
-    productName: `BSJ-1 ${i}`,
-    category: `11${i}`,
-    code: 3 + i,
-    IsPutOnShelves: "已上架",
-    quanity: '10,000,000',
-    createPerson: 'jack',
-    updateTime: '2021-02-11',
-    createTime: '2020-09-11',
-    personInCharge: 'lily',
-  });
-}
-
-
-
 class ProductTable extends Component {
+
+
 
 
 
@@ -46,7 +33,7 @@ class ProductTable extends Component {
     super(props)
     this.state = {
 
-      drawerVisible:false,
+      drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
 
@@ -54,10 +41,17 @@ class ProductTable extends Component {
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
-
+      pagination: '',
       currentPage: 1,
       limit: 10,
-      tableArr: [],
+      tableArr: '',
+
+      // 表格行点击时产品信息
+      record: "",
+
+      // 搜素产品名称
+      keyWord: '',
+
 
       // 新增产品信息
       number: '',
@@ -67,8 +61,7 @@ class ProductTable extends Component {
       produceName: '',
       produceType: '',
       putaway: "",
-      specification: ''
-
+      specification: '',
 
     }
     this.onChange = this.onChange.bind(this)
@@ -79,6 +72,61 @@ class ProductTable extends Component {
     this.getProduct = this.getProduct.bind(this)
     this.createProduct = this.createProduct.bind(this)
     this.onClose = this.onClose.bind(this)
+    this.onSearch = this.onSearch.bind(this)
+  }
+
+
+  dropdownMenu() {
+    const menu = (
+      <Menu>
+        <Menu.Item
+          onClick={() => {
+            Modal.confirm({
+              title: '确认上架',
+              icon: <ExclamationCircleOutlined />,
+              content: '确认上架此产品么？',
+              okText: '是',
+              okType: '',
+              cancelText: '否',
+              onOk: () => {
+                // this.handleOk(id)//确认按钮的回调方法，在下面
+                console.log('确认');
+              }
+              ,
+              onCancel() {
+                console.log('Cancel');
+              },
+            });
+          }}
+        >
+          上架
+        </Menu.Item>
+
+        <Menu.Item
+
+          onClick={() => {
+            Modal.confirm({
+              title: '确认下架',
+              icon: <ExclamationCircleOutlined />,
+              content: '确认下架此产品么',
+              okText: '是',
+              okType: '',
+              cancelText: '否',
+              onOk: () => {
+                // this.handleOk(id)//确认按钮的回调方法，在下面
+                console.log('确认');
+              }
+              ,
+              onCancel() {
+                console.log('Cancel');
+              },
+            });
+          }}>
+          下架
+        </Menu.Item>
+      </Menu>
+    )
+    return menu
   }
 
   getProduct() {
@@ -86,7 +134,7 @@ class ProductTable extends Component {
     axios.get(`${base.url}/produce/getProduce?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
-        keyWord: "1"
+        keyWord: this.state.keyWord
       }
     })
       .then((res) => {
@@ -95,7 +143,8 @@ class ProductTable extends Component {
 
         } else {
           this.setState({
-            tableArr: res.data.data.data
+            tableArr: res.data.data.data,
+            pagination: res.data.data.pagination
           })
         }
       })
@@ -104,58 +153,91 @@ class ProductTable extends Component {
 
   createProduct() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    axios.get(`${base.url}/produce/create?number=` + data.number + `&price=` + data.price + `&produceCoding=` + data.produceCoding, {
-      params: {
-        token: this.state.token
-      },
-      data: {
-        produceIntroduce: data.produceIntroduce,
-        produceName: data.produceName,
-        produceType: data.produceType,
-        putaway: data.putaway,
-        specification: data.specification,
-      }
-    })
-      .then((res) => {
+    if (data.number == undefined || data.produceCoding == undefined
+      || data.putaway == undefined || data.specification == undefined || data.produceType == undefined || data.produceName == undefined
+      | data.number.includes(' ') || data.produceCoding.includes(' ')
+      || data.putaway.includes(' ') || data.specification.includes(' ') || data.produceType.includes(' ') || data.produceName.includes(' ')
+    ) {
+      message.error('请填写必填选项并不要输入空格');
+    } else {
+      axios({
+        method: "post",
+        url: `${base.url}/produce/create`,
+        params: {
+          token: this.state.token,
+        },
+        // .replace(/\s+/g,'')
+        data: qs.stringify({
+          number: data.number,
+          price: data.price,
+          produceCoding: data.produceCoding,
+          produceIntroduce: data.produceIntroduce,
+          produceName: data.produceName,
+          produceType: data.produceType,
+          putaway: data.putaway,
+          specification: data.specification,
+        })
+      }).then((res) => {
         console.log(res);
+        if (res.data.code === "ERROR") {
+          message.error('请重试');
+          this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.onCancel()
+
+          this.getProduct()
+        }
+      }).catch((error) => {
+        console.log(error);
       })
+    }
+
   }
 
 
 
   formRef = React.createRef()
   submit() {
-    // console.log(this.formRef.current)
+
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
     this.createProduct()
-    // this.setState({
-    //   number: data.number,
-    //   price: data.price,
-    //   produceCoding: data.produceCoding,
-    //   produceIntroduce: data.produceIntroduce,
-    //   produceName: data.produceName,
-    //   produceType: data.produceType,
-    //   putaway: data.putaway,
-    //   specification: data.specification
-    // })
+
   }
 
 
-
-  onClose(){
+  onSearch(val) {
+    console.log(val);
     this.setState({
-      drawerVisible:false
-    })
-  }
-  showDrawer (){
-    this.setState({
-      drawerVisible:true
+      keyWord: val
+    }, () => {
+      this.getProduct()
     })
   }
 
-  onChange(pageNumber) {
-    console.log('Page: ', pageNumber);
+
+  onClose() {
+    this.setState({
+      drawerVisible: false
+    })
+  }
+  showDrawer() {
+    this.setState({
+      drawerVisible: true
+    })
+  }
+
+  onChange(page, pageSize) {    //currentPage切换
+    console.log(page, pageSize);
+    this.setState({
+      currentPage: page,
+      limit: pageSize
+    }, () => {      //setstate异步回调箭头函数
+      this.getProduct()
+    })
+
+
 
   }
 
@@ -205,7 +287,9 @@ class ProductTable extends Component {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
           <span style={{ fontSize: '18px' }}>产品管理</span>
-          <Search placeholder='请输入产品名称' style={{ width: '200px' }}></Search>
+          <Search placeholder='请输入产品名称' style={{ width: '200px' }} onSearch={this.onSearch}
+            allowClear
+          ></Search>
           <div>
             <Button type='primary'
               onClick={this.setVisible}
@@ -281,8 +365,8 @@ class ProductTable extends Component {
                     ]}
                   >
                     <Select style={{ width: 200 }} >
-                      <Option value='未上架'>未上架</Option>
-                      <Option value='已上架'>已上架</Option>
+                      <Option value='上架'>上架</Option>
+                      <Option value='下架'>下架</Option>
                     </Select>
                   </Form.Item>
                 </div>
@@ -346,22 +430,28 @@ class ProductTable extends Component {
         </div>
 
         <div>
-          <div style={{ height: 20 }}>
-
+          <div style={{ height: 20 }}
+            onClick={() => {
+              console.log(this.state.tableArr);
+            }}
+          >
+            按时到达的
           </div  >
 
           <div style={{ position: 'relative' }}>
             <div>
               <Table
                 columns={Data.columns}
-                dataSource={data}
+                dataSource={this.state.tableArr}
                 scroll={{ x: 1500, y: 300 }}
+                pagination={{ pageSize: this.state.pagination.limit }}
                 onRow={(record) => ({
                   onClick: () => {
                     console.log(record);
                     this.setState({
-                    drawerVisible:true,
-                    drawerTitle:record.productName
+                      drawerVisible: true,
+                      record: record,
+                      drawerTitle: record.produceName
 
                     })
                   },
@@ -371,18 +461,113 @@ class ProductTable extends Component {
               <Drawer
                 title={this.state.drawerTitle}
                 placement="right"
-                closable={false}
+                closable={true}
                 onClose={this.onClose}
                 visible={this.state.drawerVisible}
+                getContainer={false}
+                width={'50vw'}
+                destroyOnClose={true}
+
+
               >
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                <div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
+                    <Button type='primary' size={'small'} >编辑</Button>
+                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft">
+                      <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
+                    </Dropdown>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "30vw", padding: '0 30px 30px' }}>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>产品类别</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.produceType}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>产品单位</span>
+                      <span style={{ fontSize: 14 }}>只/辆/千克</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>产品价格</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.price ? this.state.record.price : 'none'}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>产品编码</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.produceCoding}</span>
+                    </div>
+
+                  </div>
+
+                  <div>
+                    <Tabs defaultActiveKey="1" >
+                      <TabPane tab="基本信息" key="1">
+                        <div>
+
+                          <div>
+                            <span></span>
+                            <span>基本信息</span>
+                          </div>
+
+                          <div>
+                            <div>
+                              <div>
+                                <div>产品名称</div>
+                                <div>{this.state.record.produceName}</div>
+                              </div>
+                              <div>
+                                <div>产品编码</div>
+                                <div>{this.state.record.produceCoding}</div>
+                              </div>
+                              <div>
+                                <div>规格</div>
+                                <div>{this.state.record.specification}</div>
+                              </div>
+                              <div>
+                                <div>库存数量</div>
+                                <div>{this.state.record.number}</div>
+                              </div>
+                              <div>
+                                <div>创建人</div>
+                                <div>{this.state.record.employeeCreate}</div>
+                              </div>
+                              <div>
+                                <div>创建时间</div>
+                                <div>{this.state.record.createTime}</div>
+                              </div>
+                            </div>
+                            <div>
+                              <div></div>
+                              <div></div>
+                            </div>
+                          </div>
+
+                          <div>
+
+                          </div>
+                        </div>
+                      </TabPane>
+                      <TabPane tab="附件" key="2">
+                      </TabPane>
+                      <TabPane tab="操作记录" key="3">
+                      </TabPane>
+                    </Tabs>
+                  </div>
+
+                </div>
+
+
               </Drawer>
             </div>
             <div style={{ position: 'absolute', bottom: '-374px', right: '0px' }}>
               <ConfigProvider locale={zhCN}>
-                <Pagination defaultCurrent={1} total={500} onChange={this.onChange} />
+                <Pagination showQuickJumper
+                  defaultPageSize={10}
+                  showTotal={total => `共 ${total} 项`} defaultCurrent={1} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
               </ConfigProvider>
             </div>
 

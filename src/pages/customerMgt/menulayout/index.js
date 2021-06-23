@@ -62,28 +62,28 @@ function Menulayout() {
               <Link to='/customerMgt/' >仪表盘</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-              <Link to='/todolist' >待办事项</Link>
+              <Link to='/customerMgt/todolist' >待办事项</Link>
             </Menu.Item>
             <Menu.Item key="3" icon={<UploadOutlined />}>
               <Link to='/customerMgt/clue' >线索</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<BarChartOutlined />}>
-              <Link to='/customer' >客户</Link>
+              <Link to='/customerMgt/customer' >客户</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<CloudOutlined />}>
-              <Link to='/contacts' >联系人</Link>
+              <Link to='/customerMgt/contacts' >联系人</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<AppstoreOutlined />}>
-              <Link to='/opensea' >公海</Link>
+              <Link to='/customerMgt/opensea' >公海</Link>
             </Menu.Item>
             <Menu.Item key="7" icon={<TeamOutlined />}>
-              <Link to='/bO' >商机</Link>
+              <Link to='/customerMgt/bO' >商机</Link>
             </Menu.Item>
             <Menu.Item key="8" icon={<ShopOutlined />}>
-              <Link to='/contract' >合同</Link>
+              <Link to='/customerMgt/contract' >合同</Link>
             </Menu.Item>
             <Menu.Item key="9" icon={<ShopOutlined />}>
-              <Link to='/paymentr' >回款</Link>
+              <Link to='/customerMgt/payment' >回款</Link>
             </Menu.Item>
             <Menu.Item key="10" icon={<ShopOutlined />}>
               <Link to='/customerMgt/product'>产品</Link>
@@ -92,9 +92,7 @@ function Menulayout() {
         </Sider>
         <Layout className="site-layout" style={{ marginLeft: 200 }}>
           <Content style={{ margin: '60px 16px 0', overflow: 'initial',backgroundColor:'#fff'  }}>
-            {/* <div style={{ padding: 30, fontSize: 18 }} >
-              
-            </div> */}
+      
             <div
               style={{
                 backgroundColor: '#fff',
@@ -104,14 +102,14 @@ function Menulayout() {
 
               {/* 在这里切换content的组件显示 */}
               <Route path='/customerMgt/' exact component={Dashbord}></Route>
-              <Route path='/todolist' component={TodoList}></Route>
+              <Route path='/customerMgt/todolist' component={TodoList}></Route>
               <Route path='/customerMgt/clue' component={Clue}></Route>
-              <Route path='/customer' component={Customer}></Route>
-              <Route path='/contacts' component={Contacts}></Route>
-              <Route path='/opensea' component={Opensea}></Route>
-              <Route path='/bO' component={Bo}></Route>
-              <Route path='/contract' component={Contract}></Route>
-              <Route path='/payment' component={Payment}></Route>
+              <Route path='/customerMgt/customer' component={Customer}></Route>
+              <Route path='/customerMgt/contacts' component={Contacts}></Route>
+              <Route path='/customerMgt/opensea' component={Opensea}></Route>
+              <Route path='/customerMgt/bO' component={Bo}></Route>
+              <Route path='/customerMgt/contract' component={Contract}></Route>
+              <Route path='/customerMgt/payment' component={Payment}></Route>
               <Route path='/customerMgt/product' component={ProductTable}></Route>
             </div>
           </Content>
