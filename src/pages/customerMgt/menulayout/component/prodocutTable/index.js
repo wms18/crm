@@ -22,9 +22,6 @@ const { Content, Footer, Header } = Layout
 class ProductTable extends Component {
 
 
-
-
-
   componentDidMount() {
     this.getProduct()
   }
@@ -33,9 +30,17 @@ class ProductTable extends Component {
     super(props)
     this.state = {
 
+      isCreate: true,
+      formTitle: '新建产品',
+
       drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
+
+      editProVisible: false,
+      transferVisible:false,    //转移框显示
+
+
 
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
@@ -73,6 +78,8 @@ class ProductTable extends Component {
     this.createProduct = this.createProduct.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
+    this.setEditProVisible = this.setEditProVisible.bind(this)
+    this.setEditProCancel = this.setEditProCancel.bind(this)
   }
 
 
@@ -129,6 +136,12 @@ class ProductTable extends Component {
     return menu
   }
 
+  setTransferVisible(){
+    this.setState({
+      transferVisible:true
+    })
+  }
+
   getProduct() {
     //获取产品列表
     axios.get(`${base.url}/produce/getProduce?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
@@ -138,7 +151,6 @@ class ProductTable extends Component {
       }
     })
       .then((res) => {
-        console.log(res);
         if (!res.data.code === "SUCCESS") {
 
         } else {
@@ -150,13 +162,60 @@ class ProductTable extends Component {
       })
   }
 
+  editProduct() {
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    var reg = /\s/;
+    // reg.exec(text)==null
+    if (data.number == undefined || data.produceCoding == undefined
+      || data.putaway == undefined || data.specification == undefined || data.produceType == undefined || data.produceName == undefined
+      || reg.exec(data.number) != null || reg.exec(data.produceCoding) != null || reg.exec(data.putaway) != null || reg.exec(data.specification) != null
+      || reg.exec(data.produceType) != null || reg.exec(data.produceName) != null
+    ) {
+      message.error('请填写必填选项并不要输入空格');
+    } else {
+      axios({
+        method: "post",
+        url: `${base.url}/produce/update`,
+        params: {
+          token: this.state.token,
+        },
+        data: qs.stringify({
+          id: this.state.record.id,
+          number: data.number,
+          price: data.price,
+          produceCoding: data.produceCoding,
+          produceIntroduce: data.produceIntroduce,
+          produceName: data.produceName,
+          produceType: data.produceType,
+          putaway: data.putaway,
+          specification: data.specification,
+        })
+      }).then((res) => {
+        if (res.data.code === "ERROR") {
+          message.error('请重试');
+          this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.onCancel()
+
+          this.getProduct()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+  }
+
 
   createProduct() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    var reg = /\s/;
+    // reg.exec(text)==null
+    console.log(data);
     if (data.number == undefined || data.produceCoding == undefined
       || data.putaway == undefined || data.specification == undefined || data.produceType == undefined || data.produceName == undefined
-      | data.number.includes(' ') || data.produceCoding.includes(' ')
-      || data.putaway.includes(' ') || data.specification.includes(' ') || data.produceType.includes(' ') || data.produceName.includes(' ')
+      || reg.exec(data.number) != null || reg.exec(data.produceCoding) != null || reg.exec(data.putaway) != null || reg.exec(data.specification) != null
+      || reg.exec(data.produceType) != null || reg.exec(data.produceName) != null
     ) {
       message.error('请填写必填选项并不要输入空格');
     } else {
@@ -197,14 +256,18 @@ class ProductTable extends Component {
 
 
 
-  formRef = React.createRef()
+  formRef = React.createRef()   //调用Form方法
   submit() {
-
+    console.log(this.formRef.current);
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createProduct()
-
+    if (this.state.isCreate) {
+      this.createProduct()
+    } else {
+      this.editProduct()
+    }
   }
+
 
 
   onSearch(val) {
@@ -245,12 +308,48 @@ class ProductTable extends Component {
     this.setState({
       visible: !this.state.visible
     })
+    setTimeout(() => {
+      console.log('record', this.state.record);
+      if (this.state.isCreate) {
+        this.formRef.current.resetFields();
+      } else {
+        this.formRef.current.setFieldsValue({
+          produceName: this.state.record.produceName,
+          produceType: this.state.record.produceType,
+          price: this.state.record.price,
+          produceCoding: this.state.record.produceCoding,
+          number: this.state.record.number,
+          createTime: this.state.record.createTime,
+          employeeCreate: this.state.record.employeeCreate,
+          employeeResponsible: this.state.record.employeeResponsible,
+          produceIntroduce: this.state.record.produceIntroduce,
+          putaway: this.state.record.putaway,
+          specification: this.state.record.specification,
+          updatetime: this.state.record.updatetime
+        })
+      }
+    }, 100);
+
   };
+  setEditProVisible() {
+    this.setState({
+      editProVisible: !this.state.visible
+    })
+  };
+  setEditProCancel() {
+    this.setState({
+      editProVisible: false
+    })
+  }
 
   onCancel() {
     this.setState({
-      visible: false
+      visible: false,
+      isCreate: true
     })
+    setTimeout(() => {
+      this.formRef.current.resetFields();
+    }, 100);
   }
 
   onCreate(values) {
@@ -262,7 +361,6 @@ class ProductTable extends Component {
 
   start = () => {
     this.setState({ loading: true });
-    // ajax request after empty completing
     setTimeout(() => {
       this.setState({
         selectedRowKeys: [],
@@ -296,20 +394,19 @@ class ProductTable extends Component {
             >新建产品</Button>
             <Modal
               visible={this.state.visible}
-              title="新建产品"
+              title={this.state.isCreate ? '新建产品' : '编辑产品'}
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
-
             >
-
               <Form
                 layout="vertical"
                 name="form_in_modal"
                 initialValues={{
                   modifier: 'public',
                 }}
+                //绑定
                 ref={this.formRef}
               >
                 <div>
@@ -336,7 +433,7 @@ class ProductTable extends Component {
                       },
                     ]}
                   >
-                    <Input></Input>
+                    <Input  ></Input>
                   </Form.Item>
                 </div>
 
@@ -435,7 +532,6 @@ class ProductTable extends Component {
               console.log(this.state.tableArr);
             }}
           >
-            按时到达的
           </div  >
 
           <div style={{ position: 'relative' }}>
@@ -445,6 +541,8 @@ class ProductTable extends Component {
                 dataSource={this.state.tableArr}
                 scroll={{ x: 1500, y: 300 }}
                 pagination={{ pageSize: this.state.pagination.limit }}
+
+                //点击行显示表格行信息
                 onRow={(record) => ({
                   onClick: () => {
                     console.log(record);
@@ -452,7 +550,6 @@ class ProductTable extends Component {
                       drawerVisible: true,
                       record: record,
                       drawerTitle: record.produceName
-
                     })
                   },
                 })}
@@ -473,7 +570,27 @@ class ProductTable extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                    <Button type='primary' size={'small'} >编辑</Button>
+                    <Button
+                    type='primary'
+                    size={'small'}
+                    onClick={()=>{
+                      this.setTransferVisible()
+                    }}
+                    >转移</Button>
+
+                    <Button type='primary' size={'small'}
+                      onClick={() => {
+                        this.setVisible()
+                        this.setState({
+                          isCreate: false,
+                          formTitle: '新建产品'
+
+                        })
+                      }}
+
+                    >编辑</Button>
+
+
                     <Dropdown overlay={this.dropdownMenu} placement="bottomLeft">
                       <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
                     </Dropdown>
@@ -508,12 +625,12 @@ class ProductTable extends Component {
                       <TabPane tab="基本信息" key="1">
                         <div>
 
-                          <div>
+                          <div style={{ marginBottom: '20px' }}>
                             <span></span>
                             <span>基本信息</span>
                           </div>
 
-                          <div>
+                          <div className='pro-info'>
                             <div>
                               <div>
                                 <div>产品名称</div>
@@ -540,9 +657,32 @@ class ProductTable extends Component {
                                 <div>{this.state.record.createTime}</div>
                               </div>
                             </div>
+
                             <div>
-                              <div></div>
-                              <div></div>
+                              <div>
+                                <div>产品类别</div>
+                                <div>{this.state.record.produceType}</div>
+                              </div>
+                              <div>
+                                <div>是否上架</div>
+                                <div>{this.state.record.putaway}</div>
+                              </div>
+                              <div>
+                                <div>价格</div>
+                                <div>{this.state.record.price}</div>
+                              </div>
+                              <div>
+                                <div>产品介绍</div>
+                                <div>{this.state.record.produceIntroduce}</div>
+                              </div>
+                              <div>
+                                <div>更新时间</div>
+                                <div>{this.state.record.updatetime}</div>
+                              </div>
+                              <div>
+                                <div>负责人</div>
+                                <div>{this.state.record.employeeResponsible}</div>
+                              </div>
                             </div>
                           </div>
 
@@ -551,7 +691,7 @@ class ProductTable extends Component {
                           </div>
                         </div>
                       </TabPane>
-                      <TabPane tab="附件" key="2">
+                      <TabPane tab="跟进记录" key="2">
                       </TabPane>
                       <TabPane tab="操作记录" key="3">
                       </TabPane>
@@ -559,7 +699,6 @@ class ProductTable extends Component {
                   </div>
 
                 </div>
-
 
               </Drawer>
             </div>

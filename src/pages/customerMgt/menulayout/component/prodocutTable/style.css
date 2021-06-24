@@ -17,3 +17,22 @@
 .ant-tabs-content-holder{
     padding: 0 30px 30px !important;
 }
+.pro-info{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 500px;
+}
+/* .pro-info>div{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 200px;
+} */
+.pro-info>div>div{
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 200px;
+}
