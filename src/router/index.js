@@ -69,7 +69,7 @@ const routes = [
         ]
     },
     {
-        path: '/customerMgt',
+        path: '/customerMgt/',
         component: CustomerMgt,
         children: [
             {

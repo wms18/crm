@@ -91,7 +91,7 @@ function Menulayout() {
           </Menu>
         </Sider>
         <Layout className="site-layout" style={{ marginLeft: 200 }}>
-          <Content style={{ margin: '60px 16px 0', overflow: 'initial',backgroundColor:'#fff'  }}>
+          <Content style={{ margin: '60px 16px 0', overflow: 'initial',backgroundColor:'#fff',padding:'0 0 40px 0'  }}>
       
             <div
               style={{
