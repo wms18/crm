@@ -2,99 +2,15 @@ import React, {useState} from "react";
 import {Button, ConfigProvider, DatePicker, Form, Input, Modal, Space, Table, TreeSelect} from "antd";
 import zhCN from "antd/lib/locale/zh_CN";
 import './newtask.css'
+import LinkBusiness from "./link";
 function NewTask() {
-    let arr = ['客户', '联系人', '商机', '合同']
-    let [activeIndex1, setActiveIndex1] = useState(0)  //关联业务
     //关联业务
     //关联业务模块
-    const {Search} = Input;
-    const onSearch = value => console.log(value);
-
     const [isBusinessModalVisible, setIsBusinessModalVisible] = useState(false);
 
     const showBusinessModal = () => {
         setIsBusinessModalVisible(true);
     };
-    //关联业务模块 表格
-    const columns = [
-        {
-            title: '客户名称',
-            width: 100,
-            dataIndex: 'name',
-            key: 'name',
-            fixed: 'left',
-        },
-        {
-            title: '下次联系时间',
-            width: 120,
-            dataIndex: 'time',
-            key: '0',
-        },
-        {
-            title: '最后跟进时间',
-            dataIndex: 'time1',
-            key: '1',
-            width: 120,
-        },
-        {
-            title: '创建时间',
-            dataIndex: 'time2',
-            key: '2',
-            width: 150,
-        },
-    ];
-    let [selectedRowKeys,setSelectedRowKeys] = useState([])
-    let onSelectChange = selectedRowKeys => {
-        console.log('selectedRowKeys changed: ', selectedRowKeys);
-        setSelectedRowKeys(selectedRowKeys)
-    };
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-        selections: [
-            Table.SELECTION_ALL,
-            Table.SELECTION_INVERT,
-            Table.SELECTION_NONE,
-            {
-                key: 'odd',
-                text: '奇数行',
-                onSelect: changableRowKeys => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((key, index) => {
-                        if (index % 2 !== 0) {
-                            return false;
-                        }
-                        return true;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys)
-                },
-            },
-            {
-                key: 'even',
-                text: '偶数行',
-                onSelect: changableRowKeys => {
-                    let newSelectedRowKeys = [];
-                    newSelectedRowKeys = changableRowKeys.filter((key, index) => {
-                        if (index % 2 !== 0) {
-                            return true;
-                        }
-                        return false;
-                    });
-                    setSelectedRowKeys(newSelectedRowKeys)
-                },
-            },
-        ],
-    };
-    const data = [];
-    for (let i = 0; i < 100; i++) {
-        data.push({
-            key: i,
-            name: `Edrward ${i}`,
-            time: '2021-6-23',
-            time1: '2021-6-23',
-            time2: '2021-6-23',
-        });
-    }
     //备注
     const {TextArea} = Input;
     //参与人
@@ -259,37 +175,7 @@ function NewTask() {
                            onCancel={()=>{
                                setIsBusinessModalVisible(false);
                            }}>
-                        <div className={'bus'}>
-                            <div className={'business'}>
-                                {arr.map((item, index) => {
-                                    return (
-                                        <div  className={index === activeIndex1 ? 'active1' : ''}
-                                              onClick={() => {
-                                                  setActiveIndex1(index)
-                                              }}
-                                              key={index}>{item}</div>
-                                    )
-                                })}
-                            </div>
-
-                            <div className={'business1'}>
-                                <div className={'businessTop'}>
-                                    <div>
-                                        <Space direction="vertical">
-                                            <Search  onSearch={onSearch} style={{width: 200,height:'30px',overflow:'hidden'}}/>
-                                        </Space>
-                                    </div>
-                                    <div>
-                                        <button className={'businessBtn'}>新建</button>
-                                    </div>
-                                </div>
-                                <div style={{width: '675px',height:'300px'}}>
-                                    <ConfigProvider locale={zhCN}>
-                                        <Table rowSelection={rowSelection} columns={columns} dataSource={data} scroll={{ x: 150, y: 200 }} />
-                                    </ConfigProvider>
-                                </div>
-                            </div>
-                        </div>
+                        <LinkBusiness></LinkBusiness>
                     </Modal>
                 </div>
             </div>
