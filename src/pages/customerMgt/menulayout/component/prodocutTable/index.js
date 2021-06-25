@@ -136,11 +136,7 @@ class ProductTable extends Component {
     return menu
   }
 
-  setTransferVisible(){
-    this.setState({
-      transferVisible:true
-    })
-  }
+
 
   getProduct() {
     //获取产品列表
@@ -570,13 +566,7 @@ class ProductTable extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                    <Button
-                    type='primary'
-                    size={'small'}
-                    onClick={()=>{
-                      this.setTransferVisible()
-                    }}
-                    >转移</Button>
+                   
 
                     <Button type='primary' size={'small'}
                       onClick={() => {
