@@ -5,7 +5,7 @@ const  Data={
           title: '客户姓名',
           dataIndex: 'clientName',
           key:'clientName',
-          fixed: 'left',
+          // fixed: 'left',
           sorter: {
             compare: (a, b) => a.clientName - b.clientName,
             multiple: 3,
@@ -22,7 +22,7 @@ const  Data={
           },
         },
         {
-          width: 100,
+          width: 150,
           title: '电话',
           dataIndex: 'phone',
           key:'2',
@@ -136,7 +136,7 @@ const  Data={
           title: '跟进记录',
           dataIndex: 'record',
           key:'record',
-          fixed:'right',
+          // fixed:'right',
           sorter: {
             compare: (a, b) => a.record - b.record,
             multiple: 3,

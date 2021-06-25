@@ -5,14 +5,14 @@ import qs from 'qs'
 import './style.css'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
 
 const { TabPane } = Tabs
-const { Option } = Select
+const { Option, TextArea } = Select
 const { Search } = Input
 const { Content, Footer, Header } = Layout
 
@@ -79,7 +79,68 @@ class Clue extends Component {
     this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
+    this.onChangeDate = this.onChangeDate.bind(this)
   }
+
+
+  onChangeDate(date, dateString) {
+    console.log(date, dateString);
+  }
+  dropdownMenu() {
+    const menu = (
+      <Menu>
+        <Menu.Item
+          onClick={() => {
+            Modal.confirm({
+              title: '确认删除',
+              icon: <ExclamationCircleOutlined />,
+              content: '确认删除此产品么？',
+              okText: '是',
+              okType: '',
+              cancelText: '否',
+              onOk: () => {
+                // this.handleOk(id)//确认按钮的回调方法，在下面
+                console.log('确认');
+              }
+              ,
+              onCancel() {
+                console.log('Cancel');
+              },
+            });
+          }}
+        >
+          删除
+        </Menu.Item>
+
+        <Menu.Item
+
+          onClick={() => {
+            Modal.confirm({
+              title: '确认转移',
+              icon: <ExclamationCircleOutlined />,
+              content: '确认转移为客户么?',
+              okText: '转移',
+              okType: '',
+              cancelText: '取消',
+              onOk: () => {
+                // this.handleOk(id)//确认按钮的回调方法，在下面
+                // <Alert message="已取消转移" type="success" showIcon />
+                message.success('已成功转移')
+              }
+              ,
+              onCancel() {
+                message.warning('已取消')
+                // <Alert message="已取消转移" type="info" showIcon />
+              },
+            });
+          }}>
+          转移为客户
+        </Menu.Item>
+      </Menu>
+    )
+    return menu
+  }
+
 
   getEmployeeName() {
     axios.get(`${base.url}/employee/getEmployeeName`, {
@@ -521,10 +582,8 @@ class Clue extends Component {
                 onClose={this.onClose}
                 visible={this.state.drawerVisible}
                 getContainer={false}
-                width={'50vw'}
+                width={'74vw'}
                 destroyOnClose={true}
-
-
               >
                 <div>
 
@@ -559,15 +618,16 @@ class Clue extends Component {
                             optionLabelProp="label"
                           >
                             {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return(<Option value={index} label={item.username}>
-                                <div>
-                                  <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                  <span>{item.username}</span>
-                                </div>
+                              return (<Option value={index} >
+                                <Checkbox>
+                                  <div>
+                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
+                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
+                                  </div>
+
+                                </Checkbox>
                               </Option>)
-                            }):''}
-
-
+                            }) : ''}
                           </Select>
                         </div>
                       </div>
@@ -581,14 +641,12 @@ class Clue extends Component {
                           formTitle: '新建线索'
 
                         })
-                        // this.setEditProVisible()
-                        // console.log(this.formRef.current);
                       }}
 
                     >编辑</Button>
 
 
-                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft">
+                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
                       <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
                     </Dropdown>
                   </div>
@@ -621,7 +679,6 @@ class Clue extends Component {
                     <Tabs defaultActiveKey="1" >
                       <TabPane tab="基本信息" key="1">
                         <div>
-
                           <div style={{ marginBottom: '10px' }}>
                             <span></span>
                             <span style={{ fontSize: 13 }}>基本信息</span>
@@ -693,12 +750,43 @@ class Clue extends Component {
                         </div>
                       </TabPane>
                       <TabPane tab="跟进记录" key="2">
+                        <div style={{padding:'0 0 20px 0'}}>
+                          <Input style={{ height: 100 }}></Input>
+                        </div>
+                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between',alignItems:'center' }}>
+                          <div>
+                            记录类型
+                            &nbsp;
+                            &nbsp;
+                            <Select style={{ width: 200 }}>
+                              <Option value='上门拜访'>上门拜访</Option>
+                              <Option value='电话邀约'>电话邀约</Option>
+                              <Option value='线下单杀'>线下单杀</Option>
+                            </Select>
+                          </div>
+                          <div  style={{display:'flex',flexDirection:'row',alignItems:'center'}}>
+                            下次联系时间
+                            &nbsp;
+                            &nbsp;
+                            <ConfigProvider locale={zhCN}>
+                              <Space direction="vertical" style={{marginRight:"20px"}}>
+                                <DatePicker onChange={this.onChangeDate} />
+                              </Space>,
+                            </ConfigProvider>
+                            <Checkbox style={{ fontSize: 12 }}>
+                              添加到日常提醒
+                            </Checkbox>
+                          </div>
+                          <div>
+                            <Button size={'small'}>发布</Button>
+                          </div>
+                        </div>
                       </TabPane>
                       <TabPane tab="操作记录" key="3">
                       </TabPane>
                     </Tabs>
                   </div>
-
+                        
                 </div>
 
               </Drawer>
