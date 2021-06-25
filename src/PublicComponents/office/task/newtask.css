@@ -12,4 +12,8 @@
     text-align: center;
     margin: 10px 15px 10px 0;
     cursor: pointer;
+    color: #ffffff;
+}
+.class span:hover{
+    background-color: #0FC9E7;
 }

@@ -108,3 +108,11 @@
     cursor: pointer;
     border-radius: 5px;
 }
+.taskLabelName{
+    padding:5px 8px;
+    margin:0 10px;
+    background-color: #0FC9E7;
+    color: #ffffff;
+    border-radius: 3px;
+    cursor: pointer;
+}
