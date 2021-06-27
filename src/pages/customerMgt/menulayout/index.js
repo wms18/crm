@@ -8,7 +8,7 @@ import sdTable from '../components/sdtable'
 
 import Dashbord from './component/dashboardlayout'   //仪表盘组件
 import ProductTable from './component/prodocutTable';
-import Bo from './component/bO'
+import BizOpp from './component/bO'
 import Clue from './component/clue'
 import Contract from './component/contract'
 import Contacts from './component/contacts'
@@ -77,7 +77,7 @@ function Menulayout() {
               <Link to='/customerMgt/opensea' >公海</Link>
             </Menu.Item>
             <Menu.Item key="7" icon={<TeamOutlined />}>
-              <Link to='/customerMgt/bO' >商机</Link>
+              <Link to='/customerMgt/bizOpp' >商机</Link>
             </Menu.Item>
             <Menu.Item key="8" icon={<ShopOutlined />}>
               <Link to='/customerMgt/contract' >合同</Link>
@@ -107,7 +107,7 @@ function Menulayout() {
               <Route path='/customerMgt/customer' component={Customer}></Route>
               <Route path='/customerMgt/contacts' component={Contacts}></Route>
               <Route path='/customerMgt/opensea' component={Opensea}></Route>
-              <Route path='/customerMgt/bO' component={Bo}></Route>
+              <Route path='/customerMgt/bizOpp' component={BizOpp}></Route>
               <Route path='/customerMgt/contract' component={Contract}></Route>
               <Route path='/customerMgt/payment' component={Payment}></Route>
               <Route path='/customerMgt/product' component={ProductTable}></Route>

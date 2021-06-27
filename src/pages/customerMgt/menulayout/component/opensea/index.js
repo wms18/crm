@@ -3,20 +3,28 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
-import { Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message } from 'antd';
+import {
+  Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
+} from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
-import { ConfigProvider } from 'antd'
 import Data from "./js/index";
 
-
-const { Option } = Select
+const { Step } = Steps;
+const { TabPane } = Tabs
+const { Option, TextArea } = Select
 const { Search } = Input
 const { Content, Footer, Header } = Layout
 
-class Opensea extends Component {
+
+
+
+class OpenSea extends Component {
 
   componentDidMount() {
-    this.getProduct()
+    this.getOpenSea()
+    this.getEmployeeName()
   }
 
   constructor(props) {
@@ -27,21 +35,30 @@ class Opensea extends Component {
 
       token: window.localStorage.getItem('token'),
 
+
+
+      isCreate: true,
+      formTitle: '新建公海',
+
+      transferVisible: false,
+
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
-      pagination:'',
+      pagination: '',
       currentPage: 1,
       limit: 10,
       tableArr: '',
 
+      employeeArr: '',
+
       // 表格行点击时产品信息
       record: "",
 
-      // 搜素产品名称
-      keyWord:'',
-      
+      // 搜素公海名称
+      keyword: '',
+
 
       // 新增产品信息
       number: '',
@@ -58,99 +75,113 @@ class Opensea extends Component {
     this.onChange = this.onChange.bind(this)
     this.setVisible = this.setVisible.bind(this)
     this.onCancel = this.onCancel.bind(this)
-    this.onCreate = this.onCreate.bind(this)
-    this.submit = this.submit.bind(this)
-    this.getProduct = this.getProduct.bind(this)
-    this.createProduct = this.createProduct.bind(this)
+    this.getOpenSea = this.getOpenSea.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
+    this.setTransferVisible = this.setTransferVisible.bind(this)
+    this.getEmployeeName = this.getEmployeeName.bind(this)
   }
 
-  getProduct() {
-    //获取产品列表
-    axios.get(`${base.url}/produce/getProduce?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+
+  createFollowupRecord() {
+    axios.post(`${base.url}/follow/add`, {
       params: {
-        token: this.state.token,
-        keyWord: this.state.keyWord
+        token: this.state.token
+      },
+      data: qs.stringify({
+        businessId: this.state.record.id,
+        businessTypeId: 1,
+        followRecord: this.state.followRecord,
+        nextTime: this.state.nextTalkTime,
+        recordType: '上门拜访',
+        remind: 0
+
+      })
+
+    })
+  }
+
+
+
+
+  getEmployeeName() {
+    axios.get(`${base.url}/employee/getEmployeeName`, {
+      params: {
+        token: this.state.token
       }
     })
       .then((res) => {
+        if (res.data.code == 'ERROR') {
+
+        } else {
+          this.setState({
+            employeeArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
         console.log(res);
-        if (!res.data.code === "SUCCESS") {
+      })
+  }
+
+  setTransferVisible() {
+    this.setState({
+      transferVisible: !this.state.transferVisible
+    })
+  }
+
+  transferSubmit() {
+    // setTransferVisible
+  }
+
+  getOpenSea() {
+    //获取公海
+    axios.get(`${base.url}/opensea/getOpenseas?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+      params: {
+        token: this.state.token,
+        keyword: this.state.keyword,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
 
         } else {
           this.setState({
             tableArr: res.data.data.data,
-            pagination:res.data.data.pagination
+            pagination: res.data.data.pagination
           })
         }
       })
   }
 
 
-  createProduct() {
-    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    if (data.number == undefined || data.produceCoding == undefined
-      || data.putaway == undefined || data.specification == undefined || data.produceType == undefined || data.produceName == undefined
-      | data.number.includes(' ') || data.produceCoding.includes(' ')
-      || data.putaway.includes(' ') || data.specification.includes(' ') || data.produceType.includes(' ') || data.produceName.includes(' ')
-    ) {
-      message.error('请填写必填选项并不要输入空格');
-    } else {
-      axios({
-        method: "post",
-        url: `${base.url}/produce/create`,
-        params: {
-          token: this.state.token,
-        },
-        // .replace(/\s+/g,'')
-        data: qs.stringify({
-          number: data.number,
-          price: data.price,
-          produceCoding: data.produceCoding,
-          produceIntroduce: data.produceIntroduce,
-          produceName: data.produceName,
-          produceType: data.produceType,
-          putaway: data.putaway,
-          specification: data.specification,
-        })
-      }).then((res) => {
+  
+
+  onSearch(val) {
+    console.log(val);
+    console.log(typeof (val));
+    //获取公海
+    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+      params: {
+        token: this.state.token,
+        keyword: val
+      },
+      // data: qs.stringify({
+      // })
+    })
+      .then((res) => {
         console.log(res);
         if (res.data.code === "ERROR") {
-          message.error('请重试');
-          this.onCancel()
-        } else {
-          message.success(res.data.message);
-          this.onCancel()
 
-          this.getProduct()
         }
-      }).catch((error) => {
-        console.log(error);
+        else {
+          this.setState({
+            tableArr: res.data.data.data,
+            pagination: res.data.data.pagination
+          })
+        }
       })
-    }
-
-  }
-
-
-
-  formRef = React.createRef()
-  submit() {
-
-    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    console.log(data)
-    this.createProduct()
-
-  }
-
-
-  onSearch(val){
-    console.log(val);
-    this.setState({
-      keyWord:val
-    },()=>{
-      this.getProduct()
-    })
   }
 
 
@@ -169,9 +200,9 @@ class Opensea extends Component {
     console.log(page, pageSize);
     this.setState({
       currentPage: page,
-      limit:pageSize    
+      limit: pageSize
     }, () => {      //setstate异步回调箭头函数
-      this.getProduct()
+      this.getOpenSea()
     })
 
 
@@ -182,32 +213,20 @@ class Opensea extends Component {
     this.setState({
       visible: !this.state.visible
     })
+  
   };
 
   onCancel() {
     this.setState({
-      visible: false
+      visible: false,
+      isCreate: true
     })
+ 
   }
 
-  onCreate(values) {
-    console.log('Received values of form: ', values);
-    this.setState({
-      visible: false
-    })
-  }
 
-  start = () => {
-    this.setState({ loading: true });
-    // ajax request after empty completing
-    setTimeout(() => {
-      this.setState({
-        selectedRowKeys: [],
-        loading: false,
-      });
-    }, 1000);
-  };
 
+  
   onSelectChange = selectedRowKeys => {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
@@ -222,223 +241,328 @@ class Opensea extends Component {
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
-          <span style={{ fontSize: '18px' }}>产品管理</span>
-          <Search placeholder='请输入产品名称' style={{ width: '200px' }}   onSearch={this.onSearch}   
-            allowClear
-          ></Search>
-          <div>
-            <Button type='primary'
-              onClick={this.setVisible}
-            >新建产品</Button>
-            <Modal
-              visible={this.state.visible}
-              title="新建产品"
-              okText="确认"
-              cancelText="取消"
-              onCancel={this.onCancel}
-              onOk={this.submit}
-
-            >
-
-              <Form
-                layout="vertical"
-                name="form_in_modal"
-                initialValues={{
-                  modifier: 'public',
-                }}
-                ref={this.formRef}
-              >
-                <div>
-                  <Form.Item
-                    name="produceName"
-                    label="产品名称"
-                    rules={[
-                      {
-                        required: true,
-                        message: '产品名称不能为空',
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    style={{ width: 200 }}
-                    name="produceType"
-                    label="产品类别"
-                    rules={[
-                      {
-                        required: true,
-                        message: '',
-                      },
-                    ]}
-                  >
-                    <Input></Input>
-                  </Form.Item>
-                </div>
-
-
-                <div>
-                  <Form.Item
-                    name="produceCoding"
-                    label="产品编码"
-                    rules={[
-                      {
-                        required: true,
-                        message: '产品编码不能为空',
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="putaway"
-                    label="是否上架"
-                    rules={[
-                      {
-                        required: true,
-                        message: '',
-                      },
-                    ]}
-                  >
-                    <Select style={{ width: 200 }} >
-                      <Option value='上架'>上架</Option>
-                      <Option value='下架'>下架</Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                <div>
-                  <Form.Item
-                    style={{ width: 184 }}
-                    name="specification"
-                    label="产品规格"
-                    rules={[
-                      {
-                        required: true,
-                        message: '',
-                      },
-                    ]}
-                  >
-                    <Select  >
-                      <Option value='大'>大</Option>
-                      <Option value='中'>中</Option>
-                      <Option value='小'>小</Option>
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item
-                    style={{ width: 200 }}
-                    name="price"
-                    label="价格"
-                  >
-                    <Input value='0' />
-                  </Form.Item>
-                </div>
-
-
-                <div>
-                  <Form.Item
-                    name="number"
-                    label="库存数量"
-                    rules={[
-                      {
-                        required: true,
-                        message: '库存数量不能为空',
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-
-                  <Form.Item
-                    style={{ width: 200 }}
-                    name="produceIntroduce"
-                    label="产品介绍"
-                  >
-                    <Input />
-                  </Form.Item>
-
-                </div>
-
-              </Form>
-            </Modal>
-          </div>
+        <div  style={{width:"100%",backgroundColor: 'rgb(245, 246, 249)'}}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px', width: '50%' }}>
+            <span style={{ fontSize: '18px' }}>公海管理</span>
+            <Search placeholder='请输入公海名称' style={{ width: '200px' }} onSearch={this.onSearch}
+              allowClear
+            ></Search>
+          </div >
         </div>
 
         <div>
           <div style={{ height: 20 }}
-          onClick={()=>{
-            console.log(this.state.tableArr);
-          }}
+            onClick={() => {
+              console.log(this.state.employeeArr)
+            }}
           >
-                      按时到达的
+
           </div  >
 
-          <div style={{ position: 'relative' }}>
-            <div>
+          <div >
+            <div style={{ position: 'relative' }}>
               <Table
+
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: 300 }}
-                pagination={{pageSize:this.state.pagination.limit}}
+                scroll={{ x: 1500, y: '26vw' }}
+                pagination={{ pageSize: this.state.pagination.limit }}
+                defaultCurrent={1}
                 onRow={(record) => ({
                   onClick: () => {
                     console.log(record);
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      drawerTitle: record.productName
+                      clientName: record.clientName
 
                     })
                   },
                 })}
 
-              />
+              ></Table>
+              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+                <ConfigProvider locale={zhCN}>
+                  <Pagination showQuickJumper
+                    defaultPageSize={10}
+                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
+                </ConfigProvider>
+              </div>
               <Drawer
-                title={this.state.drawerTitle}
+                mask={false}
+                title={this.state.clientName}
                 placement="right"
-                closable={false}
+                closable={true}
                 onClose={this.onClose}
                 visible={this.state.drawerVisible}
+                getContainer={false}
+                width={'74vw'}
+                destroyOnClose={true}
               >
                 <div>
-                  <div>
-                    <span>产品类别</span>
-                    <span>产品单位</span>
-                    <span>产品价格</span>
-                    <span>产品编码</span>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
+                    <Button
+                      type='primary'
+                      size={'small'}
+                      onClick={() => {
+                        this.setTransferVisible()
+                      }}
+                    >转移</Button>
+
+                    <Modal
+                      visible={this.state.transferVisible}
+                      title="转移公海"
+                      // okText="保存"
+                      // cancelText="取消"
+                      // onOk={this.transferSubmit}
+                      footer={[
+                        <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
+                        <Button onClick={this.setTransferVisible} type='default'>取消</Button>
+                      ]}
+                    >
+                      <div>
+                        变更负责人
+                        <div>
+                          <span>+点击选择</span>
+                          <Select
+                            showSearch
+                            style={{ width: 200 }}
+                            mode='multiple'
+                            optionLabelProp="label"
+                          >
+                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
+                              return (<Option value={index} >
+                                <Checkbox>
+                                  <div>
+                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
+                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
+                                  </div>
+
+                                </Checkbox>
+                              </Option>)
+                            }) : ''}
+                          </Select>
+                        </div>
+                      </div>
+
+                    </Modal>
+                  
+
+
+                    {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
+                    <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: '确认删除',
+                          icon: <ExclamationCircleOutlined />,
+                          content: '确认删除此公海么？',
+                          okText: '是',
+                          okType: '',
+                          cancelText: '否',
+                          onOk: () => {
+                            // this.handleOk(id)//确认按钮的回调方法，在下面
+                            message.success('已成功刪除')
+                          }
+                          ,
+                          onCancel() {
+                            message.warning('已取消刪除')
+                          },
+                        });
+                      }}
+                    >刪除</Button>
+                    {/* </Dropdown> */}
                   </div>
-                  <div>
-                    <span>{this.state.record.category}</span>
-                    <span>只/辆/千克</span>
-                    <span>{this.state.record.price}</span>
-                    <span>{this.state.record.code}</span>
+
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>客户级别</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.clientLevel}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>成交状态</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.dealStatus}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsibleId}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>创建人</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.employeeCreateName}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>更新时间</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.updateTime}</span>
+                    </div>
+
                   </div>
+
+
+                  <div>
+                    <Tabs defaultActiveKey="1" >
+                      <TabPane tab="基本信息" key="1">
+                        <div>
+                          <div style={{ marginBottom: '10px' }}>
+                            <span></span>
+                            <span style={{ fontSize: 13 }}>基本信息</span>
+                          </div>
+
+                          <div className='pro-info'>
+                            <div>
+                              <div>
+                                <div>公海名称</div>
+                                <div>{this.state.record.clientName}</div>
+                              </div>
+                              <div>
+                                <div>电话</div>
+                                <div>{this.state.record.phone}</div>
+                              </div>
+                              <div>
+                                <div>公海来源</div>
+                                <div>{this.state.record.clueFrom}</div>
+                              </div>
+                              <div>
+                                <div>备注</div>
+                                <div>{this.state.record.content}</div>
+                              </div>
+                              <div>
+                                <div>下次联系时间</div>
+                                <div>{this.state.record.nextTalkTime}</div>
+
+                              </div>
+                              <div>
+                                <div>创建人</div>
+                                <div>{this.state.record.employeeCreateId}</div>
+                              </div>
+                              <div>
+                                <div>创建时间</div>
+                                <div>{this.state.record.createTime}</div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div>
+                                <div>公海类型</div>
+                                <div>{this.state.record.clientType}</div>
+                              </div>
+                              <div>
+                                <div>公海等级</div>
+                                <div>{this.state.record.clientLevel}</div>
+                              </div>
+                              <div>
+                                <div>部门ID</div>
+                                <div>{this.state.record.departmentId}</div>
+                              </div>
+                              <div>
+                                <div>公司</div>
+                                <div>{this.state.record.company}</div>
+                              </div>
+                              <div>
+                                <div>更新时间</div>
+                                <div>{this.state.record.updateTime}</div>
+                              </div>
+                              <div>
+                                <div>负责人</div>
+                                <div>{this.state.record.employeeResponsible}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+
+                          </div>
+                        </div>
+                      </TabPane>
+                      <TabPane tab="跟进记录" key="2">
+
+                        <div style={{ padding: '0 0 20px 0' }}>
+                          <Input style={{ height: 100 }}></Input>
+                        </div>
+                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            记录类型
+                            &nbsp;
+                            &nbsp;
+                            <Select style={{ width: 200 }}>
+                              <Option value='上门拜访'>上门拜访</Option>
+                              <Option value='电话邀约'>电话邀约</Option>
+                              <Option value='线下单杀'>线下单杀</Option>
+                            </Select>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            下次联系时间
+                            &nbsp;
+                            &nbsp;
+                            <ConfigProvider locale={zhCN}>
+                              <Space direction="vertical" style={{ marginRight: "20px" }}>
+                                <DatePicker onChange={this.onChangeDate} />
+                              </Space>,
+                            </ConfigProvider>
+                            <Checkbox style={{ fontSize: 12 }}>
+                              添加到日常提醒
+                            </Checkbox>
+                          </div>
+                          <div>
+                            <Button size={'small'}>发布</Button>
+                          </div>
+                        </div>
+                        <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
+                          <Tabs defaultActiveKey="1" >
+                            <TabPane tab="跟进记录" key="1">
+                              1
+                            </TabPane>
+                            <TabPane tab="日志" key="2">
+                              2
+                            </TabPane>
+                            <TabPane tab="审批" key="3">
+                              3
+                            </TabPane>
+                            <TabPane tab="任务" key="4">
+                              4
+                            </TabPane>
+                            <TabPane tab="日程" key="5">
+                              5
+                            </TabPane>
+                          </Tabs>
+                        </div>
+                      </TabPane>
+
+
+                      <TabPane tab="联系人" key="3">
+                      </TabPane>
+                      <TabPane tab="合同" key="4">
+                      </TabPane>
+                      <TabPane tab="产品" key="5">
+                      </TabPane>
+                      <TabPane tab="相关团队" key="6">
+                      </TabPane>
+                      <TabPane tab="附件" key="7">
+                      </TabPane>
+                      <TabPane tab="操作记录" key="8">
+                      </TabPane>
+
+                    </Tabs>
+                  </div>
+
                 </div>
 
-
               </Drawer>
-            </div>
-            <div style={{ position: 'absolute', bottom: '-374px', right: '0px'}}>
-              <ConfigProvider locale={zhCN}>
-                <Pagination  showQuickJumper    
-                defaultPageSize={10}
-                showTotal={total => `共 ${total} 项`}  defaultCurrent={1} total={this.state.pagination.total}  style={{marginLeft:'20PX'}}  onChange={this.onChange} />
-              </ConfigProvider>
             </div>
 
           </div>
         </div>
-
-
 
       </div >
     );
   }
 }
 
-export default Opensea;
+export default OpenSea;
 
 
 

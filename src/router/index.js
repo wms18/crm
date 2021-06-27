@@ -22,7 +22,7 @@ import TodoList from '../pages/customerMgt/menulayout/component/todolist';
 import Customer from '../pages/customerMgt/menulayout/component/customer';
 import Contacts from '../pages/customerMgt/menulayout/component/contacts';
 import Opensea from '../pages/customerMgt/menulayout/component/opensea';
-import Bo from '../pages/customerMgt/menulayout/component/bO';
+import BizOpp from '../pages/customerMgt/menulayout/component/bO';
 import Contract from '../pages/customerMgt/menulayout/component/contract';
 import Payment from '../pages/customerMgt/menulayout/component/payment';
 import ProductTable from '../pages/customerMgt/menulayout/component/prodocutTable';
@@ -97,8 +97,8 @@ const routes = [
                 component: Opensea
             },
             {
-                path: '/customerMgt/bO',
-                component: Bo
+                path: '/customerMgt/bizOpp',
+                component: BizOpp
             },
             {
                 path: '/customerMgt/contract',

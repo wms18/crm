@@ -2,23 +2,22 @@ const  Data={
     columns : [
         {
           width: 100,
-          title: '产品名称',
-          dataIndex: 'produceName',
+          title: '回款编号',
+          dataIndex: 'returnNumber',
           key:'produceName',
-          fixed: 'left',
           sorter: {
-            compare: (a, b) => a.produceName - b.produceName,
+            compare: (a, b) => a.returnNumber - b.returnNumber,
             multiple: 3,
             key:''
           },
         },
         {
-          title: '产品类别',
+          title: '客户名称',
           width: 100,
-          dataIndex: 'produceType',
+          dataIndex: 'clientName',
           key:'1',
           sorter: {
-            compare: (a, b) => a.produceType - b.produceType,
+            compare: (a, b) => a.clientName - b.clientName,
             multiple: 3,
           },
         },
@@ -34,38 +33,38 @@ const  Data={
         },
         {
           width: 100,
-          title: '是否上架',
-          dataIndex: 'putaway',
+          title: '合同编号',
+          dataIndex: 'contractCoding',
           key:'3',
           sorter: {
-            compare: (a, b) => a.putaway - b.putaway,
+            compare: (a, b) => a.contractCoding - b.contractCoding,
             multiple: 3,
           },
         },
         {
           width: 100,
-          title: '产品价格',
-          dataIndex: 'price',
+          title: '回款日期',
+          dataIndex: 'receiveTime',
           key:'4',
           sorter: {
-            compare: (a, b) => a.price - b.price,
+            compare: (a, b) => a.receiveTime - b.receiveTime,
             multiple: 3,
           },
         },
         {
           width: 100,
-          title: '产品描述',
-          dataIndex: 'specification',
+          title: '回款方式',
+          dataIndex: 'receiveWay',
           key:'5',
           sorter: {
-            compare: (a, b) => a.specification - b.specification,
+            compare: (a, b) => a.receiveWay - b.receiveWay,
             multiple: 3,
           },
         },
         {
           width: 100,
-          title: '库存数量',
-          dataIndex: 'number',
+          title: '回款金额',
+          dataIndex: 'receiveMoney',
           key:'6',
           sorter: {
             compare: (a, b) => a.number - b.number,
@@ -74,21 +73,41 @@ const  Data={
         },
         {
           width: 100,
-          title: '创建人',
-          dataIndex: 'employeeCreate',
+          title: '期数',
+          dataIndex: 'periods',
           key:'7',
           sorter: {
-            compare: (a, b) => a.createPerson - b.createPerson,
+            compare: (a, b) => a.periods - b.periods,
+            multiple: 3,
+          },
+        },
+        {
+          width: 100,
+          title: '备注',
+          dataIndex: 'content',
+          key:'8',
+          sorter: {
+            compare: (a, b) => a.content - b.content,
+            multiple: 3,
+          },
+        },
+        {
+          width: 100,
+          title: '创建人',
+          dataIndex: 'employeeCreateName',
+          key:'9',
+          sorter: {
+            compare: (a, b) => a.employeeCreateName - b.employeeCreateName,
             multiple: 3,
           },
         },
         {
           width: 100,
           title: '更新时间',
-          dataIndex: 'updatetime',
-          key:'8',
+          dataIndex: 'updateTime',
+          key:'10',
           sorter: {
-            compare: (a, b) => a.updateTime - b.updateTime,
+            compare: (a, b) => a.personInCharge - b.personInCharge,
             multiple: 3,
           },
         },
@@ -96,7 +115,7 @@ const  Data={
           width: 100,
           title: '创建时间',
           dataIndex: 'createTime',
-          key:'9',
+          key:'11',
           sorter: {
             compare: (a, b) => a.createTime - b.createTime,
             multiple: 3,
@@ -105,11 +124,21 @@ const  Data={
         {
           width: 100,
           title: '负责人',
-          dataIndex: 'employeeResponsible',
-          key:'employeeResponsible',
+          dataIndex: 'employeeResponsibleName',
+          key:'11',
+          sorter: {
+            compare: (a, b) => a.employeeResponsibleName.charCodeAt(0) - b.employeeResponsibleName.charCodeAt(0),
+            multiple: 3,
+          },
+        },
+        {
+          width: 100,
+          title: '合同金额',
+          dataIndex: 'contractTotal',
+          key:'contractTotal',
           fixed:'right',
           sorter: {
-            compare: (a, b) => a.personInCharge - b.personInCharge,
+            compare: (a, b) => a.contractTotal - b.contractTotal,
             multiple: 3,
           },
         },

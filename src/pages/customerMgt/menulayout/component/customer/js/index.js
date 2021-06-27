@@ -112,6 +112,17 @@ const Data = {
         multiple: 3,
       },
     },
+    {
+      width: 100,
+      title: '距进入公海时间',
+      dataIndex: 'intoSeaTime',
+      key: 'intoSeaTime',
+      fixed:'right',
+      sorter: {
+        compare: (a, b) => a.intoSeaTime - b.intoSeaTime,
+        multiple: 3,
+      },
+    },
   ],
 
   options: [
