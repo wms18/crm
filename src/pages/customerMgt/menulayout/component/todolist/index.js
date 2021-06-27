@@ -5,14 +5,15 @@ import qs from 'qs'
 import './style.css'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space,Steps
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
 
+const { Step } = Steps;
 const { TabPane } = Tabs
-const { Option } = Select
+const { Option, TextArea } = Select
 const { Search } = Input
 const { Content, Footer, Header } = Layout
 
@@ -21,23 +22,25 @@ const { Content, Footer, Header } = Layout
 
 class TodoList extends Component {
 
-
   componentDidMount() {
-    this.getProduct()
+    this.getTodoList()
+    this.getEmployeeName()
   }
 
   constructor(props) {
     super(props)
     this.state = {
 
-      isCreate: true,
-      formTitle: '新建产品',
-
       drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
 
-      editProVisible: false,
+
+
+      isCreate: true,
+      formTitle: '新建待办事项',
+
+      transferVisible: false,
 
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
@@ -48,11 +51,13 @@ class TodoList extends Component {
       limit: 10,
       tableArr: '',
 
+      employeeArr: '',
+
       // 表格行点击时产品信息
       record: "",
 
-      // 搜素产品名称
-      keyWord: '',
+      // 搜素待办事项名称
+      keyword: '',
 
 
       // 新增产品信息
@@ -63,7 +68,8 @@ class TodoList extends Component {
       produceName: '',
       produceType: '',
       putaway: "",
-      specification: '',
+      specification: ''
+
 
     }
     this.onChange = this.onChange.bind(this)
@@ -71,78 +77,83 @@ class TodoList extends Component {
     this.onCancel = this.onCancel.bind(this)
     this.onCreate = this.onCreate.bind(this)
     this.submit = this.submit.bind(this)
-    this.getProduct = this.getProduct.bind(this)
-    this.createProduct = this.createProduct.bind(this)
+    this.getTodoList = this.getTodoList.bind(this)
+    this.createTodoList = this.createTodoList.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
-    this.setEditProVisible = this.setEditProVisible.bind(this)
-    this.setEditProCancel = this.setEditProCancel.bind(this)
+    this.setTransferVisible = this.setTransferVisible.bind(this)
+    this.getEmployeeName = this.getEmployeeName.bind(this)
+    this.onChangeDate = this.onChangeDate.bind(this)
   }
 
 
-  dropdownMenu() {
-    const menu = (
-      <Menu>
-        <Menu.Item
-          onClick={() => {
-            Modal.confirm({
-              title: '确认上架',
-              icon: <ExclamationCircleOutlined />,
-              content: '确认上架此产品么？',
-              okText: '是',
-              okType: '',
-              cancelText: '否',
-              onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                console.log('确认');
-              }
-              ,
-              onCancel() {
-                console.log('Cancel');
-              },
-            });
-          }}
-        >
-          上架
-        </Menu.Item>
-
-        <Menu.Item
-
-          onClick={() => {
-            Modal.confirm({
-              title: '确认下架',
-              icon: <ExclamationCircleOutlined />,
-              content: '确认下架此产品么',
-              okText: '是',
-              okType: '',
-              cancelText: '否',
-              onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                console.log('确认');
-              }
-              ,
-              onCancel() {
-                console.log('Cancel');
-              },
-            });
-          }}>
-          下架
-        </Menu.Item>
-      </Menu>
-    )
-    return menu
-  }
-
-  getProduct() {
-    //获取产品列表
-    axios.get(`${base.url}/produce/getProduce?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+  createFollowupRecord() {
+    axios.post(`${base.url}/follow/add`, {
       params: {
-        token: this.state.token,
-        keyWord: this.state.keyWord
+        token: this.state.token
+      },
+      data: qs.stringify({
+        businessId: this.state.record.id,
+        businessTypeId: 1,
+        followRecord: this.state.followRecord,
+        nextTime: this.state.nextTalkTime,
+        recordType: '上门拜访',
+        remind: 0
+
+      })
+
+    })
+  }
+
+  onChangeDate(date, dateString) {
+    this.setState({
+      submissionTime: dateString
+    })
+  }
+
+
+
+  getEmployeeName() {
+    axios.get(`${base.url}/employee/getEmployeeName`, {
+      params: {
+        token: this.state.token
       }
     })
       .then((res) => {
-        if (!res.data.code === "SUCCESS") {
+        if (res.data.code == 'ERROR') {
+
+        } else {
+          this.setState({
+            employeeArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  setTransferVisible() {
+    this.setState({
+      transferVisible: !this.state.transferVisible
+    })
+  }
+
+  transferSubmit() {
+    // setTransferVisible
+  }
+
+  getTodoList() {
+    //获取待办事项
+    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+      params: {
+        token: this.state.token,
+        keyword: this.state.keyword,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
 
         } else {
           this.setState({
@@ -153,90 +164,52 @@ class TodoList extends Component {
       })
   }
 
-  editProduct() {
+
+  createTodoList() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    var reg = /\s/;
-    // reg.exec(text)==null
-    if (data.number == undefined || data.produceCoding == undefined
-      || data.putaway == undefined || data.specification == undefined || data.produceType == undefined || data.produceName == undefined
-      || reg.exec(data.number) != null || reg.exec(data.produceCoding) != null || reg.exec(data.putaway) != null || reg.exec(data.specification) != null
-      || reg.exec(data.produceType) != null || reg.exec(data.produceName) != null
-    ) {
-      message.error('请填写必填选项并不要输入空格');
-    } else {
-      axios({
-        method: "post",
-        url: `${base.url}/produce/update`,
-        params: {
-          token: this.state.token,
-        },
-        data: qs.stringify({
-          id: this.state.record.id,
-          number: data.number,
-          price: data.price,
-          produceCoding: data.produceCoding,
-          produceIntroduce: data.produceIntroduce,
-          produceName: data.produceName,
-          produceType: data.produceType,
-          putaway: data.putaway,
-          specification: data.specification,
-        })
-      }).then((res) => {
-        if (res.data.code === "ERROR") {
-          message.error('请重试');
-          this.onCancel()
-        } else {
-          message.success(res.data.message);
-          this.onCancel()
-
-          this.getProduct()
-        }
-      }).catch((error) => {
-        console.log(error);
-      })
-    }
-  }
-
-
-  createProduct() {
-    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    var reg = /\s/;
-    // reg.exec(text)==null
     console.log(data);
-    if (data.number == undefined || data.produceCoding == undefined
-      || data.putaway == undefined || data.specification == undefined || data.produceType == undefined || data.produceName == undefined
-      || reg.exec(data.number) != null || reg.exec(data.produceCoding) != null || reg.exec(data.putaway) != null || reg.exec(data.specification) != null
-      || reg.exec(data.produceType) != null || reg.exec(data.produceName) != null
+    console.log(this.state.submissionTime);
+    var reg = /\s/;
+    if (
+      0 > 1
+      // data.nextTalkTime == undefined || data.clientLevel == undefined
+      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
+      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
+
     ) {
       message.error('请填写必填选项并不要输入空格');
     } else {
       axios({
         method: "post",
-        url: `${base.url}/produce/create`,
+        url: `${base.url}/commercialOpportunity/create`,
         params: {
           token: this.state.token,
         },
         // .replace(/\s+/g,'')
         data: qs.stringify({
-          number: data.number,
-          price: data.price,
-          produceCoding: data.produceCoding,
-          produceIntroduce: data.produceIntroduce,
-          produceName: data.produceName,
-          produceType: data.produceType,
-          putaway: data.putaway,
-          specification: data.specification,
+          clientId: data.clientId,
+          commercialPrice: data.commercialPrice,
+          commercialStage: data.commercialStage,
+          commercialStatusGroup: data.commercialStatusGroup,
+          content: data.content,
+          // id: data.id,
+          discount: data.discount,
+          name: data.name,
+          produceIds: data.produceIds,
+          submissionTime: this.state.submissionTime,
+          totalPrice: data.totalPrice,
         })
       }).then((res) => {
         console.log(res);
         if (res.data.code === "ERROR") {
           message.error('请重试');
-          this.onCancel()
+          // this.onCancel()
         } else {
           message.success(res.data.message);
-          this.onCancel()
+          // this.onCancel()
 
-          this.getProduct()
+          this.getTodoListt()
         }
       }).catch((error) => {
         console.log(error);
@@ -247,27 +220,40 @@ class TodoList extends Component {
 
 
 
-  formRef = React.createRef()   //调用Form方法
+  formRef = React.createRef()
   submit() {
-    console.log(this.formRef.current);
+
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    if (this.state.isCreate) {
-      this.createProduct()
-    } else {
-      this.editProduct()
-    }
-  }
+    this.createTodoList()
 
+  }
 
 
   onSearch(val) {
     console.log(val);
-    this.setState({
-      keyWord: val
-    }, () => {
-      this.getProduct()
+    console.log(typeof (val));
+    //获取待办事项
+    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+      params: {
+        token: this.state.token,
+        keyword: val
+      },
+      // data: qs.stringify({
+      // })
     })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
+
+        }
+        else {
+          this.setState({
+            tableArr: res.data.data.data,
+            pagination: res.data.data.pagination
+          })
+        }
+      })
   }
 
 
@@ -288,7 +274,7 @@ class TodoList extends Component {
       currentPage: page,
       limit: pageSize
     }, () => {      //setstate异步回调箭头函数
-      this.getProduct()
+      this.getTodoList()
     })
 
 
@@ -304,34 +290,23 @@ class TodoList extends Component {
       if (this.state.isCreate) {
         this.formRef.current.resetFields();
       } else {
+
         this.formRef.current.setFieldsValue({
-          produceName: this.state.record.produceName,
-          produceType: this.state.record.produceType,
-          price: this.state.record.price,
-          produceCoding: this.state.record.produceCoding,
-          number: this.state.record.number,
-          createTime: this.state.record.createTime,
-          employeeCreate: this.state.record.employeeCreate,
-          employeeResponsible: this.state.record.employeeResponsible,
-          produceIntroduce: this.state.record.produceIntroduce,
-          putaway: this.state.record.putaway,
-          specification: this.state.record.specification,
-          updatetime: this.state.record.updatetime
+          clientId: this.state.record.clientId,
+          commercialPrice: this.state.record.commercialPrice,
+          commercialStage: this.state.record.commercialStage,
+          commercialStatusGroup: this.state.record.commercialStatusGroup,
+          content: this.state.record.content,
+          discount: this.state.record.discount,
+          name: this.state.record.name,
+          produceIds: this.state.record.produceIds,
+          submissionTime: this.state.record.submissionTime,
+          totalPrice: this.state.record.totalPrice,
+          // record: this.state.record.record,
         })
       }
     }, 100);
-
   };
-  setEditProVisible() {
-    this.setState({
-      editProVisible: !this.state.visible
-    })
-  };
-  setEditProCancel() {
-    this.setState({
-      editProVisible: false
-    })
-  }
 
   onCancel() {
     this.setState({
@@ -352,6 +327,7 @@ class TodoList extends Component {
 
   start = () => {
     this.setState({ loading: true });
+    // ajax request after empty completing
     setTimeout(() => {
       this.setState({
         selectedRowKeys: [],
@@ -375,17 +351,18 @@ class TodoList extends Component {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
-          <span style={{ fontSize: '18px' }}>产品管理</span>
-          <Search placeholder='请输入产品名称' style={{ width: '200px' }} onSearch={this.onSearch}
+          <span style={{ fontSize: '18px' }}>待办事项管理</span>
+          <Search placeholder='请输入待办事项名称' style={{ width: '200px' }} onSearch={this.onSearch}
             allowClear
           ></Search>
           <div>
             <Button type='primary'
               onClick={this.setVisible}
-            >新建产品</Button>
+            >新建待办事项</Button>
             <Modal
+              bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
-              title={this.state.isCreate ? '新建产品' : '编辑产品'}
+              title={this.state.isCreate ? '新建待办事项' : '编辑待办事项'}
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
@@ -399,379 +376,332 @@ class TodoList extends Component {
                 initialValues={{
                   modifier: 'public',
                 }}
-                //绑定
                 ref={this.formRef}
               >
                 <div>
                   <Form.Item
-                    name="produceName"
-                    label="产品名称"
+                    name="clientId"
+                    label="客户名称"   //客户名称
                     rules={[
                       {
                         required: true,
-                        message: '产品名称不能为空',
+                        message: '客户姓名不能为空',
                       },
                     ]}
                   >
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    style={{ width: 200 }}
-                    name="produceType"
-                    label="产品类别"
-                    rules={[
-                      {
-                        required: true,
-                        message: '',
-                      },
-                    ]}
+                    name="commercialPrice"
+                    label="待办事项金额"
                   >
-                    <Input  ></Input>
+                    <Input></Input>
                   </Form.Item>
                 </div>
 
 
                 <div>
                   <Form.Item
-                    name="produceCoding"
-                    label="产品编码"
+                    name="commercialStage"
+                    label="待办事项阶段"
                     rules={[
                       {
                         required: true,
-                        message: '产品编码不能为空',
-                      },
+                        message: '待办事项阶段不能为空'
+                      }
                     ]}
                   >
-                    <Input />
+                    {/* <Input /> */}
+                    <Select style={{ width: 200 }}>
+                      <Option value='赢单'>赢单</Option>
+                      <Option value='输单'>输单</Option>
+                      <Option value='无效'>无效</Option>
+                    </Select>
                   </Form.Item>
                   <Form.Item
-                    name="putaway"
-                    label="是否上架"
-                    rules={[
-                      {
-                        required: true,
-                        message: '',
-                      },
-                    ]}
+                    name="commercialStatusGroup"
+                    label="待办事项状态组"
+                  // rules={[
+                  //   required: true,
+                  //   message:'待办事项状态组不能为空'
+                  // ]}
                   >
-                    <Select style={{ width: 200 }} >
-                      <Option value='上架'>上架</Option>
-                      <Option value='下架'>下架</Option>
+                    <Select>
+                      <Option value='服务产品线'>服务产品线</Option>
+                      <Option value='数据监测'>数据监测</Option>
+                      <Option value='服务产品线'>服务产品线</Option>
                     </Select>
                   </Form.Item>
                 </div>
 
                 <div>
                   <Form.Item
-                    style={{ width: 184 }}
-                    name="specification"
-                    label="产品规格"
-                    rules={[
-                      {
-                        required: true,
-                        message: '',
-                      },
-                    ]}
+                    name="content"
+                    label="备注"
+
                   >
-                    <Select  >
-                      <Option value='大'>大</Option>
-                      <Option value='中'>中</Option>
-                      <Option value='小'>小</Option>
-                    </Select>
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="discount"
+                    label="折扣"
+                  >
+                    <Input type='number' />
                   </Form.Item>
 
-                  <Form.Item
-                    style={{ width: 200 }}
-                    name="price"
-                    label="价格"
-                  >
-                    <Input value='0' />
-                  </Form.Item>
                 </div>
 
 
                 <div>
                   <Form.Item
-                    name="number"
-                    label="库存数量"
-                    rules={[
-                      {
-                        required: true,
-                        message: '库存数量不能为空',
-                      },
-                    ]}
+                    name="name"
+                    label="待办事项名称"
+
                   >
                     <Input />
                   </Form.Item>
-
                   <Form.Item
-                    style={{ width: 200 }}
-                    name="produceIntroduce"
-                    label="产品介绍"
+                    name="produceIds"
+                    label="关联产品ID"
                   >
                     <Input />
                   </Form.Item>
 
+
+                </div>
+                <div>
+                  <Form.Item
+                    name="submissionTime"
+                    label="预计成交时间"
+                  // rules={[
+                  //   required: true,
+                  //   message:'预计成交时间不能为空'
+                  //   ]}
+                  >
+                    <DatePicker onChange={this.onChangeDate} />
+                  </Form.Item>
+                  <Form.Item
+                    name="phone"
+                    label="手机号"
+
+                  >
+                    <Input />
+                  </Form.Item>
+
+                </div>
+                <div>
+                  <Form.Item
+                    name="totalPrice"
+                    label="预计总金额"
+                  >
+                    <Input />
+                  </Form.Item>
                 </div>
 
               </Form>
             </Modal>
           </div>
-        </div>
+        </div >
 
         <div>
           <div style={{ height: 20 }}
             onClick={() => {
-              console.log(this.state.tableArr);
+              console.log(this.state.employeeArr)
             }}
           >
+
           </div  >
 
-          <div style={{ position: 'relative' }}>
-            <div>
+          <div >
+            <div style={{ position: 'relative' }}>
               <Table
+
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: 300 }}
+                scroll={{ x: 1500, y: '26vw' }}
                 pagination={{ pageSize: this.state.pagination.limit }}
-
-                //点击行显示表格行信息
+                defaultCurrent={1}
                 onRow={(record) => ({
                   onClick: () => {
                     console.log(record);
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      drawerTitle: record.produceName
+                      name: record.name
+
                     })
                   },
                 })}
 
-              />
+              ></Table>
+              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+                <ConfigProvider locale={zhCN}>
+                  <Pagination showQuickJumper
+                    defaultPageSize={10}
+                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
+                </ConfigProvider>
+              </div>
               <Drawer
-                title={this.state.drawerTitle}
+                mask={false}
+                title={this.state.name}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}
                 visible={this.state.drawerVisible}
                 getContainer={false}
-                width={'50vw'}
+                width={'74vw'}
                 destroyOnClose={true}
-
-
               >
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
+                    <Button
+                      type='primary'
+                      size={'small'}
+                      onClick={() => {
+                        this.setTransferVisible()
+                      }}
+                    >转移</Button>
+
+                    <Modal
+                      visible={this.state.transferVisible}
+                      title="转移待办事项"
+                      // okText="保存"
+                      // cancelText="取消"
+                      // onOk={this.transferSubmit}
+                      footer={[
+                        <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
+                        <Button onClick={this.setTransferVisible} type='default'>取消</Button>
+                      ]}
+                    >
+                      <div>
+                        变更负责人
+                        <div>
+                          <span>+点击选择</span>
+                          <Select
+                            showSearch
+                            style={{ width: 200 }}
+                            mode='multiple'
+                            optionLabelProp="label"
+                          >
+                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
+                              return (<Option value={index} >
+                                <Checkbox>
+                                  <div>
+                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
+                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
+                                  </div>
+
+                                </Checkbox>
+                              </Option>)
+                            }) : ''}
+                          </Select>
+                        </div>
+                      </div>
+
+                    </Modal>
                     <Button type='primary' size={'small'}
+                      style={{ marginLeft: '10px' }}
                       onClick={() => {
                         this.setVisible()
                         this.setState({
                           isCreate: false,
-                          formTitle: '新建产品'
+                          formTitle: '新建待办事项'
 
                         })
-                        // this.setEditProVisible()
-                        // console.log(this.formRef.current);
                       }}
 
                     >编辑</Button>
 
-                    <Modal
-                      visible={this.state.editProVisible}
-                      title="编辑产品"
-                      okText="确认"
-                      cancelText="取消"
-                      onCancel={this.setEditProCancel}
-                      onOk={this.editProSubmit}
 
-                    >
-
-                      <Form
-                        layout="vertical"
-                        name="form_in_modal"
-                        initialValues={{
-                          modifier: 'public',
-                        }}
-                        //绑定
-                        ref={this.formRef}
-                      >
-                        <div>
-                          <Form.Item
-                            name="produceName"
-                            label="产品名称"
-                            rules={[
-                              {
-                                required: true,
-                                message: '产品名称不能为空',
-                              },
-                            ]}
-                          >
-                            <Input />
-                          </Form.Item>
-                          <Form.Item
-                            style={{ width: 200 }}
-                            name="produceType"
-                            label="产品类别"
-                            rules={[
-                              {
-                                required: true,
-                                message: '',
-                              },
-                            ]}
-                          >
-                            <Input  ></Input>
-                          </Form.Item>
-                        </div>
-
-
-                        <div>
-                          <Form.Item
-                            name="produceCoding"
-                            label="产品编码"
-                            rules={[
-                              {
-                                required: true,
-                                message: '产品编码不能为空',
-                              },
-                            ]}
-                          >
-                            <Input />
-                          </Form.Item>
-                          <Form.Item
-                            name="putaway"
-                            label="是否上架"
-                            rules={[
-                              {
-                                required: true,
-                                message: '',
-                              },
-                            ]}
-                          >
-                            <Select style={{ width: 200 }} >
-                              <Option value='上架'>上架</Option>
-                              <Option value='下架'>下架</Option>
-                            </Select>
-                          </Form.Item>
-                        </div>
-
-                        <div>
-                          <Form.Item
-                            style={{ width: 184 }}
-                            name="specification"
-                            label="产品规格"
-                            rules={[
-                              {
-                                required: true,
-                                message: '',
-                              },
-                            ]}
-                          >
-                            <Select  >
-                              <Option value='大'>大</Option>
-                              <Option value='中'>中</Option>
-                              <Option value='小'>小</Option>
-                            </Select>
-                          </Form.Item>
-
-                          <Form.Item
-                            style={{ width: 200 }}
-                            name="price"
-                            label="价格"
-                          >
-                            <Input value='0' />
-                          </Form.Item>
-                        </div>
-
-
-                        <div>
-                          <Form.Item
-                            name="number"
-                            label="库存数量"
-                            rules={[
-                              {
-                                required: true,
-                                message: '库存数量不能为空',
-                              },
-                            ]}
-                          >
-                            <Input />
-                          </Form.Item>
-
-                          <Form.Item
-                            style={{ width: 200 }}
-                            name="produceIntroduce"
-                            label="产品介绍"
-                          >
-                            <Input />
-                          </Form.Item>
-
-                        </div>
-
-                      </Form>
-                    </Modal>
-
-
-                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft">
-                      <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
-                    </Dropdown>
+                    {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
+                    <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: '确认删除',
+                          icon: <ExclamationCircleOutlined />,
+                          content: '确认删除此待办事项么？',
+                          okText: '是',
+                          okType: '',
+                          cancelText: '否',
+                          onOk: () => {
+                            // this.handleOk(id)//确认按钮的回调方法，在下面
+                            message.success('已成功刪除')
+                          }
+                          ,
+                          onCancel() {
+                            message.warning('已取消刪除')
+                          },
+                        });
+                      }}
+                    >刪除</Button>
+                    {/* </Dropdown> */}
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "30vw", padding: '0 30px 30px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>产品类别</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.produceType}</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>客户名称</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.clientName  }</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>产品单位</span>
-                      <span style={{ fontSize: 14 }}>只/辆/千克</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>待办事项金额</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.totalPrice}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                      <span style={{ fontSize: 12, color: '#777' }}>待办事项状态</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.commercialStage}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>产品价格</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.price ? this.state.record.price : 'none'}</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsible}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>产品编码</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.produceCoding}</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>创建时间</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.createTime}</span>
                     </div>
 
                   </div>
+
 
                   <div>
                     <Tabs defaultActiveKey="1" >
                       <TabPane tab="基本信息" key="1">
                         <div>
-
-                          <div style={{ marginBottom: '20px' }}>
+                          <div style={{ marginBottom: '10px' }}>
                             <span></span>
-                            <span>基本信息</span>
+                            <span style={{ fontSize: 13 }}>基本信息</span>
                           </div>
 
                           <div className='pro-info'>
                             <div>
                               <div>
-                                <div>产品名称</div>
-                                <div>{this.state.record.produceName}</div>
+                                <div>待办事项名称</div>
+                                <div>{this.state.record.clientName}</div>
                               </div>
                               <div>
-                                <div>产品编码</div>
-                                <div>{this.state.record.produceCoding}</div>
+                                <div>电话</div>
+                                <div>{this.state.record.phone}</div>
                               </div>
                               <div>
-                                <div>规格</div>
-                                <div>{this.state.record.specification}</div>
+                                <div>待办事项来源</div>
+                                <div>{this.state.record.clueFrom}</div>
                               </div>
                               <div>
-                                <div>库存数量</div>
-                                <div>{this.state.record.number}</div>
+                                <div>备注</div>
+                                <div>{this.state.record.content}</div>
+                              </div>
+                              <div>
+                                <div>下次联系时间</div>
+                                <div>{this.state.record.nextTalkTime}</div>
+
                               </div>
                               <div>
                                 <div>创建人</div>
-                                <div>{this.state.record.employeeCreate}</div>
+                                <div>{this.state.record.employeeCreateId}</div>
                               </div>
                               <div>
                                 <div>创建时间</div>
@@ -781,24 +711,24 @@ class TodoList extends Component {
 
                             <div>
                               <div>
-                                <div>产品类别</div>
-                                <div>{this.state.record.produceType}</div>
+                                <div>待办事项类型</div>
+                                <div>{this.state.record.clientType}</div>
                               </div>
                               <div>
-                                <div>是否上架</div>
-                                <div>{this.state.record.putaway}</div>
+                                <div>待办事项等级</div>
+                                <div>{this.state.record.clientLevel}</div>
                               </div>
                               <div>
-                                <div>价格</div>
-                                <div>{this.state.record.price}</div>
+                                <div>部门ID</div>
+                                <div>{this.state.record.departmentId}</div>
                               </div>
                               <div>
-                                <div>产品介绍</div>
-                                <div>{this.state.record.produceIntroduce}</div>
+                                <div>公司</div>
+                                <div>{this.state.record.company}</div>
                               </div>
                               <div>
                                 <div>更新时间</div>
-                                <div>{this.state.record.updatetime}</div>
+                                <div>{this.state.record.updateTime}</div>
                               </div>
                               <div>
                                 <div>负责人</div>
@@ -812,25 +742,82 @@ class TodoList extends Component {
                           </div>
                         </div>
                       </TabPane>
-                      <TabPane tab="附件" key="2">
+                      <TabPane tab="跟进记录" key="2">
+
+                        <div style={{ padding: '0 0 20px 0' }}>
+                          <Input style={{ height: 100 }}></Input>
+                        </div>
+                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            记录类型
+                            &nbsp;
+                            &nbsp;
+                            <Select style={{ width: 200 }}>
+                              <Option value='上门拜访'>上门拜访</Option>
+                              <Option value='电话邀约'>电话邀约</Option>
+                              <Option value='线下单杀'>线下单杀</Option>
+                            </Select>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            下次联系时间
+                            &nbsp;
+                            &nbsp;
+                            <ConfigProvider locale={zhCN}>
+                              <Space direction="vertical" style={{ marginRight: "20px" }}>
+                                <DatePicker onChange={this.onChangeDate} />
+                              </Space>,
+                            </ConfigProvider>
+                            <Checkbox style={{ fontSize: 12 }}>
+                              添加到日常提醒
+                            </Checkbox>
+                          </div>
+                          <div>
+                            <Button size={'small'}>发布</Button>
+                          </div>
+                        </div>
+                        <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
+                          <Tabs defaultActiveKey="1" >
+                            <TabPane tab="跟进记录" key="1">
+                              1
+                            </TabPane>
+                            <TabPane tab="日志" key="2">
+                              2
+                            </TabPane>
+                            <TabPane tab="审批" key="3">
+                              3
+                            </TabPane>
+                            <TabPane tab="任务" key="4">
+                              4
+                            </TabPane>
+                            <TabPane tab="日程" key="5">
+                              5
+                            </TabPane>
+                          </Tabs>
+                        </div>
                       </TabPane>
-                      <TabPane tab="操作记录" key="3">
+
+
+                      <TabPane tab="联系人" key="3">
                       </TabPane>
+                      <TabPane tab="合同" key="4">
+                      </TabPane>
+                      <TabPane tab="产品" key="5">
+                      </TabPane>
+                      <TabPane tab="相关团队" key="6">
+                      </TabPane>
+                      <TabPane tab="附件" key="7">
+                      </TabPane>
+                      <TabPane tab="操作记录" key="8">
+                      </TabPane>
+                     
                     </Tabs>
                   </div>
 
                 </div>
 
-
               </Drawer>
             </div>
-            <div style={{ position: 'absolute', bottom: '-374px', right: '0px' }}>
-              <ConfigProvider locale={zhCN}>
-                <Pagination showQuickJumper
-                  defaultPageSize={10}
-                  showTotal={total => `共 ${total} 项`} defaultCurrent={1} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
-              </ConfigProvider>
-            </div>
+
 
           </div>
         </div>

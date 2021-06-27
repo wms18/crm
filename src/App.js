@@ -3,7 +3,7 @@ import React from 'react'
 import BackstageMgt from './pages/backstageMgt'
 import CustomerMgt from './pages/customerMgt';
 import TestTable from './test'
-
+import './App.css'
 
 import Top from './PublicComponents/top'
 import PersonalInfo from './PublicComponents/personInfo';

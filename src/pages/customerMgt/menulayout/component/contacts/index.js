@@ -83,6 +83,25 @@ class Contacts extends Component {
   }
 
 
+
+  createFollowupRecord(){
+    axios.post(`${base.url}/follow/add`,{
+      params:{
+        token:this.state.token
+      },
+      data:qs.stringify({
+        businessId:this.state.record.id,
+        businessTypeId:1,
+        followRecord:this.state.followRecord,
+        nextTime:this.state.nextTalkTime,
+        recordType:'上门拜访',
+        remind:0
+
+      })
+
+    })
+  }
+
   onChangeDate(date, dateString) {
     console.log(date, dateString);
   }
@@ -214,7 +233,7 @@ class Contacts extends Component {
         },
         // .replace(/\s+/g,'')
         data: qs.stringify({
-          clientId : data.clientId ,
+          clientId: data.clientId,
           content: data.content,
           decision: data.decision,
           detailAddress: data.detailAddress,
@@ -318,12 +337,12 @@ class Contacts extends Component {
       } else {
 
         this.formRef.current.setFieldsValue({
-          certificate : this.state.record.certificate ,
+          certificate: this.state.record.certificate,
           certificateId: this.state.record.certificateId,
-          clientFrom : this.state.record.clientFrom ,
+          clientFrom: this.state.record.clientFrom,
           clueFrom: this.state.record.clueFrom,
-          clientLevel : this.state.record.clientLevel ,
-          clientName : this.state.record.clientName ,
+          clientLevel: this.state.record.clientLevel,
+          clientName: this.state.record.clientName,
           content: this.state.record.content,
           detailAddress: this.state.record.detailAddress,
           dingtalk: this.state.record.dingtalk,
@@ -331,7 +350,7 @@ class Contacts extends Component {
           employeeResponsibleId: this.state.record.employeeResponsibleId,
           nextTalkTime: this.state.record.nextTalkTime,
           nextTalkTime: this.state.record.nextTalkTime,
-          phone : this.state.record.phone ,
+          phone: this.state.record.phone,
           // record: this.state.record.record,
         })
       }
@@ -391,7 +410,7 @@ class Contacts extends Component {
             >新建联系人</Button>
             <Modal
               visible={this.state.visible}
-              title={this.state.isCreate?'新建联系人':'编辑联系人'}
+              title={this.state.isCreate ? '新建联系人' : '编辑联系人'}
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
@@ -433,12 +452,12 @@ class Contacts extends Component {
                   <Form.Item
                     name="decision"
                     label="是否未关键决策人"
-                   
+
                   >
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="detailAddress" 
+                    name="detailAddress"
                     label="详细地址"
                   >
                     <Input />
@@ -449,7 +468,7 @@ class Contacts extends Component {
                   <Form.Item
                     name="email"
                     label="邮箱"
-                    
+
                   >
                     <Input />
                   </Form.Item>
@@ -490,7 +509,7 @@ class Contacts extends Component {
                   <Form.Item
                     name="phone"
                     label="手机号"
-                  
+
                   >
                     <Input />
                   </Form.Item>
@@ -540,7 +559,7 @@ class Contacts extends Component {
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      drawerTitle: record.clientFrom
+                      linkmanName: record.linkmanName
 
                     })
                   },
@@ -555,7 +574,8 @@ class Contacts extends Component {
                 </ConfigProvider>
               </div>
               <Drawer
-                title={this.state.drawerTitle}
+                mask={false}
+                title={this.state.linkmanName}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}
@@ -613,6 +633,7 @@ class Contacts extends Component {
 
                     </Modal>
                     <Button type='primary' size={'small'}
+                      style={{ marginLeft: '10px' }}
                       onClick={() => {
                         this.setVisible()
                         this.setState({
@@ -625,12 +646,31 @@ class Contacts extends Component {
                     >编辑</Button>
 
 
-                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
-                      <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
-                    </Dropdown>
+                    {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
+                    <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: '确认删除',
+                          icon: <ExclamationCircleOutlined />,
+                          content: '确认删除此联系人么？',
+                          okText: '是',
+                          okType: '',
+                          cancelText: '否',
+                          onOk: () => {
+                            // this.handleOk(id)//确认按钮的回调方法，在下面
+                            message.success('已成功刪除')
+                          }
+                          ,
+                          onCancel() {
+                            message.warning('已取消刪除')
+                          },
+                        });
+                      }}
+                    >刪除</Button>
+                    {/* </Dropdown> */}
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px',alignItems:'baseline' }}>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>联系人级别</span>
@@ -684,7 +724,7 @@ class Contacts extends Component {
                               <div>
                                 <div>下次联系时间</div>
                                 <div>{this.state.record.nextTalkTime}</div>
-                                
+
                               </div>
                               <div>
                                 <div>创建人</div>

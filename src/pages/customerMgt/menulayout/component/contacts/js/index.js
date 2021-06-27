@@ -5,7 +5,6 @@ const Data = {
       title: '联系人名称',
       dataIndex: 'linkmanName',
       key: 'linkmanName',
-      fixed: 'left',
       sorter: {
         compare: (a, b) => a.linkmanName - b.linkmanName,
         multiple: 3,
