@@ -1,12 +1,24 @@
 import {ConfigProvider, Input, Space, Table,Pagination } from "antd";
 import zhCN from "antd/lib/locale/zh_CN";
-import React, {useState} from "react";
-
+import React, {useState,useEffect} from "react";
+import axios from "axios";
+import base from "../../../axios/axios";
 function LinkBusiness() {
     let arr = ['客户', '联系人', '商机', '合同']
+    let token  = window.localStorage.getItem('token')
     let [activeIndex1, setActiveIndex1] = useState(0)  //关联业务
     const {Search} = Input;
     const onSearch = value => console.log(value);
+    useEffect(()=>{
+        axios({
+            method:'get',
+            url:base.url+'/schedule/getBusinessType?token='+token
+        }).then((response)=>{
+            console.log(response)
+        }).catch((error)=>{
+            alert(error)
+        })
+    })
     //关联业务模块 客户表格
     const columns = [
         {

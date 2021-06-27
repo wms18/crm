@@ -5,6 +5,8 @@ import Right from "./right/right";
 import './menu-left.css'
 import SchedulePage from "../calendar/calendar";
 import Task from "../task/task";
+import Notice from "../notice/notice";
+import Mail from "../mail/mail";
 import {
     DesktopOutlined,
     CarryOutOutlined,
@@ -53,6 +55,8 @@ function MenuLeft() {
                 {/*<Middle/>*/}
                 {/*<SchedulePage></SchedulePage>*/}
                 <Task></Task>
+                {/*<Notice></Notice>*/}
+                {/*<Mail></Mail>*/}
             </div>
 
 

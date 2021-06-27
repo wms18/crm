@@ -24,14 +24,19 @@ function Task() {
     let [visibleMan, setVisibleMan] = useState(false)    //参与人
     let [taskPerson, setTaskPerson] = useState()
     let [taskCheckBox, setTaskCheckBox] = useState(false)
-    let [taskAllLabel, setTaskAllLabel] = useState([])   //标签列表
+    let [taskAllLabel, setTaskAllLabel] = useState([])   //所有标签
+    let [taskAllLabelName, setTaskAllLabelName] = useState([])   //该任务标签
     let [taskList, setTaskList] = useState([]) //任务列表
     let [taskId,setTaskId] = useState('')   //任务id
     let [charge,setCharge] = useState([])   //负责人
+    let [taskAddLabels,setTaskAddLabels] = useState('') //任务添加标签
+    let [labelId,setLabelId] = useState([]) //任务标签id
+    let newId
+    let newArr =[]
     const {Search} = Input;
     const {SHOW_PARENT} = TreeSelect;
 
-    //标签
+    //所有标签
     let allLabel = () => {
         axios({
             method: 'get',
@@ -49,13 +54,31 @@ function Task() {
     }
     const {Option} = Select;
     const children = [];
+
     for (let i = 0; i < taskAllLabel.length; i++) {
-        children.push(<Option key={i}>{taskAllLabel[i].labelName}</Option>);
+        children.push(<Option key={i} >{taskAllLabel[i].labelName}</Option>);
+    }
+    //添加标签
+    let handleChangeLabel = (value) => {
+        console.log(Number(value.splice(-1))+1);
+        axios({
+            method:'post',
+            url:base.url+'/task/add-label',
+            params:{
+                token:token,
+                id:taskId,
+                labelId:Number(value.splice(-1))+1,
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code === 'ERROR'){
+                alert(response.data.message)
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
     }
 
-    let handleChangeLabel = (value) => {
-        console.log(`selected ${value}`);
-    }
     const contentLabel = (
         <div style={{width: '300px', height: '200px'}}>
             <Select
@@ -70,9 +93,35 @@ function Task() {
         </div>
     );
     //删除标签
-    let deleteTaskLabel = () => {
-
+    let confirmLabel=(id)=> {
+        console.log(id);
+        axios({
+            method:'post',
+            url:base.url+'/task/delete-label',
+            params:{
+                token:token,
+                id:taskId,
+                labelId:id,
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code === 'ERROR'){
+                alert(response.data.message)
+                return
+            }else {
+                allLabels()
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+        message.success('确认删除');
     }
+
+    let cancelLabel=(e)=> {
+        console.log(e);
+        message.error('取消删除');
+    }
+
     //截止日期
     let onPanelChange = (value, mode) => {
         console.log(value, mode);
@@ -190,7 +239,7 @@ function Task() {
            method:'get',
            url:base.url+'/task/task-information?token='+token+'&id='+id,
        }).then((response)=>{
-           console.log(response)
+           // console.log(response)
            if (response.data.code === 'ERROR'){
                alert(response.data.message)
            }else {
@@ -315,17 +364,18 @@ function Task() {
             alert(error)
         })
     }
-    //该任务的所有标签
+    //该任务标签
     let allLabels = () =>{
         axios({
-            method:'post',
-            url:base.url+'/task/task-label',
-            params:{
-                token:token,
-                id:taskId
-            }
+            method:'get',
+            url:base.url+'/task/task-label?token='+token+'&id='+taskId,
         }).then((response)=>{
-            console.log(response)
+            // console.log(response)
+            if (response.data.code === 'ERROR'){
+                alert(response.data.message)
+            }else{
+                setTaskAllLabelName(response.data.data)
+            }
         }).catch((error)=>{
             alert(error)
         })
@@ -333,18 +383,11 @@ function Task() {
     useEffect(() => {
         myTask()
         allLabels()
+        allLabel()
     }, [n])
     //删除任务
     let confirm=(e)=> {
         console.log(e);
-        message.success('删除成功');
-    }
-
-    let cancel=(e)=> {
-        console.log(e);
-        message.error('取消删除');
-    }
-    let taskDelete = () =>{
         axios({
             method:'post',
             url:base.url+'/task/delete-task',
@@ -356,8 +399,17 @@ function Task() {
             console.log(response)
             if (response.data.code === 'ERROR'){
                 alert(response.data.message)
+                return
+            }else {
+                myTask()
+                message.success('删除成功');
             }
         })
+    }
+
+    let cancel=(e)=> {
+        console.log(e);
+        message.error('取消删除');
     }
     return (
         <div>
@@ -449,7 +501,7 @@ function Task() {
                                     okText="确定"
                                     cancelText="取消"
                                 >
-                                    <Button style={{margin: '0 20px'}} onClick={taskDelete}>删除</Button>
+                                    <Button style={{margin: '0 20px'}}>删除</Button>
                                 </Popconfirm>
 
                             </div>}
@@ -477,15 +529,25 @@ function Task() {
                                 {/*标签*/}
                                 <div className={'taskAddLabel'}>
                                     <div>
-                                        {taskAllLabel.map((item, index) => {
+                                        {taskAllLabelName.map((item, index) => {
                                             return (
-                                                <span className={'taskLabelName'} onClick={deleteTaskLabel}
-                                                      key={index}>{item.labelName}</span>
+                                                <span className={item === ''?'hidden':'taskLabelName'}
+                                                      key={index}>
+                                                    <Popconfirm
+                                                        title="确定删除吗?"
+                                                        onConfirm={()=>{confirmLabel(item.id)}}
+                                                        onCancel={cancelLabel}
+                                                        okText="确定"
+                                                        cancelText="取消"
+                                                    >
+                                                        {item.labelName}
+                                                </Popconfirm>
+                                                </span>
                                             )
                                         })}
                                         <span className={'taskAddLabel1'}>
-                                            <Popover content={contentLabel} title="选择标签" trigger="click">
-                                                <span onClick={allLabel}>+标签</span>
+                                            <Popover content={contentLabel} title="选择标签"  trigger="click">
+                                                <span >+标签</span>
                                             </Popover>
                                         </span>
                                     </div>

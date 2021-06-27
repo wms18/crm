@@ -347,7 +347,7 @@ function SchedulePage() {
                                         <button className={'businessBtn'}>新建</button>
                                     </div>
                                 </div>
-                                <div style={{width: '675px',height:'300px'}}>
+                                <div style={{width: '675px',height:'325px'}}>
                                     <ConfigProvider locale={zhCN}>
                                     <Table rowSelection={rowSelection} columns={columns} dataSource={data} scroll={{ x: 150, y: 200 }} />
                                     </ConfigProvider>
