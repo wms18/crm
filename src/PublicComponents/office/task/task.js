@@ -1,6 +1,6 @@
 import './task.css'
 import {ConfigProvider, Input, Space} from 'antd';
-import {Modal, Button, Drawer, Checkbox, Select, Popover, TreeSelect, Calendar,Popconfirm, message} from 'antd';
+import {Modal, Button, Drawer, Checkbox, Select, Popover, TreeSelect, Calendar, Popconfirm, message} from 'antd';
 import NewTask from "./newtask";
 import '../calendar/calendar.css'
 import LinkBusiness from "./link";
@@ -11,13 +11,14 @@ import 'moment/locale/zh-cn';
 import axios from "axios";
 import base from "../../../axios/axios";
 import qs from 'qs'
+
 moment.locale('zh-cn');
 
 function Task() {
     let n = 1
-    let arrPrior = ['全部','高','中','低','无']   //优先级
-    let taskArrPrior = ['高','中','低','无']   //优先级
-    let endTime = ['全部','今天到期','明天到期','一周到期','一个月到期']
+    let arrPrior = ['全部', '高', '中', '低', '无']   //优先级
+    let taskArrPrior = ['高', '中', '低', '无']   //优先级
+    let endTime = ['全部', '今天到期', '明天到期', '一周到期', '一个月到期']
     let token = window.localStorage.getItem('token')
     let [hidden, setHidden] = useState(true)//描述
     let [hiddenComment, setHiddenComment] = useState(true)//评论
@@ -27,15 +28,51 @@ function Task() {
     let [taskAllLabel, setTaskAllLabel] = useState([])   //所有标签
     let [taskAllLabelName, setTaskAllLabelName] = useState([])   //该任务标签
     let [taskList, setTaskList] = useState([]) //任务列表
-    let [taskId,setTaskId] = useState('')   //任务id
-    let [charge,setCharge] = useState([])   //负责人
-    let [taskAddLabels,setTaskAddLabels] = useState('') //任务添加标签
-    let [labelId,setLabelId] = useState([]) //任务标签id
-    let newId
-    let newArr =[]
+    let [taskId, setTaskId] = useState('')   //任务id
+    let [charge, setCharge] = useState([])   //负责人
+    let [taskAddLabels, setTaskAddLabels] = useState('') //任务添加标签
+    let [labelId, setLabelId] = useState([]) //任务标签id
+    let [timeOver,setTimeOver] = useState('')   //截止日期
     const {Search} = Input;
     const {SHOW_PARENT} = TreeSelect;
-
+    let [data, setData] = useState('')
+    let handleMessage = (value) => {
+        data = value
+        setData(data)
+        console.log("子传给父的值", value)
+        setIsModalVisible(false)
+        axios({
+            method: 'post',
+            url: base.url + '/task/add',
+            params: {
+                token: token,
+            },
+            data: {
+                beginTime: data.time[0],
+                content: data.textArea,
+                employeeIds: data.man,
+                endTime: data.time[1],
+                prior: data.prior,
+                taskName: data.taskItem,
+                business: {
+                    1: data.clientId,
+                    2: data.manId,
+                    3: data.businessId,
+                    // 4:data.contractId,
+                }
+            }
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+            } else {
+                alert('新建任务成功')
+                myTask()
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+    }
     //所有标签
     let allLabel = () => {
         axios({
@@ -56,25 +93,25 @@ function Task() {
     const children = [];
 
     for (let i = 0; i < taskAllLabel.length; i++) {
-        children.push(<Option key={i} >{taskAllLabel[i].labelName}</Option>);
+        children.push(<Option key={i}>{taskAllLabel[i].labelName}</Option>);
     }
     //添加标签
     let handleChangeLabel = (value) => {
-        console.log(Number(value.splice(-1))+1);
+        console.log(Number(value.splice(-1)) + 1);
         axios({
-            method:'post',
-            url:base.url+'/task/add-label',
-            params:{
-                token:token,
-                id:taskId,
-                labelId:Number(value.splice(-1))+1,
+            method: 'post',
+            url: base.url + '/task/add-label',
+            params: {
+                token: token,
+                id: taskId,
+                labelId: Number(value.splice(-1)) + 1,
             }
-        }).then((response)=>{
+        }).then((response) => {
             console.log(response)
-            if (response.data.code === 'ERROR'){
+            if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             }
-        }).catch((error)=>{
+        }).catch((error) => {
             alert(error)
         })
     }
@@ -93,44 +130,46 @@ function Task() {
         </div>
     );
     //删除标签
-    let confirmLabel=(id)=> {
+    let confirmLabel = (id) => {
         console.log(id);
-        axios({
-            method:'post',
-            url:base.url+'/task/delete-label',
-            params:{
-                token:token,
-                id:taskId,
-                labelId:id,
-            }
-        }).then((response)=>{
-            console.log(response)
-            if (response.data.code === 'ERROR'){
-                alert(response.data.message)
-                return
-            }else {
-                allLabels()
-            }
-        }).catch((error)=>{
-            alert(error)
-        })
+        // axios({
+        //     method: 'post',
+        //     url: base.url + '/task/delete-label',
+        //     params: {
+        //         token: token,
+        //         id: taskId,
+        //         labelId: id,
+        //     }
+        // }).then((response) => {
+        //     console.log(response)
+        //     if (response.data.code === 'ERROR') {
+        //         alert(response.data.message)
+        //         return
+        //     } else {
+        //         allLabels()
+        //     }
+        // }).catch((error) => {
+        //     alert(error)
+        // })
         message.success('确认删除');
     }
 
-    let cancelLabel=(e)=> {
+    let cancelLabel = (e) => {
         console.log(e);
         message.error('取消删除');
     }
 
     //截止日期
-    let onPanelChange = (value, mode) => {
-        console.log(value, mode);
+    let onPanelChange = (value) => {
+        console.log(value._d);
+        let d=value._d
+        setTimeOver(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() )
     }
     const contentDate = (
         <div>
             <div className="site-calendar-demo-card">
                 <ConfigProvider locale={zhCN}>
-                    <Calendar fullscreen={false} onPanelChange={onPanelChange}/>
+                    <Calendar fullscreen={false} onChange={onPanelChange}/>
                 </ConfigProvider>
             </div>
         </div>
@@ -198,33 +237,33 @@ function Task() {
     //抽屉表头优先级
     const content = (
         <div className={'class'}>
-            {taskArrPrior.map((item,index)=>{
+            {taskArrPrior.map((item, index) => {
                 return (
-                    <span key={index} onClick={()=>{
+                    <span key={index} onClick={() => {
                         taskArrPriorId(item)
                     }}>{item}</span>
                 )
             })}
         </div>
     );
-    let taskArrPriorId = (prior) =>{
+    let taskArrPriorId = (prior) => {
         // console.log(taskId)
         axios({
-            method:'post',
-            url:base.url+'/task/update-prior',
-            params:{
-                token:token,
-                prior:prior,
-                id:taskId,
+            method: 'post',
+            url: base.url + '/task/update-prior',
+            params: {
+                token: token,
+                prior: prior,
+                id: taskId,
             }
-        }).then((response)=>{
+        }).then((response) => {
             // console.log(response)
-            if (response.data.code === 'ERROR'){
+            if (response.data.code === 'ERROR') {
                 alert(response.data.message)
-            }else {
+            } else {
                 alert('修改优先级成功')
             }
-        }).catch((error)=>{
+        }).catch((error) => {
             alert(error)
         })
     }
@@ -235,19 +274,19 @@ function Task() {
         setTaskId(id)
         setVisible(true);
         // console.log(id)
-       axios({
-           method:'get',
-           url:base.url+'/task/task-information?token='+token+'&id='+id,
-       }).then((response)=>{
-           // console.log(response)
-           if (response.data.code === 'ERROR'){
-               alert(response.data.message)
-           }else {
-               setCharge(response.data.data.employeesName)
-           }
-       }).catch((error)=>{
-           alert(error)
-       })
+        axios({
+            method: 'get',
+            url: base.url + '/task/task-information?token=' + token + '&id=' + id,
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+            } else {
+                setCharge(response.data.data.employeesName)
+            }
+        }).catch((error) => {
+            alert(error)
+        })
     };
 
     const onClose = () => {
@@ -262,75 +301,75 @@ function Task() {
     //截止时间
     let handleChangeEnd = (value) => {
         console.log(`selected ${value}`);
-        if (value === '全部'){
+        if (value === '全部') {
             myTask()
-        }else {
+        } else {
             axios({
-                method:'get',
-                url:base.url+'/task/search?token='+token,
-                params:{
-                    endTime:value,
-                    prior:'',
+                method: 'get',
+                url: base.url + '/task/search?token=' + token,
+                params: {
+                    endTime: value,
+                    prior: '',
                 }
-            }).then((response)=>{
+            }).then((response) => {
                 console.log(response)
-                if (response.data.code === 'ERROR'){
+                if (response.data.code === 'ERROR') {
                     alert(response.data.message)
-                }else {
+                } else {
                     setTaskList(response.data.data)
                 }
-            }).catch((error)=>{
+            }).catch((error) => {
                 alert(error)
             })
         }
     }
     //优先级
-    let handleChangePrior = (value) =>{
+    let handleChangePrior = (value) => {
         // console.log(value);
-        if (value === '全部'){
+        if (value === '全部') {
             myTask()
-        }else {
+        } else {
             axios({
-                method:'get',
-                url:base.url+'/task/search?token='+token,
-                params:{
-                    prior:value,
-                    endTime:'',
+                method: 'get',
+                url: base.url + '/task/search?token=' + token,
+                params: {
+                    prior: value,
+                    endTime: '',
                 }
-            }).then((response)=>{
+            }).then((response) => {
                 // console.log(response)
-                if (response.data.code === 'ERROR'){
+                if (response.data.code === 'ERROR') {
                     alert(response.data.message)
-                }else {
+                } else {
                     setTaskList(response.data.data)
                 }
-            }).catch((error)=>{
+            }).catch((error) => {
                 alert(error)
             })
         }
     }
     //我创建的
-    let handleChangeCreat = (value) =>{
+    let handleChangeCreat = (value) => {
         console.log(`selected ${value}`);
     }
     //搜索任务
     const onSearch = value => {
         // console.log(value);
         axios({
-            method:'get',
-            url:base.url+"/task/search-name",
-            params:{
-                token:token,
-                taskName:value,
+            method: 'get',
+            url: base.url + "/task/search-name",
+            params: {
+                token: token,
+                taskName: value,
             }
-        }).then((response)=>{
+        }).then((response) => {
             console.log(response)
-            if (response.data.code === 'ERROR'){
+            if (response.data.code === 'ERROR') {
                 alert(response.data.message)
-            }else {
+            } else {
                 setTaskList(response.data.data)
             }
-        }).catch((error)=>{
+        }).catch((error) => {
             alert(error)
         })
     }
@@ -343,13 +382,14 @@ function Task() {
 
     const handleOk = () => {
         setIsModalVisible(false);
+
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
     };
     //我的任务
-    let myTask = () =>{
+    let myTask = () => {
         axios({
             mehtod: 'get',
             url: base.url + '/task/my-task?token=' + token,
@@ -365,49 +405,52 @@ function Task() {
         })
     }
     //该任务标签
-    let allLabels = () =>{
+    let allLabels = () => {
         axios({
-            method:'get',
-            url:base.url+'/task/task-label?token='+token+'&id='+taskId,
-        }).then((response)=>{
+            method: 'get',
+            url: base.url + '/task/task-label?token=' + token + '&id=' + taskId,
+        }).then((response) => {
             // console.log(response)
-            if (response.data.code === 'ERROR'){
+            if (response.data.code === 'ERROR') {
                 alert(response.data.message)
-            }else{
+            } else {
                 setTaskAllLabelName(response.data.data)
             }
-        }).catch((error)=>{
+        }).catch((error) => {
             alert(error)
         })
     }
+
+
     useEffect(() => {
         myTask()
         allLabels()
         allLabel()
+
     }, [n])
     //删除任务
-    let confirm=(e)=> {
+    let confirm = (e) => {
         console.log(e);
-        axios({
-            method:'post',
-            url:base.url+'/task/delete-task',
-            params:{
-                token:token,
-                id:taskId
-            }
-        }).then((response)=>{
-            console.log(response)
-            if (response.data.code === 'ERROR'){
-                alert(response.data.message)
-                return
-            }else {
-                myTask()
-                message.success('删除成功');
-            }
-        })
+        // axios({
+        //     method: 'post',
+        //     url: base.url + '/task/delete-task',
+        //     params: {
+        //         token: token,
+        //         id: taskId
+        //     }
+        // }).then((response) => {
+        //     console.log(response)
+        //     if (response.data.code === 'ERROR') {
+        //         alert(response.data.message)
+        //         return
+        //     } else {
+        //         myTask()
+        //         message.success('删除成功');
+        //     }
+        // })
     }
 
-    let cancel=(e)=> {
+    let cancel = (e) => {
         console.log(e);
         message.error('取消删除');
     }
@@ -425,9 +468,10 @@ function Task() {
                                cancelText={'取消'}
                                okText={'确定'}
                                onOk={handleOk}
+                               footer={null}
                                width={700}
                                onCancel={handleCancel}>
-                            <NewTask></NewTask>
+                            <NewTask handleMessage={handleMessage}></NewTask>
                         </Modal>
                     </span>
                 </div>
@@ -450,21 +494,19 @@ function Task() {
                             {/*优先级*/}
                             <span className={'taskAll'}>优先级</span>
                         <Select defaultValue="全部" style={{width: 120}} onChange={handleChangePrior}>
-                            {arrPrior.map((item,index)=>{
-                                return  (
-                                        <Option key={index} value={item}>{item}</Option>
-                                    )
-
+                            {arrPrior.map((item, index) => {
+                                return (
+                                    <Option key={index} value={item}>{item}</Option>
+                                )
                             })}
-
                         </Select>
                         </span>
                         <span>
                             {/*截止时间*/}
                             <span className={'taskAll'}>截止时间</span>
                         <Select defaultValue="全部" style={{width: 120}} onChange={handleChangeEnd}>
-                            {endTime.map((item,index)=>{
-                                return(
+                            {endTime.map((item, index) => {
+                                return (
                                     <Option key={index} value={item}>{item}</Option>
                                 )
                             })}
@@ -477,14 +519,14 @@ function Task() {
                         {taskList.map((item, index) => {
                             // console.log(item)
                             return (
-                                    <div
-                                        className={'taskCheckbox'}
-                                        key={index} onClick={()=>{
-                                        showDrawer(item.id)
-                                    }}>
-                                        <Checkbox disabled={true} onChange={onChangeCheckbox}>{item.taskName}</Checkbox>
-                                        <span>截止时间：{item.endTime}</span>
-                                    </div>
+                                <div
+                                    className={'taskCheckbox'}
+                                    key={index} onClick={() => {
+                                    showDrawer(item.id)
+                                }}>
+                                    <Checkbox disabled={true} onChange={onChangeCheckbox}>{item.taskName}</Checkbox>
+                                    <span>截止时间：{item.endTime}</span>
+                                </div>
                             )
                         })
                         }
@@ -517,9 +559,10 @@ function Task() {
                             <div style={{padding: '20px'}}>
                                 <div className={'taskMan'}>
                                     <div>
-                                        {taskList.map((item,index)=>{
-                                            return(
-                                                <Checkbox key={index} className={item.id === taskId?'':'hidden'} onChange={onChangeCheckbox}>{item.taskName}</Checkbox>
+                                        {taskList.map((item, index) => {
+                                            return (
+                                                <Checkbox key={index} className={item.id === taskId ? '' : 'hidden'}
+                                                          onChange={onChangeCheckbox}>{item.taskName}</Checkbox>
                                             )
                                         })}
                                         <span className={taskCheckBox === true ? '' : 'hidden'}>已完成</span>
@@ -531,11 +574,13 @@ function Task() {
                                     <div>
                                         {taskAllLabelName.map((item, index) => {
                                             return (
-                                                <span className={item === ''?'hidden':'taskLabelName'}
+                                                <span className={item === '' ? 'hidden' : 'taskLabelName'}
                                                       key={index}>
                                                     <Popconfirm
                                                         title="确定删除吗?"
-                                                        onConfirm={()=>{confirmLabel(item.id)}}
+                                                        onConfirm={() => {
+                                                            confirmLabel(item.id)
+                                                        }}
                                                         onCancel={cancelLabel}
                                                         okText="确定"
                                                         cancelText="取消"
@@ -546,8 +591,8 @@ function Task() {
                                             )
                                         })}
                                         <span className={'taskAddLabel1'}>
-                                            <Popover content={contentLabel} title="选择标签"  trigger="click">
-                                                <span >+标签</span>
+                                            <Popover content={contentLabel} title="选择标签" trigger="click">
+                                                <span>+标签</span>
                                             </Popover>
                                         </span>
                                     </div>
@@ -559,7 +604,7 @@ function Task() {
                                         </Popover>
 
 
-                                        <span></span>
+                                        <span>{timeOver}</span>
                                     </div>
                                 </div>
                                 <div>
