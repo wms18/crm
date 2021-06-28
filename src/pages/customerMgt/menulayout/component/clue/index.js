@@ -5,15 +5,16 @@ import qs from 'qs'
 import './style.css'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Tag
+  , Popconfirm
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
 
 const { TabPane } = Tabs
-const { Option, TextArea } = Select
-const { Search } = Input
+const { Option } = Select
+const { Search, TextArea } = Input
 const { Content, Footer, Header } = Layout
 
 class Clue extends Component {
@@ -31,6 +32,10 @@ class Clue extends Component {
 
       token: window.localStorage.getItem('token'),
 
+      remind: 0, //跟进记录是否加入日程
+      nextTime: '',  //跟进记录的下次联系时间    
+      followRecord: '',  //跟进记录的内容
+      recordType: "",  //记录类型
 
 
       isCreate: true,
@@ -80,11 +85,122 @@ class Clue extends Component {
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
+    this.onChangeRecordType = this.onChangeRecordType.bind(this)
+    this.onChangeRemind = this.onChangeRemind.bind(this)
+    this.onChangeFollowRecord = this.onChangeFollowRecord.bind(this)
+    this.createFollowUpRecord = this.createFollowUpRecord.bind(this)
+    this.getFollowUpRecord = this.getFollowUpRecord.bind(this)
+    this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
+
   }
 
 
+
+  deleteFollowUpRecord(id) {
+    console.log(id);
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/delete`,
+      params: {
+        token: this.state.token,
+        followId: id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success(res.data.message)
+          this.getFollowUpRecord()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+
+  }
+
+  getFollowUpRecord() {
+    axios({
+      method: 'get',
+      url: `${base.url}/follow/get-record`,
+      params: {
+        token: this.state.token,
+        businessId: this.state.record.id,
+        businessTypeId: 5
+      },
+
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code === 'ERROR') {
+
+        } else {
+          this.setState({
+            followUpRecordArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  onChangeFollowRecord(e) {
+    this.setState({
+      followRecord: e.target.value
+    })
+  }
+
+
+
+  //是否添加到日程提醒
+  onChangeRemind(e) {
+    let remind = e.target.checked ? 1 : 0
+    this.setState({
+      remind: remind
+    })
+  }
+
+  onChangeRecordType(val) {
+    console.log(val);
+  }
+
+  createFollowUpRecord() {
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/add?`,
+      params: {
+        token: this.state.token
+      },
+      data: qs.stringify({
+        businessId: this.state.record.id,
+        businessTypeId: 5, //线索id为5
+        followRecord: this.state.followRecord,
+        nextTime: this.state.nextTime,
+        recordType: this.state.recordType,
+        remind: this.state.remind
+      })
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code = 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success('新增成功')
+          this.getFollowUpRecord()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
   onChangeDate(date, dateString) {
-    console.log(date, dateString);
+    console.log(typeof (dateString));
+    this.setState({
+      nextTime: dateString
+    })
   }
   dropdownMenu() {
     const menu = (
@@ -304,6 +420,9 @@ class Clue extends Component {
 
 
   }
+
+
+
 
   setVisible() {
     this.setState({
@@ -552,8 +671,8 @@ class Clue extends Component {
 
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                pagination={{ pageSize: this.state.pagination.limit }}
+                scroll={{ x: 1500 }}
+                pagination={null}
                 defaultCurrent={1}
                 onRow={(record) => ({
                   onClick: () => {
@@ -563,6 +682,9 @@ class Clue extends Component {
                       record: record,
                       drawerTitle: record.clientName
 
+                    }, () => {
+                      console.log(this.state.record.id);
+                      this.getFollowUpRecord()
                     })
                   },
                 })}
@@ -572,8 +694,7 @@ class Clue extends Component {
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
                     defaultPageSize={10}
-                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
-                </ConfigProvider>
+                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />                </ConfigProvider>
               </div>
               <Drawer
                 title={this.state.drawerTitle}
@@ -647,7 +768,7 @@ class Clue extends Component {
 
 
                     <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
-                      <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
+                      <Button type='default' size={'small'} style={{ marginLeft: '10px', backgroundColror: '#fff !important', color: 'black !important' }}>更多&nbsp;∨</Button>
                     </Dropdown>
                   </div>
 
@@ -750,43 +871,119 @@ class Clue extends Component {
                         </div>
                       </TabPane>
                       <TabPane tab="跟进记录" key="2">
-                        <div style={{padding:'0 0 20px 0'}}>
-                          <Input style={{ height: 100 }}></Input>
+                        <div style={{ padding: '0 0 20px 0' }}>
+                          <TextArea style={{ height: 100 }} onChange={this.onChangeFollowRecord} ></TextArea>
                         </div>
-                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between',alignItems:'center' }}>
+                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div>
                             记录类型
                             &nbsp;
                             &nbsp;
-                            <Select style={{ width: 200 }}>
+                            <Select style={{ width: 200 }} onChange={this.onChangeRecordType}>
                               <Option value='上门拜访'>上门拜访</Option>
                               <Option value='电话邀约'>电话邀约</Option>
                               <Option value='线下单杀'>线下单杀</Option>
                             </Select>
                           </div>
-                          <div  style={{display:'flex',flexDirection:'row',alignItems:'center'}}>
+                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                             下次联系时间
                             &nbsp;
                             &nbsp;
                             <ConfigProvider locale={zhCN}>
-                              <Space direction="vertical" style={{marginRight:"20px"}}>
-                                <DatePicker onChange={this.onChangeDate} />
+                              <Space direction="vertical" style={{ marginRight: "20px" }}>
+                                <DatePicker showTime onChange={this.onChangeDate} />
                               </Space>,
                             </ConfigProvider>
-                            <Checkbox style={{ fontSize: 12 }}>
+                            <Checkbox
+                              style={{ fontSize: 12 }}
+                              onChange={this.onChangeRemind}  //是否添加到日程
+                            >
                               添加到日常提醒
                             </Checkbox>
                           </div>
                           <div>
-                            <Button size={'small'}>发布</Button>
+                            <Button
+                              onClick={this.createFollowUpRecord}
+                              size={'small'}>发布</Button>
                           </div>
                         </div>
+                        {
+                          this.state.followUpRecordArr ? this.state.followUpRecordArr.map((item, index) => {
+                            return (
+                              <div key={index} style={{ margin: '30px 0' }}>
+                                <div style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                  <div>
+                                    <span>跟进记录</span>
+                                    &nbsp;
+                                    &nbsp;
+                                    <Popconfirm
+                                      title="你确定要删除这条记录么?"
+                                      onConfirm={() => {
+                                        this.deleteFollowUpRecord(item.id)
+                                      }
+                                      }
+                                      onCancel={() => {
+                                        message.warning('已取消')
+                                      }}
+                                      okText="删除"
+                                      cancelText="取消"
+                                    >
+
+                                      <span className='iconfont icon-lajitong' ></span>
+                                    </Popconfirm>
+                                  </div>
+
+                                  <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center'
+                                  }}>
+                                    <div
+                                      style={{
+                                        width: '34px',
+                                        height: '34px',
+                                        backgroundColor: 'blue',
+                                        borderRadius: '50%',
+                                        color: 'white',
+                                        textAlign: 'center',
+                                        lineHeight: '34px',
+                                        marginRight: '8px'
+                                      }} F
+                                    >
+                                      {item.employeeAvatar ?
+                                        // <img src='https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic%2Fc8%2Fdd%2Fb9%2Fc8ddb934a69d90216f1b406cf3975475.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1627462261&t=4e52d02794c760fb28e678c680fa467e'  />
+                                        <span>{item.employeeName.slice(0, 2)}</span>
+                                        :
+                                        <span>{item.employeeName.slice(0, 2)}</span>
+                                      }
+                                    </div>
+                                    <div>
+
+
+                                      <div style={{ fontSize: '13px' }}>{item.employeeName}</div>
+                                      <div style={{ color: 'rgb(153, 153, 153)', marginTop: '3px', fontSize: '12px' }} >{item.createTime}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div style={{ padding: '20px 0px 0px 40px' }}>
+                                  {item.followRecord}
+                                </div>
+                                <div style={{ padding: '20px 0px 0px 40px' }}>
+                                  {item.recordType ? <Tag>{item.recordType}</Tag> : ''}
+                                  {item.nextTime ? <Tag>{item.nextTime}</Tag> : ''}
+                                </div>
+                              </div>
+                            )
+                          })
+                            :
+                            ""
+                        }
                       </TabPane>
                       <TabPane tab="操作记录" key="3">
                       </TabPane>
                     </Tabs>
                   </div>
-                        
+
                 </div>
 
               </Drawer>

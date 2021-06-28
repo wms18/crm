@@ -5,7 +5,7 @@ import qs from 'qs'
 import './style.css'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space,Steps
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
@@ -18,8 +18,6 @@ const { Search } = Input
 const { Content, Footer, Header } = Layout
 
 
-
-
 class TodoList extends Component {
 
   componentDidMount() {
@@ -30,12 +28,14 @@ class TodoList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-
       drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
 
 
+      Data: Data.columnsCustomer,
+      current: '1',
+      title: '我负责的客户',
 
       isCreate: true,
       formTitle: '新建待办事项',
@@ -85,6 +85,47 @@ class TodoList extends Component {
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
   }
+
+  handleClick = e => {
+    console.log(typeof (e.key));
+    this.setState({
+      current: e.key
+    })
+    switch (e.key) {
+      case '1':
+        this.setState({
+          title: '分配给我的客户',
+          Data: Data.columnsCustomer
+
+        })
+        break;
+      case '2':
+        this.setState({
+          title: '分配给我的线索',
+          Data: Data.columnsClue
+        })
+        break;
+      case '3':
+        this.setState({
+          title: '今日需联系的客户',
+          Data: Data.columnsCustomer
+        })
+        break;
+      case '4':
+        this.setState({
+          title: '未审核的合同',
+          Data: Data.columnsContract
+        })
+        break;
+      case '5':
+        this.setState({
+          title: '即将进入公海的客户',
+          Data: Data.columnsCustomer
+        })
+        break;
+    }
+
+  };
 
 
   createFollowupRecord() {
@@ -285,27 +326,7 @@ class TodoList extends Component {
     this.setState({
       visible: !this.state.visible
     })
-    setTimeout(() => {
-      console.log('record', this.state.record);
-      if (this.state.isCreate) {
-        this.formRef.current.resetFields();
-      } else {
 
-        this.formRef.current.setFieldsValue({
-          clientId: this.state.record.clientId,
-          commercialPrice: this.state.record.commercialPrice,
-          commercialStage: this.state.record.commercialStage,
-          commercialStatusGroup: this.state.record.commercialStatusGroup,
-          content: this.state.record.content,
-          discount: this.state.record.discount,
-          name: this.state.record.name,
-          produceIds: this.state.record.produceIds,
-          submissionTime: this.state.record.submissionTime,
-          totalPrice: this.state.record.totalPrice,
-          // record: this.state.record.record,
-        })
-      }
-    }, 100);
   };
 
   onCancel() {
@@ -313,9 +334,7 @@ class TodoList extends Component {
       visible: false,
       isCreate: true
     })
-    setTimeout(() => {
-      this.formRef.current.resetFields();
-    }, 100);
+
   }
 
   onCreate(values) {
@@ -352,155 +371,6 @@ class TodoList extends Component {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
           <span style={{ fontSize: '18px' }}>待办事项管理</span>
-          <Search placeholder='请输入待办事项名称' style={{ width: '200px' }} onSearch={this.onSearch}
-            allowClear
-          ></Search>
-          <div>
-            <Button type='primary'
-              onClick={this.setVisible}
-            >新建待办事项</Button>
-            <Modal
-              bodyStyle={{ height: '380px', overflowY: 'auto' }}
-              visible={this.state.visible}
-              title={this.state.isCreate ? '新建待办事项' : '编辑待办事项'}
-              okText="确认"
-              cancelText="取消"
-              onCancel={this.onCancel}
-              onOk={this.submit}
-
-            >
-
-              <Form
-                layout="vertical"
-                name="form_in_modal"
-                initialValues={{
-                  modifier: 'public',
-                }}
-                ref={this.formRef}
-              >
-                <div>
-                  <Form.Item
-                    name="clientId"
-                    label="客户名称"   //客户名称
-                    rules={[
-                      {
-                        required: true,
-                        message: '客户姓名不能为空',
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="commercialPrice"
-                    label="待办事项金额"
-                  >
-                    <Input></Input>
-                  </Form.Item>
-                </div>
-
-
-                <div>
-                  <Form.Item
-                    name="commercialStage"
-                    label="待办事项阶段"
-                    rules={[
-                      {
-                        required: true,
-                        message: '待办事项阶段不能为空'
-                      }
-                    ]}
-                  >
-                    {/* <Input /> */}
-                    <Select style={{ width: 200 }}>
-                      <Option value='赢单'>赢单</Option>
-                      <Option value='输单'>输单</Option>
-                      <Option value='无效'>无效</Option>
-                    </Select>
-                  </Form.Item>
-                  <Form.Item
-                    name="commercialStatusGroup"
-                    label="待办事项状态组"
-                  // rules={[
-                  //   required: true,
-                  //   message:'待办事项状态组不能为空'
-                  // ]}
-                  >
-                    <Select>
-                      <Option value='服务产品线'>服务产品线</Option>
-                      <Option value='数据监测'>数据监测</Option>
-                      <Option value='服务产品线'>服务产品线</Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                <div>
-                  <Form.Item
-                    name="content"
-                    label="备注"
-
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="discount"
-                    label="折扣"
-                  >
-                    <Input type='number' />
-                  </Form.Item>
-
-                </div>
-
-
-                <div>
-                  <Form.Item
-                    name="name"
-                    label="待办事项名称"
-
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="produceIds"
-                    label="关联产品ID"
-                  >
-                    <Input />
-                  </Form.Item>
-
-
-                </div>
-                <div>
-                  <Form.Item
-                    name="submissionTime"
-                    label="预计成交时间"
-                  // rules={[
-                  //   required: true,
-                  //   message:'预计成交时间不能为空'
-                  //   ]}
-                  >
-                    <DatePicker onChange={this.onChangeDate} />
-                  </Form.Item>
-                  <Form.Item
-                    name="phone"
-                    label="手机号"
-
-                  >
-                    <Input />
-                  </Form.Item>
-
-                </div>
-                <div>
-                  <Form.Item
-                    name="totalPrice"
-                    label="预计总金额"
-                  >
-                    <Input />
-                  </Form.Item>
-                </div>
-
-              </Form>
-            </Modal>
-          </div>
         </div >
 
         <div>
@@ -512,310 +382,340 @@ class TodoList extends Component {
 
           </div  >
 
-          <div >
-            <div style={{ position: 'relative' }}>
-              <Table
-
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                pagination={{ pageSize: this.state.pagination.limit }}
-                defaultCurrent={1}
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      name: record.name
-
-                    })
-                  },
-                })}
-
-              ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
-                <ConfigProvider locale={zhCN}>
-                  <Pagination showQuickJumper
-                    defaultPageSize={10}
-                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
-                </ConfigProvider>
-              </div>
-              <Drawer
-                mask={false}
-                title={this.state.name}
-                placement="right"
-                closable={true}
-                onClose={this.onClose}
-                visible={this.state.drawerVisible}
-                getContainer={false}
-                width={'74vw'}
-                destroyOnClose={true}
+          <div style={{ display: 'flex', flexDirection: 'row' }} >
+            <div>
+              <Menu
+                theme={"light"}
+                onClick={this.handleClick}
+                style={{ width: 256 }}
+                defaultOpenKeys={['1']}
+                mode="inline"
+                onClick={this.handleClick}
+                selectedKeys={[this.state.current]}
               >
-                <div>
+                <Menu.Item key='1'>分配给我的客户</Menu.Item>
+                <Menu.Item key='2'>分配给我的线索</Menu.Item>
+                <Menu.Item key='3'>今日需联系的客户</Menu.Item>
+                <Menu.Item key='4'>未审核的合同</Menu.Item>
+                <Menu.Item key='5'>即将进入公海的客户</Menu.Item>
+              </Menu>
+            </div>
+            <div >
+              <div style={{ height: 20, marginRight: '20px' }}
+                onClick={() => {
+                  console.log(this.state.employeeArr)
+                }}
+              >
+                {this.state.title}
+              </div  >
+              <div >
+                <Table
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                    <Button
-                      type='primary'
-                      size={'small'}
-                      onClick={() => {
-                        this.setTransferVisible()
-                      }}
-                    >转移</Button>
+                  columns={this.state.Data}
+                  dataSource={this.state.tableArr}
+                  style={{ width: '58vw' }}
 
-                    <Modal
-                      visible={this.state.transferVisible}
-                      title="转移待办事项"
-                      // okText="保存"
-                      // cancelText="取消"
-                      // onOk={this.transferSubmit}
-                      footer={[
-                        <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
-                        <Button onClick={this.setTransferVisible} type='default'>取消</Button>
-                      ]}
-                    >
-                      <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
+                  scroll={{ x: 300, }}
+                  pagination={{ pageSize: this.state.pagination.limit }}
+                  defaultCurrent={1}
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        name: record.name
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
-                        </div>
-                      </div>
+                      })
+                    },
+                  })}
 
-                    </Modal>
-                    <Button type='primary' size={'small'}
-                      style={{ marginLeft: '10px' }}
-                      onClick={() => {
-                        this.setVisible()
-                        this.setState({
-                          isCreate: false,
-                          formTitle: '新建待办事项'
-
-                        })
-                      }}
-
-                    >编辑</Button>
-
-
-                    {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
-                    <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
-                      onClick={() => {
-                        Modal.confirm({
-                          title: '确认删除',
-                          icon: <ExclamationCircleOutlined />,
-                          content: '确认删除此待办事项么？',
-                          okText: '是',
-                          okType: '',
-                          cancelText: '否',
-                          onOk: () => {
-                            // this.handleOk(id)//确认按钮的回调方法，在下面
-                            message.success('已成功刪除')
-                          }
-                          ,
-                          onCancel() {
-                            message.warning('已取消刪除')
-                          },
-                        });
-                      }}
-                    >刪除</Button>
-                    {/* </Dropdown> */}
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
-
-                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>客户名称</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.clientName  }</span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>待办事项金额</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.totalPrice}</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>待办事项状态</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.commercialStage}</span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsible}</span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>创建时间</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.createTime}</span>
-                    </div>
-
-                  </div>
-
-
-                  <div>
-                    <Tabs defaultActiveKey="1" >
-                      <TabPane tab="基本信息" key="1">
-                        <div>
-                          <div style={{ marginBottom: '10px' }}>
-                            <span></span>
-                            <span style={{ fontSize: 13 }}>基本信息</span>
-                          </div>
-
-                          <div className='pro-info'>
-                            <div>
-                              <div>
-                                <div>待办事项名称</div>
-                                <div>{this.state.record.clientName}</div>
-                              </div>
-                              <div>
-                                <div>电话</div>
-                                <div>{this.state.record.phone}</div>
-                              </div>
-                              <div>
-                                <div>待办事项来源</div>
-                                <div>{this.state.record.clueFrom}</div>
-                              </div>
-                              <div>
-                                <div>备注</div>
-                                <div>{this.state.record.content}</div>
-                              </div>
-                              <div>
-                                <div>下次联系时间</div>
-                                <div>{this.state.record.nextTalkTime}</div>
-
-                              </div>
-                              <div>
-                                <div>创建人</div>
-                                <div>{this.state.record.employeeCreateId}</div>
-                              </div>
-                              <div>
-                                <div>创建时间</div>
-                                <div>{this.state.record.createTime}</div>
-                              </div>
-                            </div>
-
-                            <div>
-                              <div>
-                                <div>待办事项类型</div>
-                                <div>{this.state.record.clientType}</div>
-                              </div>
-                              <div>
-                                <div>待办事项等级</div>
-                                <div>{this.state.record.clientLevel}</div>
-                              </div>
-                              <div>
-                                <div>部门ID</div>
-                                <div>{this.state.record.departmentId}</div>
-                              </div>
-                              <div>
-                                <div>公司</div>
-                                <div>{this.state.record.company}</div>
-                              </div>
-                              <div>
-                                <div>更新时间</div>
-                                <div>{this.state.record.updateTime}</div>
-                              </div>
-                              <div>
-                                <div>负责人</div>
-                                <div>{this.state.record.employeeResponsible}</div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div>
-
-                          </div>
-                        </div>
-                      </TabPane>
-                      <TabPane tab="跟进记录" key="2">
-
-                        <div style={{ padding: '0 0 20px 0' }}>
-                          <Input style={{ height: 100 }}></Input>
-                        </div>
-                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            记录类型
-                            &nbsp;
-                            &nbsp;
-                            <Select style={{ width: 200 }}>
-                              <Option value='上门拜访'>上门拜访</Option>
-                              <Option value='电话邀约'>电话邀约</Option>
-                              <Option value='线下单杀'>线下单杀</Option>
-                            </Select>
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                            下次联系时间
-                            &nbsp;
-                            &nbsp;
-                            <ConfigProvider locale={zhCN}>
-                              <Space direction="vertical" style={{ marginRight: "20px" }}>
-                                <DatePicker onChange={this.onChangeDate} />
-                              </Space>,
-                            </ConfigProvider>
-                            <Checkbox style={{ fontSize: 12 }}>
-                              添加到日常提醒
-                            </Checkbox>
-                          </div>
-                          <div>
-                            <Button size={'small'}>发布</Button>
-                          </div>
-                        </div>
-                        <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
-                          <Tabs defaultActiveKey="1" >
-                            <TabPane tab="跟进记录" key="1">
-                              1
-                            </TabPane>
-                            <TabPane tab="日志" key="2">
-                              2
-                            </TabPane>
-                            <TabPane tab="审批" key="3">
-                              3
-                            </TabPane>
-                            <TabPane tab="任务" key="4">
-                              4
-                            </TabPane>
-                            <TabPane tab="日程" key="5">
-                              5
-                            </TabPane>
-                          </Tabs>
-                        </div>
-                      </TabPane>
-
-
-                      <TabPane tab="联系人" key="3">
-                      </TabPane>
-                      <TabPane tab="合同" key="4">
-                      </TabPane>
-                      <TabPane tab="产品" key="5">
-                      </TabPane>
-                      <TabPane tab="相关团队" key="6">
-                      </TabPane>
-                      <TabPane tab="附件" key="7">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="8">
-                      </TabPane>
-                     
-                    </Tabs>
-                  </div>
-
+                ></Table>
+                <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                  <ConfigProvider locale={zhCN}>
+                    <Pagination showQuickJumper
+                      showSizeChanger
+                      defaultPageSize={10}
+                      showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
+                  </ConfigProvider>
                 </div>
 
-              </Drawer>
+                <Drawer
+                  mask={false}
+                  title={this.state.name}
+                  placement="right"
+                  closable={true}
+                  onClose={this.onClose}
+                  visible={this.state.drawerVisible}
+                  getContainer={false}
+                  width={'74vw'}
+                  destroyOnClose={true}
+                >
+                  <div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
+                      <Button
+                        type='primary'
+                        size={'small'}
+                        onClick={() => {
+                          this.setTransferVisible()
+                        }}
+                      >转移</Button>
+
+                      <Modal
+                        visible={this.state.transferVisible}
+                        title="转移待办事项"
+                        // okText="保存"
+                        // cancelText="取消"
+                        // onOk={this.transferSubmit}
+                        footer={[
+                          <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
+                          <Button onClick={this.setTransferVisible} type='default'>取消</Button>
+                        ]}
+                      >
+                        <div>
+                          变更负责人
+                          <div>
+                            <span>+点击选择</span>
+                            <Select
+                              showSearch
+                              style={{ width: 200 }}
+                              mode='multiple'
+                              optionLabelProp="label"
+                            >
+                              {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
+                                return (<Option value={index} >
+                                  <Checkbox>
+                                    <div>
+                                      <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
+                                      <Row style={{ display: 'inline' }}>{item.username}</Row>
+                                    </div>
+
+                                  </Checkbox>
+                                </Option>)
+                              }) : ''}
+                            </Select>
+                          </div>
+                        </div>
+
+                      </Modal>
+                      <Button type='primary' size={'small'}
+                        style={{ marginLeft: '10px' }}
+                        onClick={() => {
+                          this.setVisible()
+                          this.setState({
+                            isCreate: false,
+                            formTitle: '新建待办事项'
+
+                          })
+                        }}
+
+                      >编辑</Button>
+
+
+                      {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
+                      <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
+                        onClick={() => {
+                          Modal.confirm({
+                            title: '确认删除',
+                            icon: <ExclamationCircleOutlined />,
+                            content: '确认删除此待办事项么？',
+                            okText: '是',
+                            okType: '',
+                            cancelText: '否',
+                            onOk: () => {
+                              // this.handleOk(id)//确认按钮的回调方法，在下面
+                              message.success('已成功刪除')
+                            }
+                            ,
+                            onCancel() {
+                              message.warning('已取消刪除')
+                            },
+                          });
+                        }}
+                      >刪除</Button>
+                      {/* </Dropdown> */}
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
+
+                      <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                        <span style={{ fontSize: 12, color: '#777' }}>客户名称</span>
+                        <span style={{ fontSize: 14 }}>{this.state.record.clientName}</span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                        <span style={{ fontSize: 12, color: '#777' }}>待办事项金额</span>
+                        <span style={{ fontSize: 14 }}>{this.state.record.totalPrice}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                        <span style={{ fontSize: 12, color: '#777' }}>待办事项状态</span>
+                        <span style={{ fontSize: 14 }}>{this.state.record.commercialStage}</span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                        <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
+                        <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsible}</span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
+                        <span style={{ fontSize: 12, color: '#777' }}>创建时间</span>
+                        <span style={{ fontSize: 14 }}>{this.state.record.createTime}</span>
+                      </div>
+
+                    </div>
+
+
+                    <div>
+                      <Tabs defaultActiveKey="1" >
+                        <TabPane tab="基本信息" key="1">
+                          <div>
+                            <div style={{ marginBottom: '10px' }}>
+                              <span></span>
+                              <span style={{ fontSize: 13 }}>基本信息</span>
+                            </div>
+
+                            <div className='pro-info'>
+                              <div>
+                                <div>
+                                  <div>待办事项名称</div>
+                                  <div>{this.state.record.clientName}</div>
+                                </div>
+                                <div>
+                                  <div>电话</div>
+                                  <div>{this.state.record.phone}</div>
+                                </div>
+                                <div>
+                                  <div>待办事项来源</div>
+                                  <div>{this.state.record.clueFrom}</div>
+                                </div>
+                                <div>
+                                  <div>备注</div>
+                                  <div>{this.state.record.content}</div>
+                                </div>
+                                <div>
+                                  <div>下次联系时间</div>
+                                  <div>{this.state.record.nextTalkTime}</div>
+
+                                </div>
+                                <div>
+                                  <div>创建人</div>
+                                  <div>{this.state.record.employeeCreateId}</div>
+                                </div>
+                                <div>
+                                  <div>创建时间</div>
+                                  <div>{this.state.record.createTime}</div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div>
+                                  <div>待办事项类型</div>
+                                  <div>{this.state.record.clientType}</div>
+                                </div>
+                                <div>
+                                  <div>待办事项等级</div>
+                                  <div>{this.state.record.clientLevel}</div>
+                                </div>
+                                <div>
+                                  <div>部门ID</div>
+                                  <div>{this.state.record.departmentId}</div>
+                                </div>
+                                <div>
+                                  <div>公司</div>
+                                  <div>{this.state.record.company}</div>
+                                </div>
+                                <div>
+                                  <div>更新时间</div>
+                                  <div>{this.state.record.updateTime}</div>
+                                </div>
+                                <div>
+                                  <div>负责人</div>
+                                  <div>{this.state.record.employeeResponsible}</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div>
+
+                            </div>
+                          </div>
+                        </TabPane>
+                        <TabPane tab="跟进记录" key="2">
+
+                          <div style={{ padding: '0 0 20px 0' }}>
+                            <Input style={{ height: 100 }}></Input>
+                          </div>
+                          <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              记录类型
+                              &nbsp;
+                              &nbsp;
+                              <Select style={{ width: 200 }}>
+                                <Option value='上门拜访'>上门拜访</Option>
+                                <Option value='电话邀约'>电话邀约</Option>
+                                <Option value='线下单杀'>线下单杀</Option>
+                              </Select>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                              下次联系时间
+                              &nbsp;
+                              &nbsp;
+                              <ConfigProvider locale={zhCN}>
+                                <Space direction="vertical" style={{ marginRight: "20px" }}>
+                                  <DatePicker onChange={this.onChangeDate} />
+                                </Space>,
+                              </ConfigProvider>
+                              <Checkbox style={{ fontSize: 12 }}>
+                                添加到日常提醒
+                              </Checkbox>
+                            </div>
+                            <div>
+                              <Button size={'small'}>发布</Button>
+                            </div>
+                          </div>
+                          <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
+                            <Tabs defaultActiveKey="1" >
+                              <TabPane tab="跟进记录" key="1">
+                                1
+                              </TabPane>
+                              <TabPane tab="日志" key="2">
+                                2
+                              </TabPane>
+                              <TabPane tab="审批" key="3">
+                                3
+                              </TabPane>
+                              <TabPane tab="任务" key="4">
+                                4
+                              </TabPane>
+                              <TabPane tab="日程" key="5">
+                                5
+                              </TabPane>
+                            </Tabs>
+                          </div>
+                        </TabPane>
+
+
+                        <TabPane tab="联系人" key="3">
+                        </TabPane>
+                        <TabPane tab="合同" key="4">
+                        </TabPane>
+                        <TabPane tab="产品" key="5">
+                        </TabPane>
+                        <TabPane tab="相关团队" key="6">
+                        </TabPane>
+                        <TabPane tab="附件" key="7">
+                        </TabPane>
+                        <TabPane tab="操作记录" key="8">
+                        </TabPane>
+
+                      </Tabs>
+                    </div>
+
+                  </div>
+
+                </Drawer>
+              </div>
             </div>
 
 
