@@ -3,17 +3,21 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
+import GetBizOpp from "./getBussinessOpp";
+import GetContract from "./getContract";
+import GetPayment from "./getPayment";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Tag, Popconfirm
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
 
+
 const { TabPane } = Tabs
-const { Option, TextArea } = Select
-const { Search } = Input
+const { Option } = Select
+const { Search, TextArea } = Input
 const { Content, Footer, Header } = Layout
 
 class Customer extends Component {
@@ -31,6 +35,10 @@ class Customer extends Component {
 
       token: window.localStorage.getItem('token'),
 
+      remind: 0, //跟进记录是否加入日程
+      nextTime: '',  //跟进记录的下次联系时间    
+      followRecord: '',  //跟进记录的内容
+      recordType: "",  //记录类型
 
 
       isCreate: true,
@@ -80,6 +88,122 @@ class Customer extends Component {
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
+    this.onChangeRecordType = this.onChangeRecordType.bind(this)
+    this.onChangeRemind = this.onChangeRemind.bind(this)
+    this.onChangeFollowRecord = this.onChangeFollowRecord.bind(this)
+    this.createFollowUpRecord = this.createFollowUpRecord.bind(this)
+    this.getFollowUpRecord = this.getFollowUpRecord.bind(this)
+    this.onChangeFollowDate = this.onChangeFollowDate.bind(this)
+    this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
+
+  }
+
+
+  deleteFollowUpRecord(id) {
+    console.log(id);
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/delete`,
+      params: {
+        token: this.state.token,
+        followId: id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success(res.data.message)
+          this.getFollowUpRecord()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+
+  }
+
+  getFollowUpRecord() {
+    axios({
+      method: 'get',
+      url: `${base.url}/follow/get-record`,
+      params: {
+        token: this.state.token,
+        businessId: this.state.record.id,
+        businessTypeId: 1  //客户类型，id为1
+      },
+
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code === 'ERROR') {
+
+        } else {
+          this.setState({
+            followUpRecordArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  onChangeFollowRecord(e) {
+    this.setState({
+      followRecord: e.target.value
+    })
+  }
+
+  //是否添加到日程提醒
+  onChangeRemind(e) {
+    let remind = e.target.checked ? 1 : 0
+    this.setState({
+      remind: remind
+    })
+  }
+
+  onChangeRecordType(val) {
+    console.log(val);
+    this.setState({
+      recordType: val
+    })
+  }
+
+  createFollowUpRecord() {
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/add?`,
+      params: {
+        token: this.state.token
+      },
+      data: qs.stringify({
+        businessId: this.state.record.id,
+        businessTypeId: 1, //客户类型id为1
+        followRecord: this.state.followRecord,
+        nextTime: this.state.nextTime,
+        recordType: this.state.recordType,
+        remind: this.state.remind
+      })
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.message == '保存成功') {
+          message.success('新增成功')
+          this.getFollowUpRecord()
+        } else {
+          message.warning('请重试')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+  onChangeFollowDate(date, dateString) {
+    console.log(typeof (dateString));
+    this.setState({
+      nextTime: dateString
+    })
   }
 
 
@@ -316,12 +440,12 @@ class Customer extends Component {
       } else {
 
         this.formRef.current.setFieldsValue({
-          certificate : this.state.record.certificate ,
+          certificate: this.state.record.certificate,
           certificateId: this.state.record.certificateId,
-          clientFrom : this.state.record.clientFrom ,
+          clientFrom: this.state.record.clientFrom,
           clueFrom: this.state.record.clueFrom,
-          clientLevel : this.state.record.clientLevel ,
-          clientName : this.state.record.clientName ,
+          clientLevel: this.state.record.clientLevel,
+          clientName: this.state.record.clientName,
           content: this.state.record.content,
           detailAddress: this.state.record.detailAddress,
           dingtalk: this.state.record.dingtalk,
@@ -329,7 +453,7 @@ class Customer extends Component {
           employeeResponsibleId: this.state.record.employeeResponsibleId,
           nextTalkTime: this.state.record.nextTalkTime,
           nextTalkTime: this.state.record.nextTalkTime,
-          phone : this.state.record.phone ,
+          phone: this.state.record.phone,
           // record: this.state.record.record,
         })
       }
@@ -389,7 +513,7 @@ class Customer extends Component {
             >新建客户</Button>
             <Modal
               visible={this.state.visible}
-              title={this.state.isCreate?'新建客户':'编辑客户'}
+              title={this.state.isCreate ? '新建客户' : '编辑客户'}
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
@@ -561,6 +685,9 @@ class Customer extends Component {
                       record: record,
                       drawerTitle: record.clientFrom
 
+                    }, () => {
+                      console.log(this.state.record.id);
+                      this.getFollowUpRecord()
                     })
                   },
                 })}
@@ -703,7 +830,7 @@ class Customer extends Component {
                               <div>
                                 <div>下次联系时间</div>
                                 <div>{this.state.record.nextTalkTime}</div>
-                                
+
                               </div>
                               <div>
                                 <div>创建人</div>
@@ -751,14 +878,18 @@ class Customer extends Component {
                       <TabPane tab="跟进记录" key="2">
 
                         <div style={{ padding: '0 0 20px 0' }}>
-                          <Input style={{ height: 100 }}></Input>
+                          <TextArea style={{ height: 100 }}
+                            onChange={this.onChangeFollowRecord}
+                          ></TextArea>
                         </div>
                         <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div>
                             记录类型
                             &nbsp;
                             &nbsp;
-                            <Select style={{ width: 200 }}>
+                            <Select style={{ width: 200 }}
+                              onChange={this.onChangeRecordType}
+                            >
                               <Option value='上门拜访'>上门拜访</Option>
                               <Option value='电话邀约'>电话邀约</Option>
                               <Option value='线下单杀'>线下单杀</Option>
@@ -770,21 +901,96 @@ class Customer extends Component {
                             &nbsp;
                             <ConfigProvider locale={zhCN}>
                               <Space direction="vertical" style={{ marginRight: "20px" }}>
-                                <DatePicker onChange={this.onChangeDate} />
+                                <DatePicker onChange={this.onChangeFollowDate} />
                               </Space>,
                             </ConfigProvider>
-                            <Checkbox style={{ fontSize: 12 }}>
+                            <Checkbox style={{ fontSize: 12 }} onChange={this.onChangeRemind} >
                               添加到日常提醒
                             </Checkbox>
                           </div>
                           <div>
-                            <Button size={'small'}>发布</Button>
+                            <Button size={'small'}
+                              onClick={this.createFollowUpRecord}
+                            >发布</Button>
                           </div>
                         </div>
                         <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
                           <Tabs defaultActiveKey="1" >
                             <TabPane tab="跟进记录" key="1">
-                              1
+
+                              {
+                                this.state.followUpRecordArr ? this.state.followUpRecordArr.map((item, index) => {
+                                  return (
+                                    <div key={index} style={{ margin: '30px 0' }}>
+                                      <div style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                        <div>
+                                          <span>跟进记录</span>
+                                          &nbsp;
+                                          &nbsp;
+                                          <Popconfirm
+                                            title="你确定要删除这条记录么?"
+                                            onConfirm={() => {
+                                              this.deleteFollowUpRecord(item.id)
+                                            }
+                                            }
+                                            onCancel={() => {
+                                              message.warning('已取消')
+                                            }}
+                                            okText="删除"
+                                            cancelText="取消"
+                                          >
+
+                                            <span className='iconfont icon-lajitong' ></span>
+                                          </Popconfirm>
+                                        </div>
+
+                                        <div style={{
+                                          display: 'flex',
+                                          flexDirection: 'row',
+                                          alignItems: 'center'
+                                        }}>
+                                          <div
+                                            style={{
+                                              width: '34px',
+                                              height: '34px',
+                                              backgroundColor: 'blue',
+                                              borderRadius: '50%',
+                                              color: 'white',
+                                              textAlign: 'center',
+                                              lineHeight: '34px',
+                                              marginRight: '8px'
+                                            }} F
+                                          >
+                                            {item.employeeAvatar ?
+                                              // <img src='https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic%2Fc8%2Fdd%2Fb9%2Fc8ddb934a69d90216f1b406cf3975475.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1627462261&t=4e52d02794c760fb28e678c680fa467e'  />
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                              :
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                            }
+                                          </div>
+                                          <div>
+
+
+                                            <div style={{ fontSize: '13px' }}>{item.employeeName}</div>
+                                            <div style={{ color: 'rgb(153, 153, 153)', marginTop: '3px', fontSize: '12px' }} >{item.createTime}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.followRecord}
+                                      </div>
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.recordType ? <Tag>{item.recordType}</Tag> : ''}
+                                        {item.nextTime ? <Tag>{item.nextTime}</Tag> : ''}
+                                      </div>
+                                    </div>
+                                  )
+                                })
+                                  :
+                                  ""
+                              }
+
                             </TabPane>
                             <TabPane tab="日志" key="2">
                               2
@@ -808,10 +1014,13 @@ class Customer extends Component {
                       <TabPane tab="相关团队" key="4">
                       </TabPane>
                       <TabPane tab="商机" key="5">
+                        <GetBizOpp value={this.state.record.id}></GetBizOpp>
                       </TabPane>
                       <TabPane tab="合同" key="6">
+                        <GetContract value={this.state.record.id}></GetContract>
                       </TabPane>
                       <TabPane tab="回款信息" key="7">
+                        <GetPayment value={this.state.record.id}></GetPayment>
                       </TabPane>
                       <TabPane tab="附件" key="8">
                       </TabPane>
