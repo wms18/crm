@@ -3,6 +3,7 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
+import GetProduct from "./getProduct";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
@@ -23,8 +24,9 @@ const { Content, Footer, Header } = Layout
 class Contract extends Component {
 
   componentDidMount() {
+    console.log(111);
     this.getContract()
-    this.getEmployeeName()
+    // this.getEmployeeName()
   }
 
   constructor(props) {
@@ -57,7 +59,7 @@ class Contract extends Component {
       record: "",
 
       // 搜素合同名称
-      keyword: '',
+      keyword:'', 
 
 
       // 新增产品信息
@@ -146,17 +148,17 @@ class Contract extends Component {
 
   getContract() {
     // 获取合同
-    axios.get(`${base.url}/contract/getContract?currentPage=` + this.state.currentPage + `&keyword=` + '' + `&limit=` + this.state.limit, {
+    console.log(222);
+    axios({
+      method: 'get',
+      url:`${base.url}/contract/getContract`,
       params: {
         token: this.state.token,
-        Keyword: this.state.keyword,
+        keyword: '',
+        currentPage: this.state.currentPage,
+        limit: this.state.limit
       },
     })
-      // axios.get('http://47.117.138.37:8088/contract/getContract?currentPage=1&keyword=&limit=10',{
-      //   params:{
-      //     token:'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZSI6IjE4ODg4ODg4ODg4IiwiaWQiOiIxIiwiZXhwIjoxNjI2MTY4NzI4fQ.8prMXY6lzhyG2td5Vh582kWGi33mQ0fVJS4MbROVfA8'
-      //   }
-      // })
       .then((res) => {
         console.log(res);
         if (res.data.code === "ERROR") {
@@ -167,6 +169,9 @@ class Contract extends Component {
             pagination: res.data.data.pagination
           })
         }
+      })
+      .catch((res) => {
+        console.log(res);
       })
   }
 
@@ -437,7 +442,7 @@ class Contract extends Component {
                   //   message:'合同状态组不能为空'
                   // ]}
                   >
-                    <Input  />
+                    <Input />
                   </Form.Item>
                 </div>
 
@@ -454,8 +459,8 @@ class Contract extends Component {
                     label="合同金额"
                     rules={[
                       {
-                        required:true,
-                        message:'合同金额不能为空'
+                        required: true,
+                        message: '合同金额不能为空'
                       }
                     ]}
                   >
@@ -491,15 +496,15 @@ class Contract extends Component {
                   //   message:'预计成交时间不能为空'
                   //   ]}
                   >
-                      <Input  />
+                    <Input />
                   </Form.Item>
                   <Form.Item
                     name="employeeCheckId"
                     label="审核人"
                     rules={[
                       {
-                        required:true,
-                        message:'审核人不能为空'
+                        required: true,
+                        message: '审核人不能为空'
                       }
                     ]}
                   >
@@ -522,7 +527,7 @@ class Contract extends Component {
                   </Form.Item>
                 </div>
                 <div>
-                <Form.Item
+                  <Form.Item
                     name="produceIds"
                     label="产品id"
                   >
@@ -834,6 +839,7 @@ class Contract extends Component {
                       <TabPane tab="合同" key="4">
                       </TabPane>
                       <TabPane tab="产品" key="5">
+                        <GetProduct value={this.state.record.id} ></GetProduct>
                       </TabPane>
                       <TabPane tab="相关团队" key="6">
                       </TabPane>

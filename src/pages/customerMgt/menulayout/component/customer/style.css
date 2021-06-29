@@ -1,38 +1,50 @@
 @import url('~antd/dist/antd.css');
-.ant-modal-body>form>div{
+.ant-modal-body>form>div {
     display: flex !important;
     justify-content: space-between !important;
     width: 420px;
     margin: 0 auto;
 }
-.ant-tabs-nav-wrap{
+
+.ant-tabs-nav-wrap {
     background-color: #F5F6F9 !important;
 }
-.ant-tabs-nav-list{
+
+.ant-tabs-nav-list {
     padding: 0 0 0 30px !important;
 }
-.ant-drawer-body{
+
+.ant-drawer-body {
     padding: 0 !important;
 }
-.ant-tabs-content-holder{
+
+.ant-tabs-content-holder {
     padding: 0 30px 30px !important;
 }
-.pro-info{
+
+.pro-info {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 500px;
 }
+
 /* .pro-info>div{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 200px;
 } */
-.pro-info>div>div{
+
+.pro-info>div>div {
     margin-bottom: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 200px;
+}
+
+.ant-modal-confirm-content {
+    padding-bottom: 20px !important;
+    margin-top: 20px !important;
 }

@@ -30,7 +30,15 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from '@ant-design/icons';
+import { createFromIconfontCN } from '@ant-design/icons';
 const { Header, Content, Footer, Sider } = Layout;
+
+const IconFont = createFromIconfontCN({
+  scriptUrl: [
+ '//at.alicdn.com/t/font_2607566_a8bvf81fzlt.js', // icon-home  icon-gouwucheman
+  ],
+});
+
 
 
 function Menulayout() {
@@ -53,46 +61,46 @@ function Menulayout() {
             height: '100vh',
             position: 'fixed',
             left: 0,
-            zIndex:1
+            zIndex: 1
           }}
         >
           <Creatpopover></Creatpopover>
           <Menu className='createitem' theme="dark" mode="inline" defaultSelectedKeys={['1']} >
-            <Menu.Item key="1" icon={<UserOutlined />}>
+            <Menu.Item key="1" icon={<IconFont type="icon-yibiaopan" />}>  
               <Link to='/customerMgt/' >仪表盘</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+            <Menu.Item key="2" icon={<IconFont type="icon-daiban" />}>
               <Link to='/customerMgt/todolist' >待办事项</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined />}>
+            <Menu.Item key="3" icon={<IconFont type='icon-i_xiansuo' />}>
               <Link to='/customerMgt/clue' >线索</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<BarChartOutlined />}>
+            <Menu.Item key="4" icon={<IconFont type='icon-kehu1' />}>
               <Link to='/customerMgt/customer' >客户</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<CloudOutlined />}>
+            <Menu.Item key="5" icon={<IconFont type='icon-ren1' />}>
               <Link to='/customerMgt/contacts' >联系人</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<AppstoreOutlined />}>
+            <Menu.Item key="6" icon={<IconFont type='icon-gonghai' />}>
               <Link to='/customerMgt/opensea' >公海</Link>
             </Menu.Item>
-            <Menu.Item key="7" icon={<TeamOutlined />}>
+            <Menu.Item key="7" icon={<IconFont type='icon-shangji' />}>
               <Link to='/customerMgt/bizOpp' >商机</Link>
             </Menu.Item>
-            <Menu.Item key="8" icon={<ShopOutlined />}>
+            <Menu.Item key="8" icon={<IconFont type='icon-hetong' />}>
               <Link to='/customerMgt/contract' >合同</Link>
             </Menu.Item>
-            <Menu.Item key="9" icon={<ShopOutlined />}>
+            <Menu.Item key="9" icon={<IconFont type='icon-qiandai1' />}>
               <Link to='/customerMgt/payment' >回款</Link>
             </Menu.Item>
-            <Menu.Item key="10" icon={<ShopOutlined />}>
+            <Menu.Item key="10" icon={<IconFont type='icon-chanpin' />}>
               <Link to='/customerMgt/product'>产品</Link>
             </Menu.Item>
           </Menu>
         </Sider>
         <Layout className="site-layout" style={{ marginLeft: 200 }}>
-          <Content style={{ margin: '60px 16px 0', overflow: 'initial',backgroundColor:'#fff',padding:'0 0 40px 0'  }}>
-      
+          <Content style={{ margin: '60px 16px 0', backgroundColor: '#fff', padding: '0 0 40px 0' }}>
+
             <div
               style={{
                 backgroundColor: '#fff',

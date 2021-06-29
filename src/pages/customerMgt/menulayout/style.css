@@ -7,3 +7,6 @@
   .site-layout-background>div{
     display: block !important;
   }
+  .ant-layout-content{
+    height: calc(100vh - 80px) !important;
+  }

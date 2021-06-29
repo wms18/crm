@@ -11,7 +11,7 @@ import {
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
-
+import GetBizOpp from './GetBizOpp'
 const { TabPane } = Tabs
 const { Option } = Select
 const { Search, TextArea } = Input
@@ -509,12 +509,15 @@ class Clue extends Component {
               onClick={this.setVisible}
             >新建线索</Button>
             <Modal
+              mask={false}
               visible={this.state.visible}
               title="新建线索"
               okText="确认"
               cancelText="取消"
+              // confirmLoading={true}
               onCancel={this.onCancel}
               onOk={this.submit}
+              bodyStyle={{ height: '280px', overflowY: 'auto' }}
 
             >
 
@@ -979,8 +982,9 @@ class Clue extends Component {
                             ""
                         }
                       </TabPane>
-                      <TabPane tab="操作记录" key="3">
-                      </TabPane>
+                      {/* <TabPane tab="商机" key="3">
+                        <GetBizOpp value={this.state.record.id} ></GetBizOpp>
+                      </TabPane> */}
                     </Tabs>
                   </div>
 

@@ -40,6 +40,9 @@ class Customer extends Component {
       followRecord: '',  //跟进记录的内容
       recordType: "",  //记录类型
 
+      //更改成交状态的显示框
+      changeDealStatus: false,
+      dealStatus: '',
 
       isCreate: true,
       formTitle: '新建客户',
@@ -95,9 +98,18 @@ class Customer extends Component {
     this.getFollowUpRecord = this.getFollowUpRecord.bind(this)
     this.onChangeFollowDate = this.onChangeFollowDate.bind(this)
     this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
+    this.dropdownMenu = this.dropdownMenu.bind(this)
+    this.onChangeDealStatus = this.onChangeDealStatus.bind(this)
 
   }
 
+
+  onChangeDealStatus(val) {
+    console.log(val);
+    this.setState({
+      dealStatus: val
+    })
+  }
 
   deleteFollowUpRecord(id) {
     console.log(id);
@@ -214,6 +226,85 @@ class Customer extends Component {
     const menu = (
       <Menu>
         <Menu.Item
+
+          onClick={() => {
+            Modal.confirm({
+              title: '提示',
+              icon: <ExclamationCircleOutlined />,
+              content: '确认放入公海么?',
+              okText: '确定',
+              okType: '',
+              cancelText: '取消',
+              onOk: () => {
+                // this.handleOk(id)//确认按钮的回调方法，在下面
+                // <Alert message="已取消转移" type="success" showIcon />
+                message.success('已成功放入公海')
+              }
+              ,
+              onCancel() {
+                message.warning('已取消放入公海')
+                // <Alert message="已取消转移" type="info" showIcon />
+              },
+            });
+          }}>
+          放入公海
+        </Menu.Item>
+
+        <Menu.Item
+          onClick={() => {
+            this.setState({
+              changeDealStatus: true
+            })
+          }}
+        >
+          更改成交状态
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            Modal.confirm({
+              title: '提示',
+              icon: <ExclamationCircleOutlined />,
+              content: '确定要锁定这个客户么？锁定后将不会掉入公海',
+              okText: '确认',
+              okType: '',
+              cancelText: '取消',
+              onOk: () => {
+                // this.handleOk(id)//确认按钮的回调方法，在下面
+                message.success('已成功锁定')
+              }
+              ,
+              onCancel() {
+                message.warning('已取消锁定')
+              },
+            });
+          }}
+        >
+          锁定
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            Modal.confirm({
+              title: '提示',
+              icon: <ExclamationCircleOutlined />,
+              content: '确定要解鎖这个客户么？',
+              okText: '确认',
+              okType: '',
+              cancelText: '取消',
+              onOk: () => {
+                // this.handleOk(id)//确认按钮的回调方法，在下面
+                message.success('已成功解鎖')
+              }
+              ,
+              onCancel() {
+                message.warning('已取消解锁')
+              },
+            });
+          }}
+        >
+          解锁
+        </Menu.Item>
+
+        <Menu.Item
           onClick={() => {
             Modal.confirm({
               title: '确认删除',
@@ -236,30 +327,7 @@ class Customer extends Component {
           删除
         </Menu.Item>
 
-        <Menu.Item
 
-          onClick={() => {
-            Modal.confirm({
-              title: '确认转移',
-              icon: <ExclamationCircleOutlined />,
-              content: '确认转移为商机么?',
-              okText: '转移',
-              okType: '',
-              cancelText: '取消',
-              onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                // <Alert message="已取消转移" type="success" showIcon />
-                message.success('已成功转移')
-              }
-              ,
-              onCancel() {
-                message.warning('已取消')
-                // <Alert message="已取消转移" type="info" showIcon />
-              },
-            });
-          }}>
-          转移为客户
-        </Menu.Item>
       </Menu>
     )
     return menu
@@ -683,7 +751,8 @@ class Customer extends Component {
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      drawerTitle: record.clientFrom
+                      drawerTitle: record.clientFrom,
+                      dealStatus: record.dealStatus
 
                     }, () => {
                       console.log(this.state.record.id);
@@ -772,8 +841,33 @@ class Customer extends Component {
 
 
                     <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
-                      <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
+                      <Button type='default' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
                     </Dropdown>
+
+                    <Modal
+                      visible={this.state.changeDealStatus}
+                      mask={false}
+                      title="更改成交状态"
+                      style={{ width: '400px !important' }}
+                      // onOk={}
+                      onCancel={() => {
+                        this.setState({
+                          changeDealStatus: false
+                        })
+                      }}
+                    >
+                      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
+                        <span>成交状态：</span>
+                        <Select showArrow={true} value={this.state.dealStatus}
+                          style={{ width: 350 }}
+                          onChange={this.onChangeDealStatus}
+                        >
+                          <Option value='已成交' >已成交</Option>
+                          <Option value='未成交' >未成交</Option>
+                        </Select>
+                      </div>
+
+                    </Modal>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px' }}>

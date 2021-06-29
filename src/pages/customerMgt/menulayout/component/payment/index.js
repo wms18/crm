@@ -5,7 +5,7 @@ import qs from 'qs'
 import './style.css'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space,Steps
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
@@ -542,7 +542,7 @@ class Payment extends Component {
               </div>
               <Drawer
                 mask={false}
-                title={this.state.returnNumber?this.state.returnNumber:'暂无'}
+                title={this.state.returnNumber ? this.state.returnNumber : '暂无'}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}
@@ -554,51 +554,7 @@ class Payment extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                    <Button
-                      type='primary'
-                      size={'small'}
-                      onClick={() => {
-                        this.setTransferVisible()
-                      }}
-                    >转移</Button>
 
-                    <Modal
-                      visible={this.state.transferVisible}
-                      title="转移回款"
-                      // okText="保存"
-                      // cancelText="取消"
-                      // onOk={this.transferSubmit}
-                      footer={[
-                        <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
-                        <Button onClick={this.setTransferVisible} type='default'>取消</Button>
-                      ]}
-                    >
-                      <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
-
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
-                        </div>
-                      </div>
-
-                    </Modal>
                     <Button type='primary' size={'small'}
                       style={{ marginLeft: '10px' }}
                       onClick={() => {
@@ -613,8 +569,7 @@ class Payment extends Component {
                     >编辑</Button>
 
 
-                    {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
-                    <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
+                    <Button type='default' size={'small'} style={{ marginLeft: '10px' }}
                       onClick={() => {
                         Modal.confirm({
                           title: '确认删除',
@@ -633,15 +588,14 @@ class Payment extends Component {
                           },
                         });
                       }}
-                    >刪除</Button>
-                    {/* </Dropdown> */}
+                    >删除</Button>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>客户名称</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.clientName  }</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.clientName}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -741,74 +695,8 @@ class Payment extends Component {
                           </div>
                         </div>
                       </TabPane>
-                      <TabPane tab="跟进记录" key="2">
-
-                        <div style={{ padding: '0 0 20px 0' }}>
-                          <Input style={{ height: 100 }}></Input>
-                        </div>
-                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            记录类型
-                            &nbsp;
-                            &nbsp;
-                            <Select style={{ width: 200 }}>
-                              <Option value='上门拜访'>上门拜访</Option>
-                              <Option value='电话邀约'>电话邀约</Option>
-                              <Option value='线下单杀'>线下单杀</Option>
-                            </Select>
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                            下次联系时间
-                            &nbsp;
-                            &nbsp;
-                            <ConfigProvider locale={zhCN}>
-                              <Space direction="vertical" style={{ marginRight: "20px" }}>
-                                <DatePicker onChange={this.onChangeDate} />
-                              </Space>,
-                            </ConfigProvider>
-                            <Checkbox style={{ fontSize: 12 }}>
-                              添加到日常提醒
-                            </Checkbox>
-                          </div>
-                          <div>
-                            <Button size={'small'}>发布</Button>
-                          </div>
-                        </div>
-                        <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
-                          <Tabs defaultActiveKey="1" >
-                            <TabPane tab="跟进记录" key="1">
-                              1
-                            </TabPane>
-                            <TabPane tab="日志" key="2">
-                              2
-                            </TabPane>
-                            <TabPane tab="审批" key="3">
-                              3
-                            </TabPane>
-                            <TabPane tab="任务" key="4">
-                              4
-                            </TabPane>
-                            <TabPane tab="日程" key="5">
-                              5
-                            </TabPane>
-                          </Tabs>
-                        </div>
-                      </TabPane>
 
 
-                      <TabPane tab="联系人" key="3">
-                      </TabPane>
-                      <TabPane tab="合同" key="4">
-                      </TabPane>
-                      <TabPane tab="产品" key="5">
-                      </TabPane>
-                      <TabPane tab="相关团队" key="6">
-                      </TabPane>
-                      <TabPane tab="附件" key="7">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="8">
-                      </TabPane>
-                     
                     </Tabs>
                   </div>
 

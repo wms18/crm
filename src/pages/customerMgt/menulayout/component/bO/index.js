@@ -3,6 +3,7 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
+import GetProduct from "./getProduct";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
@@ -27,15 +28,15 @@ class BizOpp extends Component {
     axios.get('http://47.117.138.37:8088/dashboard/powerPoint', {
       params: {
         token: this.state.token,
-      } 
+      }
       ,
       data: qs.stringify({
         startTime: '2000-01-01',
         endTime: '2021-06-01',
         ids: [{
-          ids:1
+          ids: 1
         },
-      {ids:2}],
+        { ids: 2 }],
 
       })
     })
@@ -815,20 +816,11 @@ class BizOpp extends Component {
                           </Tabs>
                         </div>
                       </TabPane>
-
-
-                      <TabPane tab="联系人" key="3">
-                      </TabPane>
-                      <TabPane tab="合同" key="4">
-                      </TabPane>
                       <TabPane tab="产品" key="5">
+                      <GetProduct value={this.state.record.commercialOpportunityId}></GetProduct>
                       </TabPane>
-                      <TabPane tab="相关团队" key="6">
-                      </TabPane>
-                      <TabPane tab="附件" key="7">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="8">
-                      </TabPane>
+
+                      
 
                     </Tabs>
                   </div>
