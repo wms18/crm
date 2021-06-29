@@ -23,6 +23,7 @@ class TodoList extends Component {
   componentDidMount() {
     this.getTodoList()
     this.getEmployeeName()
+
   }
 
   constructor(props) {
@@ -33,9 +34,11 @@ class TodoList extends Component {
       token: window.localStorage.getItem('token'),
 
 
-      Data: Data.columnsCustomer,
+      Data: Data.columnsGetCustomer,
       current: '1',
       title: '我负责的客户',
+      path: '/backlog/getMyClient?',
+
 
       isCreate: true,
       formTitle: '新建待办事项',
@@ -90,39 +93,53 @@ class TodoList extends Component {
     })
     switch (e.key) {
       case '1':
-        this.getTodoList(e.key)
         this.setState({
           title: '分配给我的客户',
-          Data: Data.columnsGetCustomer
-
+          Data: Data.columnsGetCustomer,
+          path: '/backlog/getMyClient?'
+        }, () => {
+          this.getTodoList(e.key)
         })
         break;
       case '2':
         this.getTodoList(e.key)
         this.setState({
           title: '分配给我的线索',
-          Data: Data.columnsClue
+          Data: Data.columnsClue,
+          path: '/backlog/getMyClue?'
+        }, () => {
+          this.getTodoList(e.key)
         })
         break;
       case '3':
         this.getTodoList(e.key)
         this.setState({
           title: '今日需联系的客户',
-          Data: Data.columnsGetCustomer
+          Data: Data.columnsGetCustomer,
+          path: '/backlog/getTodayClient?'
+        }, () => {
+          this.getTodoList(e.key)
         })
         break;
       case '4':
         this.getTodoList(e.key)
         this.setState({
           title: '未审核的合同',
-          Data: Data.columnsContract
+          Data: Data.columnsContract,
+          path: '/backlog/unCheckedContract?'
+
+        }, () => {
+          this.getTodoList(e.key)
         })
         break;
       case '5':
         this.getTodoList(e.key)
         this.setState({
           title: '即将进入公海的客户',
-          Data: Data.columnsGetCustomer
+          Data: Data.columnsGetCustomer,
+          path: '/backlog/willIntoSea?'
+        }, () => {
+          this.getTodoList(e.key)
         })
         break;
     }
@@ -186,34 +203,11 @@ class TodoList extends Component {
     // setTransferVisible
   }
 
-  getTodoList(current) {
-
-    let path = ''
-
-    switch (current) {
-      case '1':
-        path = '/backlog/getMyClient?'
-        break;
-      case '2':
-        path = '/backlog/getMyClue?'
-        break;
-      case '3':
-        path = '/backlog/getTodayClient?'
-        break;
-      case '4':
-        path = '/backlog/unCheckedContract?'
-        break;
-      case '5':
-        path = '/backlog/willIntoSea?'
-        break;
-    }
-
-
-
+  getTodoList() {
     //获取待办事项 
     axios({
       method: 'get',
-      url: base.url + path + `currentPage=` + this.state.currentPage + `&limit=` + this.state.limit,
+      url: base.url + this.state.path + `currentPage=` + this.state.currentPage + `&limit=` + this.state.limit,
       params: {
         token: this.state.token,
         keyword: this.state.keyword,
@@ -317,15 +311,7 @@ class TodoList extends Component {
         </div >
 
         <div>
-          <div style={{ height: 20 }}
-            onClick={() => {
-              console.log(this.state.employeeArr)
-            }}
-          >
-
-          </div  >
-
-          <div style={{ display: 'flex', flexDirection: 'row' }} >
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
             <div>
               <Menu
                 theme={"light"}
@@ -343,8 +329,18 @@ class TodoList extends Component {
                 <Menu.Item key='5'>即将进入公海的客户</Menu.Item>
               </Menu>
             </div>
+            <div style={{ height: 'calc(100vh - 152px)', width: '10px', backgroundColor: '#f5f6f9' }}>
+
+            </div>
             <div >
-              <div style={{ height: 20, marginRight: '20px' }}
+              <div style={{
+                height: '40px',
+                marginRight: '20px',
+                marginRight: '20px',
+                padding: ' 15px',
+                marginBottom: '20px',
+                fontSize: '18px'
+              }}
                 onClick={() => {
                   console.log(this.state.employeeArr)
                 }}
