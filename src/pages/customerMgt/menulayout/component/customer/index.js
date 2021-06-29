@@ -1056,7 +1056,6 @@ class Customer extends Component {
                                             }} F
                                           >
                                             {item.employeeAvatar ?
-                                              // <img src='https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic%2Fc8%2Fdd%2Fb9%2Fc8ddb934a69d90216f1b406cf3975475.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1627462261&t=4e52d02794c760fb28e678c680fa467e'  />
                                               <span>{item.employeeName.slice(0, 2)}</span>
                                               :
                                               <span>{item.employeeName.slice(0, 2)}</span>

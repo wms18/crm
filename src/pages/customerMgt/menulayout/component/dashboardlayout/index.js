@@ -1,5 +1,5 @@
 import { Layout, Button, Select } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import './style.css';
 import Alertmodal from '../../../components/Alertmodal'
 import { AlignCenterOutlined, HomeOutlined } from '@ant-design/icons';
@@ -7,11 +7,60 @@ import Topleft from './component/topleft'
 import Toprightt from './component/topright'
 import Footleft from './component/footleft'
 import Footright from './component/footright'
+import axios from 'axios';
+import base from '../../../../../axios/axios';
+import { useEffect } from 'react';
 const { Header, Content, Footer, } = Layout;
 const { Option } = Select;
 
 
 function Dashboaedlayout() {
+
+    let [token,setToken]=useState(window.localStorage.getItem('token'))
+    
+    useEffect(()=>{
+        getPpt()
+        getEmployee()
+    },[])
+
+    function getPpt() {
+        axios({
+            method:'get',
+            url:`${base.url}/dashboard/powerPoint`,
+            params:{
+                token:token,
+                endTime:'2020',
+                ids:1,
+                startTime:'2021',
+
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+        })
+        .catch((res)=>{
+            console.log(res);
+        })
+    }
+    function getEmployee() {
+        axios({
+            method:'get',
+            url:`${base.url}/employee/getEmployee`,
+            params:{
+                token:token,
+                currentPage:1,
+                // keyword:'',
+                limit:10,
+            }
+        })
+        .then((res)=>{
+            console.log(res);
+        })
+        .catch((res)=>{
+            console.log(res);
+        })
+    }
+
     return (
         <div>
             <div style={{ display: 'flex' ,justifyContent:'space-between',marginBottom:'10px',backgroundColor:'#f5f6f9',padding:'24px'}}>
