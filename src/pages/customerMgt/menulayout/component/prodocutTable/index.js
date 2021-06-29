@@ -395,6 +395,7 @@ class ProductTable extends Component {
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
+              bodyStyle={{height:350,overflowY:'auto'}}
             >
               <Form
                 layout="vertical"
@@ -581,8 +582,8 @@ class ProductTable extends Component {
                     >编辑</Button>
 
 
-                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft">
-                      <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
+                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']} >
+                      <Button type='default' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
                     </Dropdown>
                   </div>
 
@@ -680,10 +681,6 @@ class ProductTable extends Component {
 
                           </div>
                         </div>
-                      </TabPane>
-                      <TabPane tab="跟进记录" key="2">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="3">
                       </TabPane>
                     </Tabs>
                   </div>

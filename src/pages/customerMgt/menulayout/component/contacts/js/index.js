@@ -173,6 +173,55 @@ const Data = {
       },
     },
   ],
+  columnsBizOpp: [
+    {
+      title: '商机名称',
+      dataIndex: 'name',
+      key: '1',
+      sorter: {
+        compare: (a, b) => a.name.charCodeAT(0) - b.name.charCodeAT(0),
+        multiple: 3,
+      }
+    },
+    {
+      title: '商机金额',
+      dataIndex: 'totalPrice',
+      key: '2',
+      sorter: {
+        compare: (a, b) => a.totalPrice - b.totalPrice,
+        multiple: 3,
+      },
+    },
+    {
+      title: '客户名称',
+      dataIndex: 'clientName',
+      key: '3',
+      sorter: {
+        compare: (a, b) => a.clientName.charCodeAT(0) - b.clientName.charCodeAT(0),
+        multiple: 3,
+      },
+    },
+    {
+      title: '商机状态组',
+      dataIndex: 'commercialStatusGroup',
+      key: '4',
+      sorter: {
+        compare: (a, b) => a.commercialStatusGroup.charCodeAT(0) - b.commercialStatusGroup.charCodeAT(0),
+        multiple: 3,
+      },
+
+    },
+    {
+      title: '商机状态',
+      dataIndex: 'commercialStage',
+      key: '5',
+      sorter: {
+        compare: (a, b) => a.commercialStage.charCodeAT(0) - b.commercialStage.charCodeAT(0),
+        multiple: 3,
+      },
+
+    },
+  ],
 
   options: [
     {

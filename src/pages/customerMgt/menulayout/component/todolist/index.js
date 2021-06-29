@@ -76,11 +76,8 @@ class TodoList extends Component {
     this.setVisible = this.setVisible.bind(this)
     this.onCancel = this.onCancel.bind(this)
     this.onCreate = this.onCreate.bind(this)
-    this.submit = this.submit.bind(this)
     this.getTodoList = this.getTodoList.bind(this)
-    this.createTodoList = this.createTodoList.bind(this)
     this.onClose = this.onClose.bind(this)
-    this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
@@ -93,34 +90,39 @@ class TodoList extends Component {
     })
     switch (e.key) {
       case '1':
+        this.getTodoList(e.key)
         this.setState({
           title: '分配给我的客户',
-          Data: Data.columnsCustomer
+          Data: Data.columnsGetCustomer
 
         })
         break;
       case '2':
+        this.getTodoList(e.key)
         this.setState({
           title: '分配给我的线索',
           Data: Data.columnsClue
         })
         break;
       case '3':
+        this.getTodoList(e.key)
         this.setState({
           title: '今日需联系的客户',
-          Data: Data.columnsCustomer
+          Data: Data.columnsGetCustomer
         })
         break;
       case '4':
+        this.getTodoList(e.key)
         this.setState({
           title: '未审核的合同',
           Data: Data.columnsContract
         })
         break;
       case '5':
+        this.getTodoList(e.key)
         this.setState({
           title: '即将进入公海的客户',
-          Data: Data.columnsCustomer
+          Data: Data.columnsGetCustomer
         })
         break;
     }
@@ -184,9 +186,34 @@ class TodoList extends Component {
     // setTransferVisible
   }
 
-  getTodoList() {
-    //获取待办事项
-    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+  getTodoList(current) {
+
+    let path = ''
+
+    switch (current) {
+      case '1':
+        path = '/backlog/getMyClient?'
+        break;
+      case '2':
+        path = '/backlog/getMyClue?'
+        break;
+      case '3':
+        path = '/backlog/getTodayClient?'
+        break;
+      case '4':
+        path = '/backlog/unCheckedContract?'
+        break;
+      case '5':
+        path = '/backlog/willIntoSea?'
+        break;
+    }
+
+
+
+    //获取待办事项 
+    axios({
+      method: 'get',
+      url: base.url + path + `currentPage=` + this.state.currentPage + `&limit=` + this.state.limit,
       params: {
         token: this.state.token,
         keyword: this.state.keyword,
@@ -206,96 +233,13 @@ class TodoList extends Component {
   }
 
 
-  createTodoList() {
-    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    console.log(data);
-    console.log(this.state.submissionTime);
-    var reg = /\s/;
-    if (
-      0 > 1
-      // data.nextTalkTime == undefined || data.clientLevel == undefined
-      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
-      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
-      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
-
-    ) {
-      message.error('请填写必填选项并不要输入空格');
-    } else {
-      axios({
-        method: "post",
-        url: `${base.url}/commercialOpportunity/create`,
-        params: {
-          token: this.state.token,
-        },
-        // .replace(/\s+/g,'')
-        data: qs.stringify({
-          clientId: data.clientId,
-          commercialPrice: data.commercialPrice,
-          commercialStage: data.commercialStage,
-          commercialStatusGroup: data.commercialStatusGroup,
-          content: data.content,
-          // id: data.id,
-          discount: data.discount,
-          name: data.name,
-          produceIds: data.produceIds,
-          submissionTime: this.state.submissionTime,
-          totalPrice: data.totalPrice,
-        })
-      }).then((res) => {
-        console.log(res);
-        if (res.data.code === "ERROR") {
-          message.error('请重试');
-          // this.onCancel()
-        } else {
-          message.success(res.data.message);
-          // this.onCancel()
-
-          this.getTodoListt()
-        }
-      }).catch((error) => {
-        console.log(error);
-      })
-    }
-
-  }
 
 
 
-  formRef = React.createRef()
-  submit() {
-
-    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    console.log(data)
-    this.createTodoList()
-
-  }
 
 
-  onSearch(val) {
-    console.log(val);
-    console.log(typeof (val));
-    //获取待办事项
-    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
-      params: {
-        token: this.state.token,
-        keyword: val
-      },
-      // data: qs.stringify({
-      // })
-    })
-      .then((res) => {
-        console.log(res);
-        if (res.data.code === "ERROR") {
 
-        }
-        else {
-          this.setState({
-            tableArr: res.data.data.data,
-            pagination: res.data.data.pagination
-          })
-        }
-      })
-  }
+
 
 
   onClose() {
@@ -317,7 +261,6 @@ class TodoList extends Component {
     }, () => {      //setstate异步回调箭头函数
       this.getTodoList()
     })
-
 
 
   }

@@ -3,6 +3,7 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
+import GetBizOpp from './GetBizOpp'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space
@@ -84,18 +85,18 @@ class Contacts extends Component {
 
 
 
-  createFollowupRecord(){
-    axios.post(`${base.url}/follow/add`,{
-      params:{
-        token:this.state.token
+  createFollowupRecord() {
+    axios.post(`${base.url}/follow/add`, {
+      params: {
+        token: this.state.token
       },
-      data:qs.stringify({
-        businessId:this.state.record.id,
-        businessTypeId:1,
-        followRecord:this.state.followRecord,
-        nextTime:this.state.nextTalkTime,
-        recordType:'上门拜访',
-        remind:0
+      data: qs.stringify({
+        businessId: this.state.record.id,
+        businessTypeId: 1,
+        followRecord: this.state.followRecord,
+        nextTime: this.state.nextTalkTime,
+        recordType: '上门拜访',
+        remind: 0
 
       })
 
@@ -191,6 +192,7 @@ class Contacts extends Component {
     // setTransferVisible
   }
 
+
   getContacts() {
     //获取联系人
     axios.get(`${base.url}/linkman/my-responsible?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
@@ -226,12 +228,11 @@ class Contacts extends Component {
       message.error('请填写必填选项并不要输入空格');
     } else {
       axios({
-        method: "post",
-        url: `${base.url}/linkman/add?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit,
+        method: 'post',
+        url: `${base.url}/linkman/add`,
         params: {
           token: this.state.token,
         },
-        // .replace(/\s+/g,'')
         data: qs.stringify({
           clientId: data.clientId,
           content: data.content,
@@ -245,20 +246,21 @@ class Contacts extends Component {
           role: data.role,
           sex: data.sex,
         })
-      }).then((res) => {
-        console.log(res);
-        if (res.data.code === "ERROR") {
-          message.error('请重试');
-          // this.onCancel()
-        } else {
-          message.success(res.data.message);
-          // this.onCancel()
-
-          this.getContactst()
-        }
-      }).catch((error) => {
-        console.log(error);
       })
+        .then((res) => {
+          console.log(res);
+          if (res.data.code === "ERROR") {
+            message.error('请重试');
+            // this.onCancel()
+          } else {
+            message.success(res.data.message);
+            // this.onCancel()
+
+            this.getContacts()
+          }
+        }).catch((error) => {
+          console.log(error);
+        })
     }
 
   }
@@ -415,6 +417,7 @@ class Contacts extends Component {
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
+              bodyStyle={{ height: '280px', overflowY: 'auto' }}
 
             >
 
@@ -454,7 +457,10 @@ class Contacts extends Component {
                     label="是否未关键决策人"
 
                   >
-                    <Input />
+                    <Select>
+                      <Option value={true} >是</Option>
+                      <Option value={false} >否</Option>
+                    </Select>
                   </Form.Item>
                   <Form.Item
                     name="detailAddress"
@@ -526,7 +532,10 @@ class Contacts extends Component {
                     name="sex"
                     label="性别"
                   >
-                    <Input />
+                    <Select>
+                      <Option value={true}>男</Option>
+                      <Option value={false}>女</Option>
+                    </Select>
                   </Form.Item>
                 </div>
 
@@ -670,7 +679,7 @@ class Contacts extends Component {
                     {/* </Dropdown> */}
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px',alignItems:'baseline' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>联系人级别</span>
@@ -823,20 +832,8 @@ class Contacts extends Component {
                         </div>
                       </TabPane>
 
-
-                      <TabPane tab="联系人" key="3">
-                      </TabPane>
-                      <TabPane tab="相关团队" key="4">
-                      </TabPane>
                       <TabPane tab="商机" key="5">
-                      </TabPane>
-                      <TabPane tab="合同" key="6">
-                      </TabPane>
-                      <TabPane tab="回款信息" key="7">
-                      </TabPane>
-                      <TabPane tab="附件" key="8">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="9">
+                        <GetBizOpp value={this.state.record.id} ></GetBizOpp>
                       </TabPane>
                     </Tabs>
                   </div>
