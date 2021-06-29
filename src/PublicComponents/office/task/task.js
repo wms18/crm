@@ -1,5 +1,5 @@
 import './task.css'
-import {ConfigProvider, Input, Space} from 'antd';
+import {ConfigProvider, Input, Space, Tag} from 'antd';
 import {Modal, Button, Drawer, Checkbox, Select, Popover, TreeSelect, Calendar, Popconfirm, message} from 'antd';
 import NewTask from "./newtask";
 import '../calendar/calendar.css'
@@ -11,7 +11,6 @@ import 'moment/locale/zh-cn';
 import axios from "axios";
 import base from "../../../axios/axios";
 import qs from 'qs'
-
 
 moment.locale('zh-cn');
 
@@ -39,23 +38,19 @@ function Task() {
     let [taskList, setTaskList] = useState([]) //任务列表
     let [taskId, setTaskId] = useState('')   //任务id
     let [charge, setCharge] = useState([])   //负责人
-    let [taskAddLabels, setTaskAddLabels] = useState('') //任务添加标签
-    let [labelId, setLabelId] = useState([]) //任务标签id
     let [timeOver, setTimeOver] = useState('')   //截止日期
     let [taskPrior, setTaskPrior] = useState('') //优先级
     let [taskContent, setTaskContent] = useState('') //描述
     let [client, setClient] = useState([])   //关联客户
     let [newClient, setNewClient] = useState([])
     let [personInformation, setPersonInformation] = useState('') //个人信息
-    let [beginTime,setBeginTime] = useState('') //评论时间
+    let [beginTime, setBeginTime] = useState('') //评论时间
     const {Search} = Input;
     const {SHOW_PARENT} = TreeSelect;
     let [data, setData] = useState('')
-
-    let [tags,setTags] = useState([])   //标签
-    let [inputVisible,setInputVisible] = useState(false)
-    let [inputValue,setInputValue] = useState('')
-
+    let [addStore, setAddStore] = useState('')   //添加标签库
+    let [taskText, setTaskText] = useState('')   //评论
+    let [textContent, setTextContent] = useState([]) //评论内容
     useEffect(() => {
         myTask()
         getInformation()
@@ -63,7 +58,7 @@ function Task() {
         allLabel()
         taskclient()
     }, [taskId])
-
+    //标签
     let handleMessage = (value) => {
         data = value
         setData(data)
@@ -86,7 +81,7 @@ function Task() {
                     1: data.clientId,
                     2: data.manId,
                     3: data.businessId,
-                    // 4:data.contractId,
+                    4: data.contractId,
                 }
             }
         }).then((response) => {
@@ -121,29 +116,50 @@ function Task() {
     const children = [];
 
     for (let i = 0; i < taskAllLabel.length; i++) {
-        children.push(<Option key={i}>{taskAllLabel[i].labelName}</Option>);
+        children.push(<Option key={taskAllLabel[i].id}>{taskAllLabel[i].labelName}</Option>);
     }
     //添加标签
-    let handleChangeLabel = (value) => {
-        console.log(Number(value.splice(-1)) + 1);
+    let handleChangeLabel = (value, key) => {
+
         axios({
             method: 'post',
             url: base.url + '/task/add-label',
             params: {
                 token: token,
                 id: taskId,
-                labelId: Number(value.splice(-1)) + 1,
+                labelId: value,
             }
         }).then((response) => {
             console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
+            } else {
+                allLabels()
             }
         }).catch((error) => {
             alert(error)
         })
     }
 
+//新增标签
+    let addLabels = () => {
+        console.log(addStore)
+        axios({
+            method: 'post',
+            url: base.url + '/task/addLabelStore?token=' + token,
+            data: qs.stringify({
+                label: addStore
+            })
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'SUCCESS') {
+                setAddStore('')
+                allLabel()
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+    }
     const contentLabel = (
         <div style={{width: '300px', height: '200px'}}>
             <Select
@@ -151,39 +167,52 @@ function Task() {
                 allowClear
                 style={{width: '100%'}}
                 placeholder="请选择标签"
-                onChange={handleChangeLabel}
+                onSelect={handleChangeLabel}
+                autoClearSearchValue={false}
             >
-
                 {children}
             </Select>
-            <div style={{position:'absolute',bottom:'23px',left:'42%',color:'#3e84e9',cursor:'pointer'}}
-            // onClick={}
-            >新增标签</div>
 
+            <Input placeholder="新增标签"
+                   value={addStore}
+                   onChange={(e) => {
+                       setAddStore(e.target.value)
+                   }}
+                   style={{position: 'absolute', bottom: '60px', left: '0', color: '#3e84e9', cursor: 'pointer'}}/>
+            <Button
+                onClick={addLabels}
+                style={{
+                    position: 'absolute',
+                    bottom: '15px',
+                    left: '10px',
+                    color: '#3e84e9',
+                    cursor: 'pointer'
+                }}>保存</Button>
         </div>
+
     );
+
     //删除标签
     let confirmLabel = (id) => {
-        console.log(id);
-        // axios({
-        //     method: 'post',
-        //     url: base.url + '/task/delete-label',
-        //     params: {
-        //         token: token,
-        //         id: taskId,
-        //         labelId: id,
-        //     }
-        // }).then((response) => {
-        //     console.log(response)
-        //     if (response.data.code === 'ERROR') {
-        //         alert(response.data.message)
-        //         return
-        //     } else {
-        //         allLabels()
-        //     }
-        // }).catch((error) => {
-        //     alert(error)
-        // })
+        axios({
+            method: 'post',
+            url: base.url + '/task/delete-label',
+            params: {
+                token: token,
+                id: taskId,
+                labelId: id,
+            }
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+                return
+            } else {
+                allLabels()
+            }
+        }).catch((error) => {
+            alert(error)
+        })
         message.success('确认删除');
     }
 
@@ -216,31 +245,30 @@ function Task() {
         setIsBusinessModalVisible(true);
     };
     //客户接口
-    let taskclient = () => {
+    let taskclient = (value) => {
+        console.log(idsObj)
         axios({
-            method: 'get',
-            url: base.url + '/client/getClient?token=' + token,
+            method: 'post',
+            url: base.url + '/task/linkBusiness?token=' + token,
+            data: {
+                linkBusinessMap: {
+                    1: idsObj.clientId,
+                    2: idsObj.manId,
+                    3: idsObj.businessId,
+                    4: idsObj.contractId,
+                },
+                taskId: taskId,
+            }
+
         }).then((response) => {
             console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
-            } else {
-                client = response.data.data.data
-                setClient(client)
             }
         }).catch((error) => {
             alert(error)
         })
-        if (idsObj.clientId.length > 0) {
-            for (let i = 0; i < client.length; i++) {
-                for (let j = 0; j < idsObj.clientId.length; j++) {
-                    if (client[i].id === idsObj.clientId[j]) {
-                        newClient.push(client[i].clientName)
-                        setNewClient(newClient)
-                    }
-                }
-            }
-        }
+
     }
 
     //参与人
@@ -295,6 +323,38 @@ function Task() {
     //添加评论
     let taskAddComment = () => {
         setHiddenComment(!hiddenComment)
+    }
+    //保存
+    let taskAddCommentOk = () => {
+        setHiddenComment(!hiddenComment)
+        axios({
+            method: 'post',
+            url: base.url + '/task/addComment',
+            params: {
+                token: token,
+                content: taskText,
+                taskId: taskId,
+                id: personInformation.id
+            }
+        }).then((response) => {
+            // console.log(response)
+            if (response.data.code === 'SUCCESS') {
+                setTaskText('')
+                showDrawer(taskId)
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+    }
+    //评论内容
+    let handleText = (value) => {
+        taskText = value
+        setTaskText(taskText)
+    }
+    //取消
+    let taskAddCommentCancle = () => {
+        setHiddenComment(!hiddenComment)
+        setTaskText('')
     }
     //抽屉表头优先级
     const content = (
@@ -358,7 +418,7 @@ function Task() {
             method: 'get',
             url: base.url + '/task/task-information?token=' + token + '&id=' + id,
         }).then((response) => {
-            console.log(response)
+            // console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
@@ -369,6 +429,7 @@ function Task() {
                 setTaskContent(response.data.data.content)
                 setTaskMan(response.data.data.employeesName)
                 setBeginTime(response.data.data.beginTime)
+                setTextContent(response.data.data.comments)
             }
         }).catch((error) => {
             alert(error)
@@ -480,7 +541,7 @@ function Task() {
             mehtod: 'get',
             url: base.url + '/task/my-task?token=' + token,
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
@@ -496,9 +557,9 @@ function Task() {
             method: 'get',
             url: base.url + '/task/task-label?token=' + token + '&id=' + taskId,
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
-                alert(response.data.message)
+                // alert(response.data.message)
             } else {
                 setTaskAllLabelName(response.data.data)
             }
@@ -533,6 +594,24 @@ function Task() {
     let cancel = (e) => {
         console.log(e);
         message.error('取消删除');
+    }
+    //删除评论
+    let deleteContent = (id) => {
+        axios({
+            method: 'post',
+            url: base.url + '/task/deleteComment',
+            params: {
+                token: token,
+                id: id
+            }
+        }).then((response) => {
+            // console.log(response)
+            if (response.data.code === 'SUCCESS') {
+                showDrawer(taskId)
+            }
+        }).catch((error) => {
+            alert(error)
+        })
     }
     return (
         <div>
@@ -688,22 +767,11 @@ function Task() {
                                 <div>
                                     描述：
                                     <span>{taskContent}</span>
-                                    <div style={{color: '#3E84E9', cursor: 'pointer'}}
-                                         onClick={taskDescribe}>添加描述
-                                    </div>
-                                    <div className={hidden === true ? 'hidden' : ''}>
-                                        <TextArea rows={4}/>
-                                        <div style={{margin: '10px 0'}}>
-                                            <Button type="primary" style={{marginRight: '20px'}}
-                                                    onClick={taskDescribe}>保存</Button>
-                                            <Button onClick={taskDescribe}>取消</Button>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div style={{margin: '30px 0'}}>
                                     参与人：{taskMan.map((item, index) => {
                                     return (
-                                        <span key={index}>{item}</span>
+                                        <span key={index} style={{margin: '0 10px'}}>{item}</span>
                                     )
                                 })}
 
@@ -718,13 +786,7 @@ function Task() {
                                 </div>
                                 <div style={{marginBottom: '30px'}}>
                                     关联业务
-                                    {
-                                        newClient.map((item, index) => {
-                                            return (
-                                                <div key={index}>客户：{item}</div>
-                                            )
-                                        })
-                                    }
+
                                     <div className={'linkBusiness'} type="primary" onClick={showBusinessModal}
                                          style={{cursor: 'pointer'}}>
                                         关联业务
@@ -743,9 +805,10 @@ function Task() {
                                            }}>
                                         <LinkBusiness onOk={(value) => {
                                             console.log("孙子传给儿子的值", value)
-                                            setIdsObj(value || initIdsObj)
+                                            idsObj = value
+                                            setIdsObj(idsObj || initIdsObj)
                                             setIsBusinessModalVisible(false);
-                                            taskclient()
+                                            taskclient(value)
                                         }}></LinkBusiness>
                                     </Modal>
                                 </div>
@@ -759,28 +822,43 @@ function Task() {
                                         <span onClick={taskAddComment} className={'taskAddComment'}>添加评论</span>
                                     </div>
                                     <div className={hiddenComment === true ? 'hidden' : ''}>
-                                        <TextArea rows={4}/>
+                                        <TextArea rows={4} value={taskText} onChange={(e) => {
+                                            handleText(e.target.value)
+                                        }}/>
                                         <div style={{margin: '10px 0'}}>
                                             <Button type="primary" style={{marginRight: '20px'}}
-                                                    onClick={taskAddComment}>保存</Button>
-                                            <Button onClick={taskAddComment}>取消</Button>
+                                                    onClick={taskAddCommentOk}>保存</Button>
+                                            <Button onClick={taskAddCommentCancle}>取消</Button>
                                         </div>
                                     </div>
-                                    <div style={{marginLeft: '43px'}} className={'taskReply'}>
-                                        <div>
+                                    {textContent.map((item, index) => {
+                                        return (
+                                            <div>
+                                                <div style={{marginLeft: '43px'}} className={'taskReply'}>
+                                                    <div>
                                             <span>
                                                 <img style={{width: '30px', height: '30px', borderRadius: '50%'}}
                                                      src={personInformation.avatar} alt=""/>
                                             </span>
-                                            <span style={{margin: '0 20px'}}>{personInformation.username}</span>
-                                            <span>{beginTime}</span>
-                                        </div>
-                                        <div>
-                                            <span style={{marginRight: '20px'}}>删除</span>
-                                            <span>回复</span>
-                                        </div>
-                                    </div>
+                                                        <span
+                                                            style={{margin: '0 20px'}}>{personInformation.username}</span>
+                                                        <span>{beginTime}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span style={{marginRight: '20px'}} onClick={() => {
+                                                            deleteContent(item.id)
+                                                        }}>删除</span>
+                                                        <span>回复</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div className={'textContent'} key={index}>{item.content}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
                                 </div>
+
                             </div>
                         </Drawer>
                     </div>

@@ -13,19 +13,19 @@ function LinkBusiness(props) {
     let [client, setClient] = useState([])   //客户
     let [pagination, setPagination] = useState('')   //分页
     let [current, setCurrent] = useState('1') //当前页
-    let [clientId, setClientId] = useState('')   //客户id
+    let [clientId, setClientId] = useState([])   //客户id
     let [taskMan, setTaskMan] = useState([])     //联系人
     let [currentMan, setCurrentMan] = useState('1')  //联系人当前页
     let [paginationMan, setPaginationMan] = useState('')   //分页
-    let [manId, setManId] = useState('') //联系人id
+    let [manId, setManId] = useState([]) //联系人id
     let [taskBusiness, setTaskBusiness] = useState([])     //商机
     let [currentBusiness, setCurrentBusiness] = useState('1')  //商机当前页
     let [paginationBusiness, setPaginationBusiness] = useState('')   //分页
-    let [businessId, setBusinessId] = useState('')   //商机id
+    let [businessId, setBusinessId] = useState([])   //商机id
     let [taskContract, setTaskContract] = useState([])     //合同
     let [currentContract, setCurrentContract] = useState('1')  //合同当前页
     let [paginationContract, setPaginationContract] = useState('')   //分页
-    let [contractId, setContractId] = useState('')   //合同id
+    let [contractId, setContractId] = useState([])   //合同id
     let [search, setSearch] = useState('')   //搜索内容
     const onSearch = value => {
         console.log(value);
