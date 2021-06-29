@@ -12,10 +12,18 @@ import axios from "axios";
 import base from "../../../axios/axios";
 import qs from 'qs'
 
+
 moment.locale('zh-cn');
 
 function Task() {
     let n = 1
+    let initIdsObj = {
+        clientId: [],
+        manId: [],
+        businessId: [],
+        contractId: [],
+    }
+    let [idsObj, setIdsObj] = useState(initIdsObj)   // 4个ids
     let arrPrior = ['全部', '高', '中', '低', '无']   //优先级
     let taskArrPrior = ['高', '中', '低', '无']   //优先级
     let endTime = ['全部', '今天到期', '明天到期', '一周到期', '一个月到期']
@@ -23,6 +31,7 @@ function Task() {
     let [hidden, setHidden] = useState(true)//描述
     let [hiddenComment, setHiddenComment] = useState(true)//评论
     let [visibleMan, setVisibleMan] = useState(false)    //参与人
+    let [taskMan, setTaskMan] = useState([]) //参与人
     let [taskPerson, setTaskPerson] = useState()
     let [taskCheckBox, setTaskCheckBox] = useState(false)
     let [taskAllLabel, setTaskAllLabel] = useState([])   //所有标签
@@ -32,10 +41,29 @@ function Task() {
     let [charge, setCharge] = useState([])   //负责人
     let [taskAddLabels, setTaskAddLabels] = useState('') //任务添加标签
     let [labelId, setLabelId] = useState([]) //任务标签id
-    let [timeOver,setTimeOver] = useState('')   //截止日期
+    let [timeOver, setTimeOver] = useState('')   //截止日期
+    let [taskPrior, setTaskPrior] = useState('') //优先级
+    let [taskContent, setTaskContent] = useState('') //描述
+    let [client, setClient] = useState([])   //关联客户
+    let [newClient, setNewClient] = useState([])
+    let [personInformation, setPersonInformation] = useState('') //个人信息
+    let [beginTime,setBeginTime] = useState('') //评论时间
     const {Search} = Input;
     const {SHOW_PARENT} = TreeSelect;
     let [data, setData] = useState('')
+
+    let [tags,setTags] = useState([])   //标签
+    let [inputVisible,setInputVisible] = useState(false)
+    let [inputValue,setInputValue] = useState('')
+
+    useEffect(() => {
+        myTask()
+        getInformation()
+        allLabels()
+        allLabel()
+        taskclient()
+    }, [taskId])
+
     let handleMessage = (value) => {
         data = value
         setData(data)
@@ -125,8 +153,13 @@ function Task() {
                 placeholder="请选择标签"
                 onChange={handleChangeLabel}
             >
+
                 {children}
             </Select>
+            <div style={{position:'absolute',bottom:'23px',left:'42%',color:'#3e84e9',cursor:'pointer'}}
+            // onClick={}
+            >新增标签</div>
+
         </div>
     );
     //删除标签
@@ -162,8 +195,8 @@ function Task() {
     //截止日期
     let onPanelChange = (value) => {
         console.log(value._d);
-        let d=value._d
-        setTimeOver(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() )
+        let d = value._d
+        setTimeOver(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate())
     }
     const contentDate = (
         <div>
@@ -171,6 +204,7 @@ function Task() {
                 <ConfigProvider locale={zhCN}>
                     <Calendar fullscreen={false} onChange={onPanelChange}/>
                 </ConfigProvider>
+
             </div>
         </div>
     );
@@ -181,6 +215,34 @@ function Task() {
     const showBusinessModal = () => {
         setIsBusinessModalVisible(true);
     };
+    //客户接口
+    let taskclient = () => {
+        axios({
+            method: 'get',
+            url: base.url + '/client/getClient?token=' + token,
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+            } else {
+                client = response.data.data.data
+                setClient(client)
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+        if (idsObj.clientId.length > 0) {
+            for (let i = 0; i < client.length; i++) {
+                for (let j = 0; j < idsObj.clientId.length; j++) {
+                    if (client[i].id === idsObj.clientId[j]) {
+                        newClient.push(client[i].clientName)
+                        setNewClient(newClient)
+                    }
+                }
+            }
+        }
+    }
+
     //参与人
     const treeData = [
         {
@@ -239,9 +301,11 @@ function Task() {
         <div className={'class'}>
             {taskArrPrior.map((item, index) => {
                 return (
-                    <span key={index} onClick={() => {
-                        taskArrPriorId(item)
-                    }}>{item}</span>
+                    <span key={index}
+                          className={taskPrior === item ? 'class activeColor' : ''}
+                          onClick={() => {
+                              taskArrPriorId(item)
+                          }}>{item}</span>
                 )
             })}
         </div>
@@ -267,6 +331,22 @@ function Task() {
             alert(error)
         })
     }
+    //个人信息
+    let getInformation = () => {
+        axios({
+            method: 'get',
+            url: base.url + '/employee/whoami?token=' + token
+        }).then((response) => {
+            console.log(response.data.data)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+            } else {
+                setPersonInformation(response.data.data)
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+    }
     //抽屉
     const [visible, setVisible] = useState(false);
     //获取信息
@@ -283,6 +363,12 @@ function Task() {
                 alert(response.data.message)
             } else {
                 setCharge(response.data.data.employeesName)
+                setTimeOver(response.data.data.endTime)
+                taskPrior = response.data.data.prior
+                setTaskPrior(taskPrior)
+                setTaskContent(response.data.data.content)
+                setTaskMan(response.data.data.employeesName)
+                setBeginTime(response.data.data.beginTime)
             }
         }).catch((error) => {
             alert(error)
@@ -422,32 +508,26 @@ function Task() {
     }
 
 
-    useEffect(() => {
-        myTask()
-        allLabels()
-        allLabel()
-
-    }, [n])
     //删除任务
     let confirm = (e) => {
         console.log(e);
-        // axios({
-        //     method: 'post',
-        //     url: base.url + '/task/delete-task',
-        //     params: {
-        //         token: token,
-        //         id: taskId
-        //     }
-        // }).then((response) => {
-        //     console.log(response)
-        //     if (response.data.code === 'ERROR') {
-        //         alert(response.data.message)
-        //         return
-        //     } else {
-        //         myTask()
-        //         message.success('删除成功');
-        //     }
-        // })
+        axios({
+            method: 'post',
+            url: base.url + '/task/delete-task',
+            params: {
+                token: token,
+                id: taskId
+            }
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+                return
+            } else {
+                myTask()
+                message.success('删除成功');
+            }
+        })
     }
 
     let cancel = (e) => {
@@ -602,16 +682,15 @@ function Task() {
                                             <span><i style={{color: '#a6a6e6', cursor: 'pointer'}}
                                                      className="fa fa-calendar" aria-hidden="true"></i> </span>
                                         </Popover>
-
-
                                         <span>{timeOver}</span>
                                     </div>
                                 </div>
                                 <div>
                                     描述：
-                                    <div></div>
-                                    <span style={{color: '#3E84E9', cursor: 'pointer'}}
-                                          onClick={taskDescribe}>添加描述</span>
+                                    <span>{taskContent}</span>
+                                    <div style={{color: '#3E84E9', cursor: 'pointer'}}
+                                         onClick={taskDescribe}>添加描述
+                                    </div>
                                     <div className={hidden === true ? 'hidden' : ''}>
                                         <TextArea rows={4}/>
                                         <div style={{margin: '10px 0'}}>
@@ -622,7 +701,12 @@ function Task() {
                                     </div>
                                 </div>
                                 <div style={{margin: '30px 0'}}>
-                                    参与人：<span></span>
+                                    参与人：{taskMan.map((item, index) => {
+                                    return (
+                                        <span key={index}>{item}</span>
+                                    )
+                                })}
+
                                     <span style={{fontSize: '20px', cursor: 'pointer', color: '#3E84E9'}}>
                                         <Popover
                                             visible={visibleMan}
@@ -634,6 +718,13 @@ function Task() {
                                 </div>
                                 <div style={{marginBottom: '30px'}}>
                                     关联业务
+                                    {
+                                        newClient.map((item, index) => {
+                                            return (
+                                                <div key={index}>客户：{item}</div>
+                                            )
+                                        })
+                                    }
                                     <div className={'linkBusiness'} type="primary" onClick={showBusinessModal}
                                          style={{cursor: 'pointer'}}>
                                         关联业务
@@ -643,19 +734,28 @@ function Task() {
                                            bordered={true}
                                            bodyStyle={{padding: 0}}
                                            visible={isBusinessModalVisible}
+                                           footer={null}
                                            onOk={() => {
                                                setIsBusinessModalVisible(false);
                                            }}
                                            onCancel={() => {
                                                setIsBusinessModalVisible(false);
                                            }}>
-                                        <LinkBusiness></LinkBusiness>
+                                        <LinkBusiness onOk={(value) => {
+                                            console.log("孙子传给儿子的值", value)
+                                            setIdsObj(value || initIdsObj)
+                                            setIsBusinessModalVisible(false);
+                                            taskclient()
+                                        }}></LinkBusiness>
                                     </Modal>
                                 </div>
                                 <div>
                                     评论
                                     <div style={{margin: '20px 0'}}>
-                                        <span style={{marginRight: '20px'}}>123</span>
+                                        <span style={{marginRight: '20px'}}>
+                                                <img style={{width: '30px', height: '30px', borderRadius: '50%'}}
+                                                     src={personInformation.avatar} alt=""/>
+                                        </span>
                                         <span onClick={taskAddComment} className={'taskAddComment'}>添加评论</span>
                                     </div>
                                     <div className={hiddenComment === true ? 'hidden' : ''}>
@@ -668,9 +768,12 @@ function Task() {
                                     </div>
                                     <div style={{marginLeft: '43px'}} className={'taskReply'}>
                                         <div>
-                                            <span>123</span>
-                                            <span style={{margin: '0 20px'}}>一个好人</span>
-                                            <span>时间</span>
+                                            <span>
+                                                <img style={{width: '30px', height: '30px', borderRadius: '50%'}}
+                                                     src={personInformation.avatar} alt=""/>
+                                            </span>
+                                            <span style={{margin: '0 20px'}}>{personInformation.username}</span>
+                                            <span>{beginTime}</span>
                                         </div>
                                         <div>
                                             <span style={{marginRight: '20px'}}>删除</span>
