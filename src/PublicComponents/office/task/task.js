@@ -15,12 +15,16 @@ import qs from 'qs'
 moment.locale('zh-cn');
 
 function Task() {
+    let clients ; // 空Map
+    let mans ;
+    let businesss ;
+    let contracts ;
     let n = 1
     let initIdsObj = {
-        clientId: [],
-        manId: [],
-        businessId: [],
-        contractId: [],
+        clients,
+        mans,
+        businesss,
+        contracts,
     }
     let [idsObj, setIdsObj] = useState(initIdsObj)   // 4个ids
     let arrPrior = ['全部', '高', '中', '低', '无']   //优先级
@@ -41,8 +45,7 @@ function Task() {
     let [timeOver, setTimeOver] = useState('')   //截止日期
     let [taskPrior, setTaskPrior] = useState('') //优先级
     let [taskContent, setTaskContent] = useState('') //描述
-    let [client, setClient] = useState([])   //关联客户
-    let [newClient, setNewClient] = useState([])
+    let [client, setClient] = useState([] )   //关联客户
     let [personInformation, setPersonInformation] = useState('') //个人信息
     let [beginTime, setBeginTime] = useState('') //评论时间
     const {Search} = Input;
@@ -51,14 +54,14 @@ function Task() {
     let [addStore, setAddStore] = useState('')   //添加标签库
     let [taskText, setTaskText] = useState('')   //评论
     let [textContent, setTextContent] = useState([]) //评论内容
+
     useEffect(() => {
         myTask()
         getInformation()
         allLabels()
         allLabel()
-        taskclient()
     }, [taskId])
-    //标签
+    //任务
     let handleMessage = (value) => {
         data = value
         setData(data)
@@ -78,10 +81,10 @@ function Task() {
                 prior: data.prior,
                 taskName: data.taskItem,
                 business: {
-                    1: data.clientId,
-                    2: data.manId,
-                    3: data.businessId,
-                    4: data.contractId,
+                    1: data.clients,
+                    2: data.mans,
+                    3: data.businesss,
+                    4: data.contracts,
                 }
             }
         }).then((response) => {
@@ -247,21 +250,24 @@ function Task() {
     //客户接口
     let taskclient = (value) => {
         console.log(idsObj)
+        console.log(idsObj.clients)
         axios({
             method: 'post',
             url: base.url + '/task/linkBusiness?token=' + token,
-            data: {
+            data:{
                 linkBusinessMap: {
-                    1: idsObj.clientId,
-                    2: idsObj.manId,
-                    3: idsObj.businessId,
-                    4: idsObj.contractId,
+                    1: idsObj.clients,
+                    2: idsObj.mans,
+                    3: idsObj.businesss,
+                    4: idsObj.contracts,
                 },
                 taskId: taskId,
             }
-
         }).then((response) => {
             console.log(response)
+            if (response.data.code === 'SUCCESS'){
+                showDrawer(taskId)
+            }
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             }
@@ -397,7 +403,7 @@ function Task() {
             method: 'get',
             url: base.url + '/employee/whoami?token=' + token
         }).then((response) => {
-            console.log(response.data.data)
+            // console.log(response.data.data)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
@@ -418,7 +424,7 @@ function Task() {
             method: 'get',
             url: base.url + '/task/task-information?token=' + token + '&id=' + id,
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
@@ -430,6 +436,7 @@ function Task() {
                 setTaskMan(response.data.data.employeesName)
                 setBeginTime(response.data.data.beginTime)
                 setTextContent(response.data.data.comments)
+                setClient(response.data.data.linkClient)
             }
         }).catch((error) => {
             alert(error)
@@ -439,6 +446,24 @@ function Task() {
     const onClose = () => {
         setVisible(false);
     };
+    //删除关联业务
+    let deleteClient =(id)=>{
+        console.log(id)
+        axios({
+            method:'post',
+            url:base.url+'/task/deleteLinkBusiness?token='+token,
+            data:qs.stringify({
+                id:id
+            })
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code === 'SUCCESS'){
+                showDrawer(taskId)
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+    }
     //多选框
     let onChangeCheckbox = (e) => {
         console.log(`checked = ${e.target.checked}`);
@@ -488,7 +513,7 @@ function Task() {
                 if (response.data.code === 'ERROR') {
                     alert(response.data.message)
                 } else {
-                    setTaskList(response.data.data)
+                    myTask(response.data.data)
                 }
             }).catch((error) => {
                 alert(error)
@@ -557,7 +582,7 @@ function Task() {
             method: 'get',
             url: base.url + '/task/task-label?token=' + token + '&id=' + taskId,
         }).then((response) => {
-            console.log(response)
+            // console.log(response)
             if (response.data.code === 'ERROR') {
                 // alert(response.data.message)
             } else {
@@ -786,6 +811,16 @@ function Task() {
                                 </div>
                                 <div style={{marginBottom: '30px'}}>
                                     关联业务
+                                    {client.map((item,index)=>{
+                                        return(
+                                            <div key={index} className={'taskClient'} >
+                                                <span>{item.name}-{item.clientName}</span>
+                                                <span onClick={()=>{
+                                                    deleteClient(item.id)
+                                                }}>删除</span>
+                                            </div>
+                                        )
+                                    })}
 
                                     <div className={'linkBusiness'} type="primary" onClick={showBusinessModal}
                                          style={{cursor: 'pointer'}}>
@@ -808,7 +843,7 @@ function Task() {
                                             idsObj = value
                                             setIdsObj(idsObj || initIdsObj)
                                             setIsBusinessModalVisible(false);
-                                            taskclient(value)
+                                            taskclient()
                                         }}></LinkBusiness>
                                     </Modal>
                                 </div>

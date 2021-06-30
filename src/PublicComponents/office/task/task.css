@@ -1,37 +1,42 @@
-.taskContent{
+.taskContent {
     width: 920px;
     height: calc(100vh - 40px);
     background-color: #ffffff;
     border: 1px solid #e6e6e6;
     border-radius: 4px;
     padding: 10px;
-    margin:20px;
+    margin: 20px;
 }
-.taskTop{
+
+.taskTop {
     height: 50px;
     line-height: 50px;
     width: 100%;
     display: flex;
-    justify-content:space-between;
+    justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid #e6e6e6;
-    padding:0 20px;
+    padding: 0 20px;
     color: #3E84E9;
 }
-.taskSp{
+
+.taskSp {
     height: 50px;
     line-height: 50px;
-    border-bottom: 3px solid  #3E84E9;
+    border-bottom: 3px solid #3E84E9;
 }
-.taskAll{
+
+.taskAll {
     margin-right: 20px;
 }
-.taskDropdown{
+
+.taskDropdown {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.taskCheckbox{
+
+.taskCheckbox {
     padding: 0 20px;
     height: 50px;
     line-height: 50px;
@@ -40,7 +45,8 @@
     justify-content: space-between;
     align-items: center;
 }
-.taskAvatar{
+
+.taskAvatar {
     display: inline-block;
     width: 30px;
     height: 30px;
@@ -49,13 +55,15 @@
     line-height: 30px;
     text-align: center;
 }
-.taskMan{
+
+.taskMan {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin:30px 75px 30px 0 ;
+    margin: 30px 75px 30px 0;
 }
-.linkBusiness{
+
+.linkBusiness {
     width: 100%;
     height: 40px;
     background-color: #F5F7FA;
@@ -64,40 +72,46 @@
     padding: 0 20px;
     cursor: pointer;
     font-size: 13px;
-    margin:10px 0;
+    margin: 10px 0;
 }
-.taskAddComment{
+
+.taskAddComment {
     /*display: inline-block;*/
     width: calc(100% - 43px);
     height: 40px;
     line-height: 40px;
     background-color: #e1e1e1;
-    padding:6px 20px;
+    padding: 6px 20px;
     border-radius: 5px;
     cursor: pointer;
 }
-.taskReply{
+
+.taskReply {
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    color: #acaaaa ;
+    color: #acaaaa;
 }
-.ant-table-cell-fix-left-last{
+
+.ant-table-cell-fix-left-last {
     left: 40px !important;
 }
-.taskAddLabel{
+
+.taskAddLabel {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin:20px 70px 20px 0;
+    margin: 20px 70px 20px 0;
 }
+
 .site-calendar-demo-card {
     width: 300px;
     border: 1px solid #f0f0f0;
     border-radius: 2px;
 }
-.taskAddLabel1{
+
+.taskAddLabel1 {
     display: inline-block;
     width: 60px;
     height: 26px;
@@ -108,20 +122,31 @@
     cursor: pointer;
     border-radius: 5px;
 }
-.taskLabelName{
-    padding:5px 8px;
-    margin:0 10px;
+
+.taskLabelName {
+    padding: 5px 8px;
+    margin: 0 10px;
     background-color: #0FC9E7;
     color: #ffffff;
     border-radius: 3px;
     cursor: pointer;
 }
-.class .activeColor{
+
+.class .activeColor {
     background-color: #12c3ed;
 }
-.textContent{
+
+.textContent {
     margin: 10px 0 10px 43px;
     padding: 10px 0 10px 10px;
     background-color: #ddd;
     border-radius: 6px;
+}
+.taskClient {
+    color: #6a96d6;
+    width: 100%;
+    height: 30px;display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
 }

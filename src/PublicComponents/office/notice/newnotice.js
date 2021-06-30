@@ -4,6 +4,7 @@ import LinkBusiness from "../task/link";
 import React, {useState} from "react";
 
 function Newnotice() {
+    let [theme,setTheme] = useState('') //主题
     //公告正文
     const {TextArea} = Input;
     //通知部门
@@ -20,6 +21,7 @@ function Newnotice() {
             key: '1',
         },
     ];
+    
     let [man, setMan] = useState()//通知部门
     let onChange1 = value => {
         console.log('onChange ', value);
@@ -70,6 +72,11 @@ function Newnotice() {
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
+    //主题
+    let newTheme =(value) =>{
+        theme = value
+        setTheme(theme)
+    }
     return(
         <div >
             {/*输入内容*/}
@@ -96,14 +103,16 @@ function Newnotice() {
                                 },
                             ]}
                         >
-                            <Input/>
+                            <Input value={theme} onChange={(e)=>{
+                                newTheme(e.target.value)
+                            }}/>
                         </Form.Item>
                     </Form>
                 </div>
                 <div>
                     {/*通知部门*/}
                     <div style={{margin:'6px 0 6px 0'}}>
-                        <span >通知部门</span>
+                        <span >通知员工</span>
                     </div>
                     <TreeSelect {...tProps} style={{width: '253px'}}/>
                 </div>
@@ -129,6 +138,14 @@ function Newnotice() {
                 <span>公告正文</span>
             </div>
             <TextArea rows={4} placeholder={'请输入内容'}/>
+            <div className={'ok-button'}>
+                {/*<Button style={{marginRight: '20px'}} onClick={()=>{*/}
+                {/*    setIsModalVisible(false);*/}
+                {/*}}> 取消</Button>*/}
+                <Button type={"primary"} onClick={() => {
+
+                }}>确定</Button>
+            </div>
         </div>
     )
 }

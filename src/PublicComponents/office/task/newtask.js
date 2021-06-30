@@ -5,12 +5,15 @@ import './newtask.css'
 import LinkBusiness from "./link";
 import axios from "axios";
 import base from "../../../axios/axios";
-
+let clients ; // 空Map
+let mans ;
+let businesss ;
+let contracts ;
 let initIdsObj = {
-    clientId: [],
-    manId: [],
-    businessId: [],
-    contractId: [],
+    clients,
+    mans,
+    businesss,
+    contracts,
 }
 
 function NewTask(props) {

@@ -54,8 +54,8 @@ function MenuLeft() {
             <div>
                 {/*<Middle/>*/}
                 {/*<SchedulePage></SchedulePage>*/}
-                <Task></Task>
-                {/*<Notice></Notice>*/}
+                {/*<Task></Task>*/}
+                <Notice></Notice>
                 {/*<Mail></Mail>*/}
             </div>
 

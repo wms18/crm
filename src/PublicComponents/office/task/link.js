@@ -27,6 +27,10 @@ function LinkBusiness(props) {
     let [paginationContract, setPaginationContract] = useState('')   //分页
     let [contractId, setContractId] = useState([])   //合同id
     let [search, setSearch] = useState('')   //搜索内容
+    let [clientName, setClientName] = useState([])   //客户名字
+    let [manName, setManName] = useState([]) //联系人名字
+    let [businessName, setBusinessName] = useState([])   //商机名字
+    let [contractName, setContractName] = useState([])   //合同名字
     const onSearch = value => {
         console.log(value);
         search = value
@@ -37,7 +41,6 @@ function LinkBusiness(props) {
     }, [search])
     //客户
     let taskclient = () => {
-        console.log(search)
         axios({
             method: 'get',
             url: base.url + '/client/getClient?token=' + token,
@@ -46,7 +49,7 @@ function LinkBusiness(props) {
                 keyword: search,
             }
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
@@ -87,15 +90,20 @@ function LinkBusiness(props) {
         },
     ];
     let [selectedRowKeys, setSelectedRowKeys] = useState([])
-    let onSelectChange = selectedRowKeys => {
+    let onSelectChange = (selectedRowKeys, selectedRows) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
+        console.log(selectedRows)
+        clientName = selectedRows.map((ele, index) => {
+            return ele.name
+        })
+        setClientName(clientName)
         setSelectedRowKeys(selectedRowKeys)
         clientId = selectedRowKeys
         setClientId(clientId)
     };
     const rowSelection = {
         onChange: onSelectChange,
-        selectedRowKeys:[...clientId],
+        selectedRowKeys: [...clientId],
         selections: [
             Table.SELECTION_ALL,
             Table.SELECTION_INVERT,
@@ -173,8 +181,12 @@ function LinkBusiness(props) {
         },
     ];
     let [selectedRowKeysMan, setSelectedRowKeysMan] = useState([])
-    let onSelectChangeMan = selectedRowKeys => {
+    let onSelectChangeMan = (selectedRowKeys, selectedRows) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
+        manName = selectedRows.map((ele, index) => {
+            return ele.name
+        })
+        setManName(manName)
         setSelectedRowKeysMan(selectedRowKeys)
         manId = selectedRowKeys
         setManId(manId)
@@ -182,7 +194,7 @@ function LinkBusiness(props) {
     const rowSelectionMan = {
         selectedRowKeysMan,
         onChange: onSelectChangeMan,
-        selectedRowKeys:[...manId],
+        selectedRowKeys: [...manId],
         selections: [
             Table.SELECTION_ALL,
             Table.SELECTION_INVERT,
@@ -238,9 +250,13 @@ function LinkBusiness(props) {
         },
     ];
     let [selectedRowKeysBusiness, setSelectedRowKeysBusiness] = useState([])
-    let onSelectChangeBusiness = selectedRowKeys => {
+    let onSelectChangeBusiness = (selectedRowKeys, selectedRows) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
         setSelectedRowKeysBusiness(selectedRowKeys)
+        businessName = selectedRows.map((ele, index) => {
+            return ele.name
+        })
+        setBusinessName(businessName)
         setBusinessId(selectedRowKeys)
         businessId = selectedRowKeys
         setBusinessId(businessId)
@@ -248,7 +264,7 @@ function LinkBusiness(props) {
     const rowSelectionBusiness = {
         selectedRowKeysBusiness,
         onChange: onSelectChangeBusiness,
-        selectedRowKeys:[...businessId],
+        selectedRowKeys: [...businessId],
         selections: [
             Table.SELECTION_ALL,
             Table.SELECTION_INVERT,
@@ -311,8 +327,12 @@ function LinkBusiness(props) {
         },
     ];
     let [selectedRowKeysContract, setSelectedRowKeysContract] = useState([])
-    let onSelectChangeContract = selectedRowKeys => {
+    let onSelectChangeContract = (selectedRowKeys, selectedRows) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
+        contractName = selectedRows.map((ele, index) => {
+            return ele.name
+        })
+        setContractName(contractName)
         setSelectedRowKeysContract(selectedRowKeys)
         contractId = selectedRowKeys
         setContractId(contractId)
@@ -320,7 +340,7 @@ function LinkBusiness(props) {
     const rowSelectionContract = {
         selectedRowKeysContract,
         onChange: onSelectChangeContract,
-        selectedRowKeys:[...contractId],
+        selectedRowKeys: [...contractId],
         selections: [
             Table.SELECTION_ALL,
             Table.SELECTION_INVERT,
@@ -474,17 +494,37 @@ function LinkBusiness(props) {
                 </div>
                 <div className={"ok-button"}>
                     <Button type={"primary"} onClick={() => {
+                        let clients = {}; // 空Map
+                        let mans = {};
+                        let businesss = {};
+                        let contracts = {};
                         let ids = {
-                            clientId: clientId,
-                            manId: manId,
-                            businessId: businessId,
-                            contractId: contractId,
+                            clients,
+                            mans,
+                            businesss,
+                            contracts,
+                        }
+                        for (let i = 0; i < clientId.length; i++) {
+                            clients[clientId[i]]=clientName[i]
+                        }
+                        for (let i = 0; i < manId.length; i++) {
+                            mans[manId[i]]=manName[i]
+                        }
+                        for (let i = 0; i < businessId.length; i++) {
+                            businesss[businessId[i]]=businessName[i]
+                        }
+                        for (let i = 0; i < contractName.length; i++) {
+                            contracts[contractId[i]]=contractName[i]
                         }
                         props.onOk(ids)
-                        setClientId("")
-                        setManId("")
-                        setBusinessId("")
-                        setContractId("")
+                        setClientId([])
+                        setManId([])
+                        setBusinessId([])
+                        setContractId([])
+                        setContractName([])
+                        setBusinessName([])
+                        setManName([])
+                        setClientName([])
                     }}>确定</Button>
                 </div>
             </div>
