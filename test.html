@@ -1,73 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>城市检索</title>
+    <style type="text/css">
+        html {
+            height: 100%
+        }
+
+        body {
+            height: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+
+        #container {
+            height: 50%;
+            margin: 200px auto;
+            width: 50%;
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=(l2LtbGZaq8m78Ltx2ann5VkN1RKXtGj9)">
+</script>
 </head>
 
 <body>
-    <button onclick="creat()">
+    <input type="text" class="input">
+    <div id="container"></div>
+    <script type="text/javascript">
 
-    </button>
+        let value = document.getElementsByClassName('input')[0]
+        console.log(value);
+        value.onchange = function (e) {
+            searchLocation(e.target.value)
+        }
+        function searchLocation(val) {
+            var map = new BMap.Map("container");
+            map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);
+            var local = new BMap.LocalSearch(map, {
+                renderOptions: { map: map }
+            });
+            local.search(val);
+        }
+
+        searchLocation('')
+
+    </script>
 </body>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script>
-    function creat(params) {
-        axios.post('http://47.117.138.37:8088/produce/create', {
-            params: {
-                token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZSI6IjE4ODg4ODg4ODg4IiwiaWQiOiIxIiwiZXhwIjoxNjI2MTQwMjc4fQ.yJ_7eLs4HqBfeQU--tSem1CH7WccrxYXUGZPbKWhk6k',
 
-            },
-            // data: qs.stringify({
-            //   number:Number(data.number),
-            //   price: Number(data.price),
-            //   produceCoding:data.produceCoding,
-            //   produceIntroduce: data.produceIntroduce,
-            //   produceName: data.produceName,
-            //   produceType: data.produceType,
-            //   putaway: data.putaway,
-            //   specification: data.specification,
-            // })
-        })
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((res) => {
-                console.log(res);
-            })
-    }
+</html> -->
 
-    function axiosPostRequst() {
-        let result = axios({
-            method: 'post',
-            url: 'http://47.117.138.37:8088/produce/create',
-            params: {
-                token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwaG9uZSI6IjE4ODg4ODg4ODg4IiwiaWQiOiIxIiwiZXhwIjoxNjI2MTQwMjc4fQ.yJ_7eLs4HqBfeQU--tSem1CH7WccrxYXUGZPbKWhk6k',
-            },
-            data: {
-                number: 1,
-                price: 10,
-                produceCoding: '1',
-                produceIntroduce: '1',
-                produceName: '1',
-                produceType: '1',
-                putaway: '1',
-                specification: '1',
-            },
-            header: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }).then((res) => {
-            console.log(res); ;
-        }).catch((error) => {
-            console.log(res);
-        });
-        return result;
-    }
 
-</script>
-
-</html>

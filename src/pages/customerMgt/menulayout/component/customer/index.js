@@ -6,6 +6,7 @@ import './style.css'
 import GetBizOpp from "./getBussinessOpp";
 import GetContract from "./getContract";
 import GetPayment from "./getPayment";
+import GetEmployee from "../../../../../components/getEmployee";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Tag, Popconfirm
@@ -100,9 +101,42 @@ class Customer extends Component {
     this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
     this.dropdownMenu = this.dropdownMenu.bind(this)
     this.onChangeDealStatus = this.onChangeDealStatus.bind(this)
+    this.giveMethCreate = this.giveMethCreate.bind(this)
+    this.giveMethResponsible = this.giveMethResponsible.bind(this)
+    this.getOneClient = this.getOneClient.bind(this)
 
   }
 
+  getOneClient(id, isCreate) {
+    axios({
+      method: 'get',
+      url: `${base.url}/client/getOneClient`,
+      params: {
+        clientId: id
+      }
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+  giveMethCreate(key) {
+    this.setState({
+      employeeCreateId: key
+    }, () => {
+
+    })
+  }
+  giveMethResponsible(key) {
+    this.setState({
+      employeeResponsibleId: key
+    }, () => {
+    })
+  }
 
   onChangeDealStatus(val) {
     console.log(val);
@@ -415,6 +449,8 @@ class Customer extends Component {
           dingtalk: data.dingtalk,
           nextTalkTime: data.nextTalkTime,
           phone: data.phone,
+          employeeCreateId: this.state.employeeCreateId,
+          employeeResponsibleId: this.state.employeeResponsibleId
         })
       }).then((res) => {
         console.log(res);
@@ -517,8 +553,8 @@ class Customer extends Component {
           content: this.state.record.content,
           detailAddress: this.state.record.detailAddress,
           dingtalk: this.state.record.dingtalk,
-          employeeCreateId: this.state.record.employeeCreateId,
-          employeeResponsibleId: this.state.record.employeeResponsibleId,
+          employeeCreateName: this.state.record.employeeCreateName,
+          employeeResponsibleName: this.state.record.employeeResponsibleName,
           nextTalkTime: this.state.record.nextTalkTime,
           nextTalkTime: this.state.record.nextTalkTime,
           phone: this.state.record.phone,
@@ -586,6 +622,7 @@ class Customer extends Component {
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
+              bodyStyle={{ height: 380, overflowY: "auto" }}
 
             >
 
@@ -658,6 +695,28 @@ class Customer extends Component {
                     label="备注"
                   >
                     <Input />
+                  </Form.Item>
+
+                </div>
+
+                <div>
+                  <Form.Item
+                    name="employeeCreateId"
+                    label="创建人"
+
+                  >
+                    <GetEmployee
+                      name={this.state.isCreate ? '' : this.state.record.employeeCreateName}
+                      contentCreate={(val) => { this.giveMethCreate(val) }} ></GetEmployee>
+                  </Form.Item>
+                  <Form.Item
+                    name="employeeResponsibleId"
+                    label="负责人"
+                  >
+                    <GetEmployee
+                      name={this.state.isCreate ? '' : this.state.record.employeeResponsibleName}
+                      contentResponsible={(val) => { this.giveMethResponsible(val) }} >
+                    </GetEmployee>
                   </Form.Item>
 
                 </div>
@@ -754,9 +813,14 @@ class Customer extends Component {
                       drawerTitle: record.clientFrom,
                       dealStatus: record.dealStatus
 
+
                     }, () => {
+                      let isCreate = 'create'
+                      let isResponsible = 'responsible'
                       console.log(this.state.record.id);
                       this.getFollowUpRecord()
+                      // this.getOneClient(record.employeeCreateName,isCreate)
+                      // this.getOneClient(record.employeeResponsibleName,isResponsible)
                     })
                   },
                 })}

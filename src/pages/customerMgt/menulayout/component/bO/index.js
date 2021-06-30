@@ -4,6 +4,7 @@ import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
 import GetProduct from "./getProduct";
+import GetProductTable from '../../../../../components/getProductTable'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
@@ -55,7 +56,7 @@ class BizOpp extends Component {
       drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
-
+      modalProVisible: false,
 
 
       isCreate: true,
@@ -105,8 +106,22 @@ class BizOpp extends Component {
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
+    this.setModalProVisible = this.setModalProVisible.bind(this)
   }
 
+
+  setModalProVisible() {
+    this.setState({
+      modalProVisible: !this.state.modalProVisible
+    })
+  }
+
+  getContainer = () => {
+    return this.container;
+  };
+  saveContainer = container => {
+    this.container = container;
+  };
 
   createFollowupRecord() {
     axios.post(`${base.url}/follow/add`, {
@@ -381,6 +396,8 @@ class BizOpp extends Component {
               onClick={this.setVisible}
             >新建商机</Button>
             <Modal
+              style={{ position: "relative"}}
+
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
               title={this.state.isCreate ? '新建商机' : '编辑商机'}
@@ -485,7 +502,29 @@ class BizOpp extends Component {
                     name="produceIds"
                     label="关联产品ID"
                   >
-                    <Input />
+                    <Input onClick={this.setModalProVisible} placeholder='+关联产品' ></Input>
+                    <Modal
+                      mask={false}
+                      title={'产品'}
+                      visible={this.state.modalProVisible}
+                      width={600}
+                      bodyStyle={{ height: 300 }}
+                      // height={500}
+                      // style={{height:500}}
+                      style={{ position: "absolute", right:10 }}
+                      okText="保存"
+                      cancelText="取消"
+                      onOk={this.setModalProVisible}
+                      onCancel={this.setModalProVisible}
+                    // footer={[
+                    //   <Button onClick={this.setModalProVisible} type='primary'>保存</Button>,
+                    //   <Button onClick={this.setModalProVisible} type='default'>取消</Button>
+                    // ]}
+                    >
+                      <GetProductTable ></GetProductTable>
+                    </Modal>
+                    {/* <Input /> */}
+
                   </Form.Item>
 
 
@@ -523,7 +562,7 @@ class BizOpp extends Component {
             </Modal>
           </div>
         </div >
-
+        <div ref={this.saveContainer}  ></div>
         <div>
           <div style={{ height: 20 }}
             onClick={() => {
@@ -817,10 +856,10 @@ class BizOpp extends Component {
                         </div>
                       </TabPane>
                       <TabPane tab="产品" key="5">
-                      <GetProduct value={this.state.record.commercialOpportunityId}></GetProduct>
+                        <GetProduct value={this.state.record.commercialOpportunityId}></GetProduct>
                       </TabPane>
 
-                      
+
 
                     </Tabs>
                   </div>
