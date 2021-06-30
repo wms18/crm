@@ -19,11 +19,11 @@ function App() {
         <div>
             {/*<Top></Top>*/}
             {/* <PersonalInfo></PersonalInfo> */}
-            {/*<CustomerMgt/>*/}
-            {/* <BackstageMgt></BackstageMgt>*/}
+            <CustomerMgt/>
+            {/* <BackstageMgt></BackstageMgt> */}
             {/*<Login></Login>*/}
             {/* <ProductTable></ProductTable> */}
-               <MenuLeft></MenuLeft>
+               {/* <MenuLeft></MenuLeft> */}
         </div>
     );
 
