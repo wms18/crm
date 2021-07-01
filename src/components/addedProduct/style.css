@@ -1,0 +1,12 @@
+@import '~antd/dist/antd.css';
+.addedPro:hover{
+    background-color: #F5F7FA,
+}
+/* /* .addedPro>span:nth-child(1){
+    flex: 0.5;
+} */
+.addedPro>span{
+    width: 130px;
+    text-align: center;
+    display: block;
+} 

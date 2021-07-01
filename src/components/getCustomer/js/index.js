@@ -2,15 +2,15 @@ const Data = {
   columns: [
     {
       width: 100,
-      title: '产品名称',
-      dataIndex: 'produceName',
+      title: '客户名称',
+      dataIndex: 'clientName',
       key:'1',
      
     },
     {
-      title: '产品类别',
+      title: '下次联系时间',
       width: 100,
-      dataIndex: 'produceType',
+      dataIndex: 'nextTalkTime',
       key:'2'
      
     },
@@ -18,8 +18,14 @@ const Data = {
 
     {
       width: 100,
-      title: '产品价格',
-      dataIndex: 'price',
+      title: '更新时间',
+      dataIndex: 'updateTime',
+      key:'3'
+    },
+    {
+      width: 100,
+      title: '创建时间',
+      dataIndex: 'createTime',
       key:'3'
     },
 

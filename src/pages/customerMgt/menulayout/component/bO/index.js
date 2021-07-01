@@ -5,6 +5,8 @@ import qs from 'qs'
 import './style.css'
 import GetProduct from "./getProduct";
 import GetProductTable from '../../../../../components/getProductTable'
+import GetCustomer from "../../../../../components/getCustomer";
+import AddedProduct from "../../../../../components/addedProduct";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
@@ -58,7 +60,8 @@ class BizOpp extends Component {
       token: window.localStorage.getItem('token'),
       modalProVisible: false,
 
-
+      productArr:'',   //新建时添加的产品信息,是数组
+      customerId:'',  //新建时添加的客户id
       isCreate: true,
       formTitle: '新建商机',
 
@@ -66,6 +69,7 @@ class BizOpp extends Component {
 
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
+      addedProduct: '',   //已添加的产品信息
       loading: false,
 
       pagination: '',
@@ -107,6 +111,33 @@ class BizOpp extends Component {
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
     this.setModalProVisible = this.setModalProVisible.bind(this)
+    this.getCustomerId = this.getCustomerId.bind(this)
+  }
+
+  getCustomerId(val) {
+    // console.log(val[0].id);
+    // this.setState({
+    //     customerId:val[0].id
+    // })
+    this.setState({
+      customerId:val[0].id
+    },()=>{
+    })
+
+  }
+
+  getProductId(val) {   //从孙组件拿到productId-arr
+
+    let arr = []
+    // console.log(val);
+    val.map((item) => {
+      arr.push(item.id)
+      return arr
+    })
+    this.setState({
+      productArr:arr
+    },()=>{
+    })
   }
 
 
@@ -224,7 +255,7 @@ class BizOpp extends Component {
         },
         // .replace(/\s+/g,'')
         data: qs.stringify({
-          clientId: data.clientId,
+          clientId: this.state.customerId,
           commercialPrice: data.commercialPrice,
           commercialStage: data.commercialStage,
           commercialStatusGroup: data.commercialStatusGroup,
@@ -232,7 +263,7 @@ class BizOpp extends Component {
           // id: data.id,
           discount: data.discount,
           name: data.name,
-          produceIds: data.produceIds,
+          produceIds: this.state.productArr,
           submissionTime: this.state.submissionTime,
           totalPrice: data.totalPrice,
         })
@@ -396,7 +427,7 @@ class BizOpp extends Component {
               onClick={this.setVisible}
             >新建商机</Button>
             <Modal
-              style={{ position: "relative"}}
+              style={{ position: "relative" }}
 
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
@@ -417,7 +448,8 @@ class BizOpp extends Component {
                 ref={this.formRef}
               >
                 <div>
-                  <Form.Item
+                  <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
+                  {/* <Form.Item
                     name="clientId"
                     label="客户名称"   //客户名称
                     rules={[
@@ -427,8 +459,8 @@ class BizOpp extends Component {
                       },
                     ]}
                   >
-                    <Input />
-                  </Form.Item>
+                    <GetCustomer></GetCustomer>
+                  </Form.Item> */}
                   <Form.Item
                     name="commercialPrice"
                     label="商机金额"
@@ -450,7 +482,7 @@ class BizOpp extends Component {
                     ]}
                   >
                     {/* <Input /> */}
-                    <Select style={{ width: 200 }}>
+                    <Select style={{ width: 184 }} showArrow={true}>
                       <Option value='赢单'>赢单</Option>
                       <Option value='输单'>输单</Option>
                       <Option value='无效'>无效</Option>
@@ -459,12 +491,9 @@ class BizOpp extends Component {
                   <Form.Item
                     name="commercialStatusGroup"
                     label="商机状态组"
-                  // rules={[
-                  //   required: true,
-                  //   message:'商机状态组不能为空'
-                  // ]}
+
                   >
-                    <Select>
+                    <Select showArrow={true} style={{ width: 184 }} >
                       <Option value='服务产品线'>服务产品线</Option>
                       <Option value='数据监测'>数据监测</Option>
                       <Option value='服务产品线'>服务产品线</Option>
@@ -474,69 +503,33 @@ class BizOpp extends Component {
 
                 <div>
                   <Form.Item
+                    name="name"
+                    label="商机名称"
+                    rules={[
+                      {
+                        require: true,
+                        message: '商机名称不能为空'
+                      }
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
                     name="content"
                     label="备注"
 
                   >
                     <Input />
                   </Form.Item>
-                  <Form.Item
-                    name="discount"
-                    label="折扣"
-                  >
-                    <Input type='number' />
-                  </Form.Item>
-
-                </div>
-
-
-                <div>
-                  <Form.Item
-                    name="name"
-                    label="商机名称"
-
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="produceIds"
-                    label="关联产品ID"
-                  >
-                    <Input onClick={this.setModalProVisible} placeholder='+关联产品' ></Input>
-                    <Modal
-                      mask={false}
-                      title={'产品'}
-                      visible={this.state.modalProVisible}
-                      width={600}
-                      bodyStyle={{ height: 300 }}
-                      // height={500}
-                      // style={{height:500}}
-                      style={{ position: "absolute", right:10 }}
-                      okText="保存"
-                      cancelText="取消"
-                      onOk={this.setModalProVisible}
-                      onCancel={this.setModalProVisible}
-                    // footer={[
-                    //   <Button onClick={this.setModalProVisible} type='primary'>保存</Button>,
-                    //   <Button onClick={this.setModalProVisible} type='default'>取消</Button>
-                    // ]}
-                    >
-                      <GetProductTable ></GetProductTable>
-                    </Modal>
-                    {/* <Input /> */}
-
-                  </Form.Item>
 
 
                 </div>
+
                 <div>
                   <Form.Item
                     name="submissionTime"
                     label="预计成交时间"
-                  // rules={[
-                  //   required: true,
-                  //   message:'预计成交时间不能为空'
-                  //   ]}
+
                   >
                     <DatePicker onChange={this.onChangeDate} />
                   </Form.Item>
@@ -556,7 +549,17 @@ class BizOpp extends Component {
                   >
                     <Input />
                   </Form.Item>
+                  <Form.Item
+                    name="discount"
+                    label="折扣"
+                  >
+                    <Input />
+                  </Form.Item>
                 </div>
+                <div>
+                  <AddedProduct  methods={(val)=>{this.getProductId(val)}} ></AddedProduct>
+                </div>
+
 
               </Form>
             </Modal>
@@ -626,9 +629,6 @@ class BizOpp extends Component {
                     <Modal
                       visible={this.state.transferVisible}
                       title="转移商机"
-                      // okText="保存"
-                      // cancelText="取消"
-                      // onOk={this.transferSubmit}
                       footer={[
                         <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
                         <Button onClick={this.setTransferVisible} type='default'>取消</Button>

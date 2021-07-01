@@ -3,7 +3,9 @@ import axios from 'axios';
 import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
-import {
+import GetCustomer from "../../../../../components/getCustomer";
+import GetEmployee from "../../../../../components/getEmployee";
+import { 
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
 } from 'antd';
@@ -84,8 +86,14 @@ class Payment extends Component {
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
+    this.getCustomerID = this.getCustomerID.bind(this)
+
   }
 
+
+  getCustomerID(val) {
+    console.log(val);
+  }
 
   createFollowupRecord() {
     axios.post(`${base.url}/follow/add`, {
@@ -378,7 +386,9 @@ class Payment extends Component {
                 ref={this.formRef}
               >
                 <div>
-                  <Form.Item
+                <GetCustomer  methods={()=>{this.getCustomerID()}}   ></GetCustomer>
+
+                  {/* <Form.Item
                     name="clientId"
                     label="客户名称"   //客户名称
                     rules={[
@@ -388,8 +398,7 @@ class Payment extends Component {
                       },
                     ]}
                   >
-                    <Input />
-                  </Form.Item>
+                  </Form.Item> */}
                   <Form.Item
                     name="commercialPrice"
                     label="回款金额"
