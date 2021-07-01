@@ -4,6 +4,10 @@ import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
 import GetProduct from "./getProduct";
+import AddedProduct from "../../../../../components/addedProduct";  //新增的产品列表
+import GetCustomer from "../../../../../components/getCustomer";
+import GetEmployee from '../../../../../components/getEmployee'
+
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
@@ -59,7 +63,7 @@ class Contract extends Component {
       record: "",
 
       // 搜素合同名称
-      keyword:'', 
+      keyword: '',
 
 
       // 新增产品信息
@@ -86,8 +90,18 @@ class Contract extends Component {
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
+    this.getProductId = this.getProductId.bind(this)
+    this.getCustomerID = this.getCustomerID.bind(this)
   }
 
+  getProductId(val) {
+    console.log(val);
+  }
+
+
+  getCustomerID(val) {
+    console.log(val);
+  }
 
   createFollowupRecord() {
     axios.post(`${base.url}/follow/add`, {
@@ -151,7 +165,7 @@ class Contract extends Component {
     console.log(222);
     axios({
       method: 'get',
-      url:`${base.url}/contract/getContract`,
+      url: `${base.url}/contract/getContract`,
       params: {
         token: this.state.token,
         keyword: '',
@@ -407,7 +421,7 @@ class Contract extends Component {
                   </Form.Item>
                   <Form.Item
                     name="contractName"
-                    label="合同名称"   //客户名称,这里默认为10，客户为CTO
+                    label="合同名称"
                     rules={[
                       {
                         required: true,
@@ -421,7 +435,11 @@ class Contract extends Component {
 
 
                 <div>
-                  <Form.Item
+                  <GetCustomer methods={(val) => {
+                    this.getCustomerID(val)
+                  }}  ></GetCustomer>
+
+                  {/* <Form.Item
                     name="clientId"
                     label="客户名称"   //客户名称,这里默认为10，客户为CTO
                     rules={[
@@ -432,7 +450,7 @@ class Contract extends Component {
                     ]}
                   >
                     <Input />
-                  </Form.Item>
+                  </Form.Item> */}
 
                   <Form.Item
                     name="commercialOpportunityId"
@@ -496,7 +514,9 @@ class Contract extends Component {
                   //   message:'预计成交时间不能为空'
                   //   ]}
                   >
-                    <Input />
+                    {/* <Input /> */}
+                    <GetEmployee></GetEmployee>
+
                   </Form.Item>
                   <Form.Item
                     name="employeeCheckId"
@@ -508,7 +528,7 @@ class Contract extends Component {
                       }
                     ]}
                   >
-                    <Input />
+                    <GetEmployee></GetEmployee>
                   </Form.Item>
 
                 </div>
@@ -527,12 +547,15 @@ class Contract extends Component {
                   </Form.Item>
                 </div>
                 <div>
-                  <Form.Item
+                  {/* <Form.Item
                     name="produceIds"
                     label="产品id"
                   >
                     <Input />
-                  </Form.Item>
+                  </Form.Item> */}
+                  <AddedProduct methods={(val) => {
+                    this.getProductId(val)
+                  }} ></AddedProduct>
                 </div>
 
               </Form>

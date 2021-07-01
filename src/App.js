@@ -7,7 +7,7 @@ import './App.css'
 
 import Top from './PublicComponents/top'
 import PersonalInfo from './PublicComponents/personInfo';
-import ProductTable from './Protable'
+// import ProductTable from './Protable'
 import { HashRouter, Route, Link, Switch } from 'react-router-dom';
 import { routes } from './router';
 import Paging from './PublicComponents/backstageMgt/component/staff&department/component/Paging';
@@ -22,7 +22,6 @@ function App() {
             <CustomerMgt/>
             {/* <BackstageMgt></BackstageMgt> */}
             {/*<Login></Login>*/}
-            {/* <ProductTable></ProductTable> */}
                {/* <MenuLeft></MenuLeft> */}
         </div>
     );

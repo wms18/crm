@@ -3,68 +3,15 @@ import './style.css'
 import axios from 'axios'
 import qs from 'qs'
 import base from '../../axios/axios'
-import { Input, Modal, Table, Button, Popover } from 'antd'
+import { Input, Modal, Table, Button, Popover, Spin, Select } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons';
 import Data from './js'
 import userEvent from '@testing-library/user-event'
 
 
-const columns = [
-    {
-        title: 'Name',
-        dataIndex: 'name',
-        render: (text) => <a>{text}</a>,
-    },
-    {
-        title: 'Age',
-        dataIndex: 'age',
-    },
-    {
-        title: 'Address',
-        dataIndex: 'address',
-    },
-];
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-    },
-    {
-        key: '4',
-        name: 'Disabled User',
-        age: 99,
-        address: 'Sidney No. 1 Lake Park',
-    },
-]; // row
 
-const rowSelection = {
-    hideDefaultSelections: true, // 去掉全选
-    onChange: (selectedRowKeys, selectedRows) => {
-        console.log(selectedRowKeys, selectedRows);
-        // selectedRowKeys=selectedRowKeys
-    },
-    // getCheckboxProps: (record) => ({
-    //     disabled: record.name === 'Disabled User',
-    //     // Column configuration not to be checked
-    //     name: record.name,
-    // }),
-};
+function GetProductTable(props) {
 
-
-function GetProductTable() {
 
     const [selectionType, setSelectionType] = useState('checkbox');
 
@@ -77,13 +24,17 @@ function GetProductTable() {
     let [limit, setLimit] = useState(10)
     // let [selectedRowKeys, setSelectedRowKeys] = useState([])
     let [record, setRecord] = useState([])
-    let [arr, setArr] = useState([
-        // { key: "1", produceName: "压缩饼干", produceType: "食品", price: 1 },
-        // { key: "2", produceName: "SKII神仙水", produceType: "护肤品", price: 2000 },
-        // { key: "3", produceName: "马自达3", produceType: "汽车", price: 1300000 },
-        // { key: "4", produceName: "名爵6", produceType: "汽车", price: 90000 }
-    ])
-    let [selectedRowKeys,setSelectedRowKeys]=useState([])
+    let [arr, setArr] = useState([])
+    let [selectedRowKeys, setSelectedRowKeys] = useState([])
+    let [visibleLoading, setVisibleLoading] = useState('block')
+    let [visibleTable, setVisibleTable] = useState('none')
+    let [modalProVisible, setModalProVisible] = useState(false)
+    let [selectedRows, setSelectedRows] = useState([])
+    let [selectTags, setSelectTags] = useState([])
+
+
+
+    const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />
 
 
 
@@ -94,12 +45,31 @@ function GetProductTable() {
     }, [])
 
 
+    const rowSelection = {
+        hideDefaultSelections: true, // 去掉全选
+        onChange: (selectedRowKeys, selectedRows) => {
+            selectedRows = selectedRows
+            setSelectedRows(selectedRows)
 
+            let arr = []
+            selectedRows.map((item) => {
+                arr.push(item.produceName)
+                return arr
+            })
+            addProductItem(arr)
 
-    function changeVisible() {
-        visible = !visible
-            (visible)
+        },
+    };
+
+    function addProductItem(val) {
+        selectTags = val
+        setSelectTags(selectTags)
     }
+
+    function sendProduct() {
+        props.getProduct(selectedRows)
+    }
+
 
     function getProduct() {
         //获取产品列表
@@ -117,21 +87,31 @@ function GetProductTable() {
             .then((res) => {
                 console.log(res);
                 if (res.data.code === "ERROR") {
-
+                    visibleLoading = 'none'
+                    setVisibleLoading(visibleLoading)
+                    visibleTable = 'block'
+                    setVisibleTable(visibleTable)
                 } else {
 
                     res.data.data.data.map((item, index) => {
                         arr.push({
-                            key: item.id.toString(),
+                            key: (index + 1).toString(),
+                            id: item.id,
                             produceName: item.produceName,
                             produceType: item.produceType,
-                            price: item.price
+                            price: item.price,
+
                         })
+                        // arr.push({...item,key:index+1})
                         return arr
                     })
                     // arr=res.data.data.data
                     setArr(arr)
-                    console.log(arr);
+
+                    visibleLoading = 'none'
+                    setVisibleLoading(visibleLoading)
+                    visibleTable = 'block'
+                    setVisibleTable(visibleTable)
 
 
                     // console.log(arr);
@@ -146,14 +126,32 @@ function GetProductTable() {
 
 
     return (
-        <div>
-            <div onClick={() => {
-                console.log(arr);
-            }}>
-                11
-            </div>
-            {arr.length > 0 ? (
+        <div style={{position:'relative',height:'40px'}} >
+            <Button style={{position:'absolute',right:'0px'}}  type='primary' size={'small'} onClick={() => { setModalProVisible(true) }} >添加产品</Button>
+            <Modal
+                mask={false}
+                title={'产品'}
+                visible={modalProVisible}
+                width={600}
+                bodyStyle={{ height: 300 }}
+                // height={500}
+                // style={{height:500}}
+                style={{ position: "absolute", right: 10 }}
+                okText="保存"
+                cancelText="取消"
+                onOk={() => {
+                    setModalProVisible(false)
+                    sendProduct()
+                }}
+                onCancel={() => { setModalProVisible(false) }}
+            // footer={[
+            //   <Button onClick={this.setModalProVisible} type='primary'>保存</Button>,
+            //   <Button onClick={this.setModalProVisible} type='default'>取消</Button>
+            // ]}
+            >
+                <Spin style={{ display: visibleLoading }} indicator={antIcon} />
                 <Table
+                    style={{ display: visibleTable }}
                     rowSelection={rowSelection}
                     columns={Data.columns}
                     dataSource={arr}
@@ -170,10 +168,10 @@ function GetProductTable() {
                         },
                     })}
 
-                />)
-                :
-                ''
-            }
+                />
+            </Modal>
+
+
 
         </div>
     )
