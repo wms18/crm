@@ -7,6 +7,8 @@ import SchedulePage from "../calendar/calendar";
 import Task from "../task/task";
 import Notice from "../notice/notice";
 import Mail from "../mail/mail";
+import Approval from "../approval/approval";
+import Journal from "../journal/journal";
 import {
     DesktopOutlined,
     CarryOutOutlined,
@@ -55,8 +57,10 @@ function MenuLeft() {
                 {/*<Middle/>*/}
                 {/*<SchedulePage></SchedulePage>*/}
                 {/*<Task></Task>*/}
-                <Notice></Notice>
+                {/*<Notice></Notice>*/}
                 {/*<Mail></Mail>*/}
+                {/*<Approval></Approval>*/}
+                <Journal></Journal>
             </div>
 
 

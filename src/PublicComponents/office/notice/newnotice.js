@@ -1,49 +1,28 @@
 import {Button, ConfigProvider, DatePicker, Form, Input, Modal, Space, TreeSelect} from "antd";
 import zhCN from "antd/lib/locale/zh_CN";
-import LinkBusiness from "../task/link";
-import React, {useState} from "react";
-
-function Newnotice() {
-    let [theme,setTheme] = useState('') //主题
+import React, {useState,useEffect} from "react";
+import base from "../../../axios/axios";
+import axios from "axios";
+function Newnotice(props) {
+    let token = window.localStorage.getItem('token')
+    let [newContent,setNewContent] = useState('') //主题
+    let [time,setTime] = useState([])   //时间
+    let [timeValue,setTimeValue] = useState(null,null)  //时间
+    let [notice,setNotice] = useState('')   //正文
+    const [form] = Form.useForm();
     //公告正文
     const {TextArea} = Input;
-    //通知部门
-    const {SHOW_PARENT} = TreeSelect;
-    const treeData = [
-        {
-            title: 'Node1',
-            value: '0',
-            key: '0',
-        },
-        {
-            title: 'Node2',
-            value: '1',
-            key: '1',
-        },
-    ];
-    
-    let [man, setMan] = useState()//通知部门
-    let onChange1 = value => {
-        console.log('onChange ', value);
-        setMan(value)
-    };
-    const tProps = {
-        treeData,
-        value: man,
-        bordered: true,
-        onChange: onChange1,
-        treeCheckable: true,
-        showCheckedStrategy: SHOW_PARENT,
-        placeholder: '请选择',
-        style: {
-            width: '100%',
-        },
-    };
+
+
     //开始时间，结束时间
     const {RangePicker} = DatePicker;
     let onChangeTime = (value, dateString) => {
         console.log('Selected Time: ', value);
         console.log('Formatted Selected Time: ', dateString);
+        timeValue = value
+        setTimeValue(value)
+        time = dateString
+        setTime(time)
     }
 
     let onOk = (value) => {
@@ -74,8 +53,14 @@ function Newnotice() {
     };
     //主题
     let newTheme =(value) =>{
-        theme = value
-        setTheme(theme)
+        console.log(value)
+        newContent = value
+        setNewContent(newContent)
+    }
+    //正文
+    let handle =(value)=>{
+        notice = value
+        setNotice(notice)
     }
     return(
         <div >
@@ -83,9 +68,9 @@ function Newnotice() {
             <div className={'newtask'}>
                 <div>
                     <Form
+                        form={form}
                         {...layout}
                         layout="vertical"
-                        name="basic"
                         initialValues={{
                             remember: true,
                         }}
@@ -103,19 +88,13 @@ function Newnotice() {
                                 },
                             ]}
                         >
-                            <Input value={theme} onChange={(e)=>{
+                            <Input value={newContent} onChange={(e)=>{
                                 newTheme(e.target.value)
                             }}/>
                         </Form.Item>
                     </Form>
                 </div>
-                <div>
-                    {/*通知部门*/}
-                    <div style={{margin:'6px 0 6px 0'}}>
-                        <span >通知员工</span>
-                    </div>
-                    <TreeSelect {...tProps} style={{width: '253px'}}/>
-                </div>
+
             </div>
             {/*时间*/}
             <div style={{margin: '20px 0 5px 0'}}>
@@ -125,6 +104,7 @@ function Newnotice() {
             <Space direction="vertical" size={12}>
                 <ConfigProvider locale={zhCN}>
                     <RangePicker
+                        value={timeValue}
                         bordered={false}
                         showTime={{format: 'HH:mm'}}
                         format="YYYY-MM-DD HH:mm"
@@ -137,13 +117,35 @@ function Newnotice() {
             <div style={{margin: '20px 0'}}>
                 <span>公告正文</span>
             </div>
-            <TextArea rows={4} placeholder={'请输入内容'}/>
+            <TextArea rows={4} value={notice} onChange={(e)=>{
+                handle(e.target.value)
+            }} placeholder={'请输入内容'}/>
             <div className={'ok-button'}>
-                {/*<Button style={{marginRight: '20px'}} onClick={()=>{*/}
-                {/*    setIsModalVisible(false);*/}
-                {/*}}> 取消</Button>*/}
+                <Button style={{marginRight: '20px'}} onClick={()=>{
+                   props.onCancel()
+                    setNewContent('')
+                    setTime([])
+                    setNotice('')
+                    setTimeValue(null,null)
+                    form.setFieldsValue({"username": ""})
+                }}> 取消</Button>
                 <Button type={"primary"} onClick={() => {
-
+                    if (newContent === '' || notice ===''){
+                        alert('正文、标题不能为空')
+                        return
+                    }else {
+                        let messages={
+                            newContent:newContent,
+                            time:time,
+                            notice:notice
+                        }
+                        props.onOk(messages)
+                        setNewContent('')
+                        setTime([])
+                        setNotice('')
+                        setTimeValue(null,null)
+                        form.setFieldsValue({"username": ""})
+                    }
                 }}>确定</Button>
             </div>
         </div>

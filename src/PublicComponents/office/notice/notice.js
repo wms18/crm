@@ -10,10 +10,16 @@ import base from "../../../axios/axios";
 import moment from 'moment';
 
 function Notice() {
-    let data = {
-
+    let newContent=''
+    let time=[]
+    let notice=''
+    let messages={
+        newContent:newContent,
+        time:time,
+        notice:notice
     }
     const dateFormat = 'YYYY-MM-DD';
+    let [mesObj,setMesObj] = useState(messages)
     let [end, setEnd] = useState(1)
     let token = window.localStorage.getItem('token')
     let [allList, setAllList] = useState([])    //公告列表
@@ -223,6 +229,30 @@ function Notice() {
         content = value
         setContent(value)
     }
+    //新建公告
+    let handleNotice = () =>{
+        axios({
+            method:'post',
+            url:base.url+'/notice/create',
+            params:{
+                token:token,
+                beginTime: mesObj.time[0],
+                endTime: mesObj.time[1],
+                content:mesObj.notice,
+                title:mesObj.newContent
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code === 'ERROR'){
+                alert(response.data.message)
+            }else {
+                alert('新建成功')
+                all()
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+    }
     return (
         <div style={{padding: '20px', width: '800px'}}>
             <div className={'notice'}>
@@ -241,7 +271,15 @@ function Notice() {
                            footer={null}
                            onCancel={handleCancel}
                     >
-                        <Newnotice onOk={data}></Newnotice>
+                        <Newnotice onOk={(value)=>{
+                            console.log(value)
+                            mesObj = value
+                            setMesObj(mesObj)
+                            setIsModalVisible(false);
+                            handleNotice()
+                        }} onCancel={()=>{
+                            setIsModalVisible(false);
+                        }}></Newnotice>
                     </Modal>
                 </span>
                 </div>
