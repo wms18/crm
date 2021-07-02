@@ -71,7 +71,7 @@ class GetEmployee extends Component {
             }
         })
             .then((res) => {
-                console.log(res);
+                // console.log(res);
                 if (res.data.code === 'ERROR') {
 
                 } else {

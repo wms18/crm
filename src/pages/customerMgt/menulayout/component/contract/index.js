@@ -6,7 +6,8 @@ import './style.css'
 import GetProduct from "./getProduct";
 import AddedProduct from "../../../../../components/addedProduct";  //新增的产品列表
 import GetCustomer from "../../../../../components/getCustomer";
-import GetEmployee from '../../../../../components/getEmployee'
+import GetEmployee from '../../../../../components/getEmployee';
+import GetBizOppTable from "../../../../../components/getBizOppTable";
 
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
@@ -28,7 +29,7 @@ const { Content, Footer, Header } = Layout
 class Contract extends Component {
 
   componentDidMount() {
-    console.log(111);
+    // console.log(111);
     this.getContract()
     // this.getEmployeeName()
   }
@@ -51,6 +52,9 @@ class Contract extends Component {
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
+
+      getLinkBizOppCustomerId: '',   //获取商机拿到的客户id
+      linkBizOpp: '',
 
       pagination: '',
       currentPage: 1,
@@ -92,6 +96,13 @@ class Contract extends Component {
     this.onChangeDate = this.onChangeDate.bind(this)
     this.getProductId = this.getProductId.bind(this)
     this.getCustomerID = this.getCustomerID.bind(this)
+    this.getBizOppID = this.getBizOppID.bind(this)
+
+  }
+
+
+  getBizOppID(val) {   //关联商机传过来的商机信息
+    console.log(val);
   }
 
   getProductId(val) {
@@ -99,8 +110,71 @@ class Contract extends Component {
   }
 
 
+  // getLinkBizOppInfo(id) {
+  //   axios({
+  //     method: 'get',
+  //     url: `${base.url}/commercialOpportunity/one`,
+  //     params: {
+  //       token: this.state.token,
+  //       id: id
+  //     }
+  //   })
+  //     .then((res) => {
+  //       console.log(res);
+  //       if (res.data.code == 'ERROR') {
+  //       } else {
+  //         console.log("商机信息",res)
+  //         this.setState({
+  //           linkBizOpp: {
+  //             name: res.data.data.name,
+  //             commercialOpportunityId: res.data.data.commercialOpportunityId
+  //           }
+  //         })
+  //       }
+  //     })
+  //     .catch((res) => {
+  //       console.log(res);
+  //     })
+  // }
+
+  // getCustomerLinkBizOppID(id) {   //拿到关联后的客户id再获取商机具体信息
+  //   axios({
+  //     method: "get",
+  //     url: `${base.url}/client/getOneClient`,
+  //     params: {
+  //       token: this.state.token,
+  //       clientId: id
+  //     }
+  //   })
+  //     .then((res) => {
+  //       console.log("获取商机",res);
+  //       if (res.data.code == 'ERRPR') {
+  //       } else {
+  //         this.setState({
+  //           linkBizOppID: res.data.data.linkCommercialOpportunity   //拿到关联的商机id
+  //         }, () => {
+  //           this.getLinkBizOppInfo(res.data.data.linkCommercialOpportunity)
+  //         })
+  //       }
+  //     })
+  //     .catch((res) => {
+  //       console.log(res);
+  //     })
+  // }
+
+
+  // 获取客户id
   getCustomerID(val) {
     console.log(val);
+    console.log("获取客户id", val);
+    this.setState({
+      getLinkBizOppCustomerId: val ? val[0].id : ''
+    })
+    // this.setState({  
+    //   getLinkBizOppCustomerId: val[0].id
+    // }, () => {
+    //   this.getCustomerLinkBizOppID(val[0].id)
+    // })
   }
 
   createFollowupRecord() {
@@ -162,7 +236,7 @@ class Contract extends Component {
 
   getContract() {
     // 获取合同
-    console.log(222);
+    // console.log(222);
     axios({
       method: 'get',
       url: `${base.url}/contract/getContract`,
@@ -437,31 +511,12 @@ class Contract extends Component {
                 <div>
                   <GetCustomer methods={(val) => {
                     this.getCustomerID(val)
+
                   }}  ></GetCustomer>
 
-                  {/* <Form.Item
-                    name="clientId"
-                    label="客户名称"   //客户名称,这里默认为10，客户为CTO
-                    rules={[
-                      {
-                        required: true,
-                        message: '客户名称不能为空',
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item> */}
-
-                  <Form.Item
-                    name="commercialOpportunityId"
-                    label="商机名称"
-                  // rules={[
-                  //   required: true,
-                  //   message:'合同状态组不能为空'
-                  // ]}
-                  >
-                    <Input />
-                  </Form.Item>
+                  <GetBizOppTable
+                    id={this.state.getLinkBizOppCustomerId}
+                    linkBizOpp={this.state.linkBizOpp} methods={(val) => { this.getBizOppID(val) }}  ></GetBizOppTable>
                 </div>
 
                 <div>
