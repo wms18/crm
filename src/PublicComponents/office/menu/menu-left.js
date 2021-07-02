@@ -55,12 +55,12 @@ function MenuLeft() {
             </Sider>
             <div>
                 {/*<Middle/>*/}
-                {/*<SchedulePage></SchedulePage>*/}
+                <SchedulePage></SchedulePage>
                 {/*<Task></Task>*/}
                 {/*<Notice></Notice>*/}
                 {/*<Mail></Mail>*/}
                 {/*<Approval></Approval>*/}
-                <Journal></Journal>
+                {/*<Journal></Journal>*/}
             </div>
 
 

@@ -4,7 +4,7 @@ import React, {useState, useEffect} from "react";
 import './journal.css'
 import base from "../../../axios/axios";
 import axios from "axios";
-
+import qs from 'qs'
 function Journal() {
     let token = window.localStorage.getItem('token')
     let dateArr = ['日报', '周报', '月报']
@@ -99,10 +99,46 @@ function Journal() {
     };
 
     const handleOk = () => {
+        if (date === '' || next === '' || selectStaff.length === 0){
+            alert('请输入内容')
+        }else {
+            axios({
+                method:'post',
+                url:base.url+'/log/create',
+                data:qs.stringify({
+                    token:token,
+                    contentType:dateActive,
+                    employeeIds:selectStaff,
+                    nextContent:next,
+                    problem:problem,
+                    thisContent:date,
+                })
+            }).then((response)=>{
+                console.log(response)
+                if (response.data.code === 'ERROR'){
+                    alert(response.data.message)
+                }else {
+                    setSelectStaff([])
+                    setDateActive(0)
+                    setNext('')
+                    setProblem('')
+                    setDate('')
+                    allJournal()
+                }
+            }).catch((error)=>{
+                alert(error)
+            })
+        }
         setIsModalVisible(false);
     };
 
     const handleCancel = () => {
+        setSelectStaff([])
+        setDateActive(0)
+        setNext('')
+        setProblem('')
+        setDate('')
+        allJournal()
         setIsModalVisible(false);
     };
     //日志列表
@@ -272,6 +308,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>今日工作内容：</span>
                                         <TextArea rows={4}
+                                                  value={date}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleDate(e.target.value)
@@ -280,6 +317,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>明日工作内容：</span>
                                         <TextArea rows={4}
+                                                  value={next}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleNext(e.target.value)
@@ -288,6 +326,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>遇到的问题：</span>
                                         <TextArea rows={4}
+                                                  value={problem}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleProblem(e.target.value)
@@ -304,6 +343,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>本周工作内容：</span>
                                         <TextArea rows={4}
+                                                  value={date}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleDate(e.target.value)
@@ -312,6 +352,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>下周工作内容：</span>
                                         <TextArea rows={4}
+                                                  value={next}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleNext(e.target.value)
@@ -320,6 +361,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>遇到的问题：</span>
                                         <TextArea rows={4}
+                                                  value={problem}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleProblem(e.target.value)
@@ -336,6 +378,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>本月工作内容：</span>
                                         <TextArea rows={4}
+                                                  value={date}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleDate(e.target.value)
@@ -344,6 +387,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>下月工作内容：</span>
                                         <TextArea rows={4}
+                                                  value={next}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleNext(e.target.value)
@@ -352,6 +396,7 @@ function Journal() {
                                     <div style={{width: '98%'}}>
                                         <span>遇到的问题：</span>
                                         <TextArea rows={4}
+                                                  value={problem}
                                                   placeholder={'请输入内容'}
                                                   onChange={(e) => {
                                                       handleProblem(e.target.value)
@@ -368,8 +413,8 @@ function Journal() {
                 </div>
             </div>
             <div className={'journalSelect'} style={{margin: '20px 0'}}>
-                <div>
-                    <span>发起人</span>
+                <div className={approveIndex === 1?'hidden':''}>
+                    <span >发起人</span>
                     <Select defaultValue="请选择" style={{width: 120, margin: '0 10px'}}
                             onChange={handleChange} allowClear>
                         {allStaff.map((item, index) => {
@@ -419,8 +464,20 @@ function Journal() {
                                 }}>删除</span>
                                     </div>
                                 </div>
-                                <div>
-                                    <div className={'journalText'}>{item.content}</div>
+                                <div className={item.contentType === 0? '':'hidden'}>
+                                    <div className={item.thisContent===''?'hidden':'journalText'}>今日工作内容：{item.thisContent}</div>
+                                    <div className={item.nextContent===''?'hidden':'journalText'}>明日工作内容：{item.nextContent}</div>
+                                    <div className={item.problem===''?'hidden':'journalText'}>遇到的问题：{item.problem}</div>
+                                </div>
+                                <div className={item.contentType === 1? '':'hidden'}>
+                                    <div className={item.thisContent===''?'hidden':'journalText'}>本周工作内容：{item.thisContent}</div>
+                                    <div className={item.nextContent===''?'hidden':'journalText'}>下周工作内容：{item.nextContent}</div>
+                                    <div className={item.problem===''?'hidden':'journalText'}>遇到的问题：{item.problem}</div>
+                                </div>
+                                <div className={item.contentType === 2? '':'hidden'}>
+                                    <div className={item.thisContent===''?'hidden':'journalText'}>本月工作内容：{item.thisContent}</div>
+                                    <div className={item.nextContent===''?'hidden':'journalText'}>下月工作内容：{item.nextContent}</div>
+                                    <div className={item.problem===''?'hidden':'journalText'}>遇到的问题：{item.problem}</div>
                                 </div>
                                 {item.reply.map((item, index) => {
                                     return (
