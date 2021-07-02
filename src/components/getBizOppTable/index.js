@@ -6,12 +6,40 @@ import base from '../../axios/axios'
 import { Input, Modal, Table, Button, Spin, Select, Menu, Dropdown, Form, message } from 'antd'
 import { LoadingOutlined, DownOutlined } from '@ant-design/icons';
 import Data from './js'
+import GetCustomer from '../getCustomer'
 
 const { Search } = Input
 const { Option } = Select
 
 
-function GetCustomer(props) {
+function GetBizOppTable(props) {
+    useEffect(() => {
+        console.log(props.id);
+        if (props.id) {
+            setCustomerID(props.id)
+            setHasBizOpp(false)
+
+
+        } else {
+            console.log('不存在');
+            setHasBizOpp(true)
+        }
+
+
+        // console.log("props.linkBizOpp", props.linkBizOpp)
+        // if (!props.linkBizOpp) {
+        //     hasBizOpp = false
+        //     setHasBizOpp(hasBizOpp)
+        // } else {
+        //     tags = props.linkBizOpp.name
+        //     setTags(tags)
+        //     hasBizOpp = true
+        //     setHasBizOpp(hasBizOpp)
+        // }
+
+
+    }, [props])
+
 
     const [selectionType, setSelectionType] = useState('radio');
 
@@ -27,15 +55,21 @@ function GetCustomer(props) {
     let [record, setRecord] = useState([])
     let [arr, setArr] = useState([])
     let [arrTags, setArrTags] = useState('')
-    let [tags, setTags] = useState('')
-    let [selectedRowKeys, setSelectedRowKeys] = useState([])
+    let [tags, setTags] = useState(undefined)
+    let [selectedRowKeys] = useState([])
     let [visibleLoading, setVisibleLoading] = useState('block')
     let [visibleTable, setVisibleTable] = useState('none')
     let [modalProVisible, setModalProVisible] = useState(false)
     let [selectedRows, setSelectedRows] = useState([])
     let [selectTags, setSelectTags] = useState([])
+    let [hasBizOpp, setHasBizOpp] = useState(true)
+    let [customerID, setCustomerID] = useState()
 
 
+    useEffect(() => {
+        console.log('加载');
+        getBizOpp(customerID)
+    }, [customerID])
 
     const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />
 
@@ -43,10 +77,8 @@ function GetCustomer(props) {
 
 
 
-    useEffect(() => {
-        console.log(props);
-        getCustomer()
-    }, [])
+    // useEffect(() => {
+    // }, [])
 
 
     const rowSelection = {
@@ -57,14 +89,13 @@ function GetCustomer(props) {
             selectedRows = selectedRows
             setSelectedRows(selectedRows)
 
-            let ssarr = []
+            let arr = []
             selectedRows.map((item) => {
-                ssarr.push(item.clientName)
-
+                arr.push(item.name)
+                return arr
             })
-            console.log(ssarr);
-            selectTags = ssarr
-            setSelectTags(ssarr)
+            arrTags = arr
+            setArrTags(arr)
 
         },
     };
@@ -74,61 +105,86 @@ function GetCustomer(props) {
         // setSelectTags(selectTags)
     }
 
-    function sendCustomerID(selectedRows) {
+    function sendBizOppID(selectedRows) {
+        // tags = arrTags
+        // setTags(tags)
 
         props.methods(selectedRows)
-
     }
 
 
-    function getCustomer() {
-
-        axios.get(`${base.url}/client/getClient?currentPage=` + currentPage + `&limit=` + limit, {
+    function getBizOpp(id) {
+        //获取商机列表
+        axios({
+            method: 'get',
+            url: `${base.url}/client/getCommercialOpportunity`,
             params: {
                 token: token,
-                keyWord: keyWord
-            },
+                clientId: id
+                // keyword: keyword,
+                // currentPage: currentPage,
+                // limit: limit
+            }
         })
 
             .then((res) => {
                 console.log(res);
                 if (res.data.code === "ERROR") {
+
                     visibleLoading = 'none'
                     setVisibleLoading(visibleLoading)
                     visibleTable = 'block'
                     setVisibleTable(visibleTable)
+                    arr = []
+                    setArr(arr)
+
                 } else {
-                    pagination = res.data.data.pagination
-                    setPagination(pagination)
-
-                    res.data.data.data.map((item, index) => {
-                        arr.push({
+                    console.log('商机信息存在')
+                    arr = []
+                    setArr(arr)
+                    let temp=[...arr]  //解構對象，再set,不让指向同一内存地址导致Table组件不更新    
+                    res.data.data.map((item, index) => {
+                        temp.push({
                             key: (index + 1).toString(),
-                            id: item.id,
+                            id: item.commercialOpportunityId,
                             clientName: item.clientName,
-                            nextTalkTime: item.nextTalkTime,
-                            updateTime: item.updateTime,
-                            createTime: item.createTime,
+                            commercialStage: item.commercialStage,
+                            commercialStatusGroup: item.commercialStatusGroup,
+                            name: item.name,
+                            totalPrice: item.totalPrice,
                         })
-
-                        // arr.push({...item,key:index+1})
-
-
+                            // setArr(temp)
+                            setArr(temp)
                     })
-                    // arr=res.data.data.data
+
 
 
                     visibleLoading = 'none'
                     setVisibleLoading(visibleLoading)
                     visibleTable = 'block'
                     setVisibleTable(visibleTable)
+
+
+                    // console.log(arr);
+                    // tableArr = arr
+                    // setTableArr(tableArr)
+                    // pagination = res.data.data.pagination
+                    // setPagination(pagination)
                 }
+            })
+            .catch((res) => {
+                arr = []
+                setArr(arr)
             })
     }
 
     function validateServiceName(rule, value, callback) {
         console.log(value)
-
+        // this.setState({
+        //    onlyName: value 
+        // },()=>{
+        //     this.nameChange(callback)
+        // })
     }
 
 
@@ -137,74 +193,69 @@ function GetCustomer(props) {
 
             <Form.Item
                 // name="clientId"
-                label="客户名称"
+                label="商机名称"
                 rules={[
                     {
                         required: true,
-                        message: '客户姓名不能为空',
+                        message: '商机姓名不能为空',
                     },
                 ]}
             >
 
                 <div style={{ position: 'relative', height: '40px' }} >
                     <Select
-                        // disabled={hasBizOpp}
+                        placeholder='+添加'
+                        disabled={hasBizOpp}
                         dropdownClassName="hiddenDropdown"
                         mode='tags'
                         value={tags}
                         allowClear={true}
                         onClear={() => {
-                            tags = ''
+                            arrTags=''
+                            setArrTags(arrTags)
+                            tags = undefined
                             setTags(tags)
-                            // sendCustomerID(tags)
-
-
-                            // console.log('清除框');
-                            // tags = ''
-                            // setTags(tags)
-                            selectedRows = ''
-                            setSelectedRows(selectedRows)
-                            sendCustomerID('')
-
+                            // selectedRows = ''
+                            // setSelectedRows(selectedRows)
+                            sendBizOppID()
                         }}
 
                         style={{ position: 'absolute', right: '0px' }} style={{ width: 184 }}
+
                         onClick={() => {
-                            // setModalProVisible(true)
-                            setModalProVisible(true)
+                            console.log(arr);
+                            if (hasBizOpp) {
 
+                            } else {
+                                setModalProVisible(true)
 
-                        }}
-                    >
-                    </Select>
+                            }
+                        }} >添加产品</Select>
                     <Modal
                         destroyOnClose={true}
                         mask={false}
-                        title={'客户'}
+                        title={'商机'}
                         visible={modalProVisible}
                         width={600}
                         bodyStyle={{ height: 350, position: 'relative' }}
+
                         // height={500}
                         // style={{height:500}}
                         style={{ position: "absolute", right: 10 }}
                         okText="保存"
                         cancelText="取消"
                         onOk={() => {
-                            setModalProVisible()
-
-                            sendCustomerID(selectedRows)
-                            tags = selectTags
+                            setModalProVisible(false)
+                            sendBizOppID()
+                            tags = arrTags
                             setTags(tags)
                             console.log(tags);
-
                         }}
-                        onCancel={() => {
-                            setModalProVisible(false)
-                        }}
+                        onCancel={() => { setModalProVisible(false) }}
 
                     >
                         <div style={{ textAlign: 'center', padding: '0px 0px  15px 0' }}>
-                            <Search style={{ width: '200px' }} placeholder='请输入客户名称' ></Search>
+                            <Search style={{ width: '200px' }} placeholder='请输入商机名称' ></Search>
                         </div>
                         <Spin style={{ display: visibleLoading }} indicator={antIcon} />
                         <Table
@@ -217,7 +268,7 @@ function GetCustomer(props) {
                             columns={Data.columns}
                             dataSource={arr}
                             scroll={{ y: 130 }}
-                            pagination={{ pageSize: pagination.limit }}
+                            // style={{  height: 200 }}
 
                             //点击行显示表格行信息
                             onRow={(record) => ({
@@ -230,7 +281,14 @@ function GetCustomer(props) {
 
                         />
                         <div style={{ position: 'absolute', bottom: '20px' }} >
-                            <Button type='primary' style={{ marginRight: '20px' }}  >上一页</Button>
+                            <Button type='primary' style={{ marginRight: '20px' }}
+                                onClick={() => {
+                                    console.log(1);
+                                    if (currentPage == 1) {
+                                        message.warning('已是第一页')
+                                    }
+                                }}
+                            >上一页</Button>
                             <Button type='default'
                                 onClick={() => {
                                     console.log(1);
@@ -247,6 +305,7 @@ function GetCustomer(props) {
 
                 </div>
             </Form.Item>
+            {/* <GetCustomer name   ></GetCustomer> */}
         </div>
 
     )
@@ -256,4 +315,4 @@ function GetCustomer(props) {
 
 
 
-export default GetCustomer
+export default GetBizOppTable

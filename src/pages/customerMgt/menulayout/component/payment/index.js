@@ -5,7 +5,8 @@ import qs from 'qs'
 import './style.css'
 import GetCustomer from "../../../../../components/getCustomer";
 import GetEmployee from "../../../../../components/getEmployee";
-import { 
+import GetContractTable from '../../../../../components/getContractTable'
+import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
 } from 'antd';
@@ -38,6 +39,8 @@ class Payment extends Component {
       token: window.localStorage.getItem('token'),
 
 
+
+      customerID: '',
 
       isCreate: true,
       formTitle: '新建回款',
@@ -90,9 +93,26 @@ class Payment extends Component {
 
   }
 
+  // getCustomerID(val) {
+  //   console.log(val);
+  //   this.setState({
+  //     customerID: val[0].id
+  //   })
+  // }
+
+  getContractID(val){
+    console.log(val);
+    this.setState({
+      contractCoding:val?val[0].contractCoding:''
+    })
+    console.log(this.state.contractCoding);
+  }
 
   getCustomerID(val) {
     console.log(val);
+      this.setState({
+        customerID: val?val[0].id:''
+      })
   }
 
   createFollowupRecord() {
@@ -386,7 +406,10 @@ class Payment extends Component {
                 ref={this.formRef}
               >
                 <div>
-                <GetCustomer  methods={()=>{this.getCustomerID()}}   ></GetCustomer>
+                  <GetCustomer methods={(val) => { this.getCustomerID(val) }}   ></GetCustomer>
+                  <GetContractTable id={this.state.customerID} methods={(val) => { this.getContractID(val) }}  ></GetContractTable>
+                </div>
+                <div>
 
                   {/* <Form.Item
                     name="clientId"
@@ -503,6 +526,21 @@ class Payment extends Component {
                     label="预计总金额"
                   >
                     <Input />
+                  </Form.Item>
+                </div>
+                <div>
+                  <Form.Item
+                    name="employeeCheckId"
+                    label="审核人"
+                    rules={[
+                      {
+                        required: true,
+                        message: '审核人不能为空'
+                      }
+                    ]}
+                  >
+                    {/* <Input /> */}
+                    <GetEmployee></GetEmployee>
                   </Form.Item>
                 </div>
 
