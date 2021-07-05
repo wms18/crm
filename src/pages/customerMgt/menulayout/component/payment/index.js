@@ -6,18 +6,19 @@ import './style.css'
 import GetCustomer from "../../../../../components/getCustomer";
 import GetEmployee from "../../../../../components/getEmployee";
 import GetContractTable from '../../../../../components/getContractTable'
+import GetProductTable from "../../../../../components/getProductTable";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
 } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Data from "./js/index";
 
 const { Step } = Steps;
 const { TabPane } = Tabs
-const { Option, TextArea } = Select
-const { Search } = Input
+const { Option } = Select
+const { Search, TextArea } = Input
 const { Content, Footer, Header } = Layout
 
 
@@ -27,7 +28,6 @@ class Payment extends Component {
 
   componentDidMount() {
     this.getPayment()
-    this.getEmployeeName()
   }
 
   constructor(props) {
@@ -87,32 +87,34 @@ class Payment extends Component {
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
-    this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
     this.getCustomerID = this.getCustomerID.bind(this)
 
   }
 
-  // getCustomerID(val) {
-  //   console.log(val);
-  //   this.setState({
-  //     customerID: val[0].id
-  //   })
-  // }
 
-  getContractID(val){
+  getEmployee(val) {   //获取审核人员工ID
     console.log(val);
     this.setState({
-      contractCoding:val?val[0].contractCoding:''
+      employeeCheckedId: val ? val : ''
     })
-    console.log(this.state.contractCoding);
+  }
+
+  getContractID(val) {
+    console.log(val);
+    this.setState({
+      contractCoding: val ? val[0].contractCoding : '',
+      // contractID:val?val[0].
+    }, () => {
+      console.log(this.state.contractCoding);
+    })
   }
 
   getCustomerID(val) {
     console.log(val);
-      this.setState({
-        customerID: val?val[0].id:''
-      })
+    this.setState({
+      customerID: val ? val[0].id : ''
+    })
   }
 
   createFollowupRecord() {
@@ -134,32 +136,16 @@ class Payment extends Component {
   }
 
   onChangeDate(date, dateString) {
+    console.log(dateString);
     this.setState({
       submissionTime: dateString
+    },()=>{
+      
     })
   }
 
 
 
-  getEmployeeName() {
-    axios.get(`${base.url}/employee/getEmployeeName`, {
-      params: {
-        token: this.state.token
-      }
-    })
-      .then((res) => {
-        if (res.data.code == 'ERROR') {
-
-        } else {
-          this.setState({
-            employeeArr: res.data.data
-          })
-        }
-      })
-      .catch((res) => {
-        console.log(res);
-      })
-  }
 
   setTransferVisible() {
     this.setState({
@@ -209,28 +195,28 @@ class Payment extends Component {
     } else {
       axios({
         method: "post",
-        url: `${base.url}/commercialOpportunity/create`,
+        url: `${base.url}/return-money/add`,
         params: {
           token: this.state.token,
+          clientId: this.state.customerID,
+          content: data.content,
+          contractCoding : this.state.contractCoding ,
+          employeeCheckId: this.state.employeeCheckedId,
+          content: data.content,
+          periods: data.periods,
+          receiveTime  : this.state.submissionTime ,
+          receiveWay : data.receiveWay ,
+          returnNumber  : data.returnNumber  ,
+          reviceMoney  : data.reviceMoney  ,
         },
         // .replace(/\s+/g,'')
-        data: qs.stringify({
-          clientId: data.clientId,
-          commercialPrice: data.commercialPrice,
-          commercialStage: data.commercialStage,
-          commercialStatusGroup: data.commercialStatusGroup,
-          content: data.content,
-          // id: data.id,
-          discount: data.discount,
-          name: data.name,
-          produceIds: data.produceIds,
-          submissionTime: this.state.submissionTime,
-          totalPrice: data.totalPrice,
-        })
+        // data: qs.stringify({
+        
+        // })
       }).then((res) => {
         console.log(res);
         if (res.data.code === "ERROR") {
-          message.error('请重试');
+          message.error(res.data.message);
           // this.onCancel()
         } else {
           message.success(res.data.message);
@@ -315,7 +301,7 @@ class Payment extends Component {
     setTimeout(() => {
       console.log('record', this.state.record);
       if (this.state.isCreate) {
-        this.formRef.current.resetFields();
+        // this.formRef.current.resetFields();
       } else {
 
         this.formRef.current.setFieldsValue({
@@ -340,9 +326,9 @@ class Payment extends Component {
       visible: false,
       isCreate: true
     })
-    setTimeout(() => {
-      this.formRef.current.resetFields();
-    }, 100);
+    // setTimeout(() => {
+    //   this.formRef.current.resetFields();
+    // }, 100);
   }
 
   onCreate(values) {
@@ -390,7 +376,7 @@ class Payment extends Component {
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
               title={this.state.isCreate ? '新建回款' : '编辑回款'}
-              okText="确认"
+              okText="提交审核"
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
@@ -406,76 +392,84 @@ class Payment extends Component {
                 ref={this.formRef}
               >
                 <div>
-                  <GetCustomer methods={(val) => { this.getCustomerID(val) }}   ></GetCustomer>
-                  <GetContractTable id={this.state.customerID} methods={(val) => { this.getContractID(val) }}  ></GetContractTable>
-                </div>
-                <div>
-
-                  {/* <Form.Item
-                    name="clientId"
-                    label="客户名称"   //客户名称
+                  <Form.Item
+                    name="returnNumber"
+                    label="回款编号"
                     rules={[
                       {
-                        required: true,
-                        message: '客户姓名不能为空',
-                      },
-                    ]}
-                  >
-                  </Form.Item> */}
-                  <Form.Item
-                    name="commercialPrice"
-                    label="回款金额"
-                  >
-                    <Input></Input>
-                  </Form.Item>
-                </div>
-
-
-                <div>
-                  <Form.Item
-                    name="commercialStage"
-                    label="回款阶段"
-                    rules={[
-                      {
-                        required: true,
-                        message: '回款阶段不能为空'
+                        required: 'true',
+                        message: '回款编号不能为空'
                       }
                     ]}
                   >
-                    {/* <Input /> */}
-                    <Select style={{ width: 200 }}>
-                      <Option value='赢单'>赢单</Option>
-                      <Option value='输单'>输单</Option>
-                      <Option value='无效'>无效</Option>
-                    </Select>
+                    <Input></Input>
+
+
+                    {/* 客户名称 */}
                   </Form.Item>
                   <Form.Item
-                    name="commercialStatusGroup"
-                    label="回款状态组"
-                  // rules={[
-                  //   required: true,
-                  //   message:'回款状态组不能为空'
-                  // ]}
+                    name="clientId"
+                    label="客户名称"
+                    rules={[
+                      {
+                        required: 'true',
+                        message: '客户名称不能为空'
+                      }
+                    ]}
                   >
-                    <Select>
-                      <Option value='服务产品线'>服务产品线</Option>
-                      <Option value='数据监测'>数据监测</Option>
-                      <Option value='服务产品线'>服务产品线</Option>
-                    </Select>
+                    <GetCustomer methods={(val) => { this.getCustomerID(val) }}   ></GetCustomer>
+                  </Form.Item>
+
+                </div>
+
+
+                <div>
+
+                  {/* 合同编号 */}
+                  <GetContractTable id={this.state.customerID} methods={(val) => { this.getContractID(val) }}  ></GetContractTable>
+
+                  <Form.Item
+                    name="receiveTime"
+                    label="回款日期"
+                    rules={[
+                      {
+                        required: true,
+                        message: '回款日期不能为空'
+                      }
+                    ]}
+                  >
+                    <ConfigProvider locale={zhCN}>
+                      <DatePicker  style={{width:184}} onChange={this.onChangeDate} />
+                    </ConfigProvider>
+
                   </Form.Item>
                 </div>
 
                 <div>
                   <Form.Item
-                    name="content"
-                    label="备注"
+                    name="receiveWay"
+                    label="回款方式"
+                    rules={[
+                      {
+                        required: 'true',
+                        message: '回款方式不能为空'
+                      }
+                    ]}
 
                   >
                     <Input />
                   </Form.Item>
+
                   <Form.Item
-                    name="discount"
-                    label="折扣"
+                    name="reviceMoney"
+                    label="回款金额"
+
+                    rules={[
+                      {
+                        required: true,
+                        message: "回款金额不能为空"
+                      }
+                    ]}
                   >
                     <Input type='number' />
                   </Form.Item>
@@ -485,50 +479,24 @@ class Payment extends Component {
 
                 <div>
                   <Form.Item
-                    name="name"
-                    label="回款名称"
+                    name="periods"
+                    label="期数"
 
                   >
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="produceIds"
-                    label="关联产品ID"
+                    name="content"
+                    label="备注"
                   >
-                    <Input />
+                    <TextArea style={{ width: 184, height: 60 }}   ></TextArea>
                   </Form.Item>
 
 
                 </div>
-                <div>
-                  <Form.Item
-                    name="submissionTime"
-                    label="预计成交时间"
-                  // rules={[
-                  //   required: true,
-                  //   message:'预计成交时间不能为空'
-                  //   ]}
-                  >
-                    <DatePicker onChange={this.onChangeDate} />
-                  </Form.Item>
-                  <Form.Item
-                    name="phone"
-                    label="手机号"
 
-                  >
-                    <Input />
-                  </Form.Item>
+                <div>
 
-                </div>
-                <div>
-                  <Form.Item
-                    name="totalPrice"
-                    label="预计总金额"
-                  >
-                    <Input />
-                  </Form.Item>
-                </div>
-                <div>
                   <Form.Item
                     name="employeeCheckId"
                     label="审核人"
@@ -539,10 +507,11 @@ class Payment extends Component {
                       }
                     ]}
                   >
-                    {/* <Input /> */}
-                    <GetEmployee></GetEmployee>
+                    <GetEmployee contentResponsible={(val) => { this.getEmployee(val) }}   ></GetEmployee>
                   </Form.Item>
                 </div>
+
+
 
               </Form>
             </Modal>

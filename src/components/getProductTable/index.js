@@ -71,6 +71,63 @@ function GetProductTable(props) {
     }
 
 
+    function getContractLinkProduct() {   //获取在新建回款时关联的产品表
+
+
+        axios({
+            method: 'get',
+            url: `${base.url}/contract/getLinkProduce`,
+            params: {
+                token: token,
+                keyWord: keyWord,
+                currentPage: currentPage,
+                limit: limit
+            }
+        })
+
+            .then((res) => {
+                console.log(res);
+                if (res.data.code === "ERROR") {
+                    visibleLoading = 'none'
+                    setVisibleLoading(visibleLoading)
+                    visibleTable = 'block'
+                    setVisibleTable(visibleTable)
+                } else {
+
+                    res.data.data.data.map((item, index) => {
+                        arr.push({
+                            key: (index + 1).toString(),
+                            id: item.id,
+                            produceName: item.produceName,
+                            produceType: item.produceType,
+                            price: item.price,
+
+                        })
+                        // arr.push({...item,key:index+1})
+                        return arr
+                    })
+                    // arr=res.data.data.data
+                    setArr(arr)
+
+                    visibleLoading = 'none'
+                    setVisibleLoading(visibleLoading)
+                    visibleTable = 'block'
+                    setVisibleTable(visibleTable)
+
+
+                    // console.log(arr);
+                    // tableArr = arr
+                    // setTableArr(tableArr)
+                    // pagination = res.data.data.pagination
+                    // setPagination(pagination)
+                }
+            })
+    }
+
+
+
+
+
     function getProduct() {
         //获取产品列表
         axios({
@@ -126,8 +183,8 @@ function GetProductTable(props) {
 
 
     return (
-        <div style={{position:'relative',height:'40px'}} >
-            <Button style={{position:'absolute',right:'0px'}}  type='primary' size={'small'} onClick={() => { setModalProVisible(true) }} >添加产品</Button>
+        <div style={{ position: 'relative', height: '40px' }} >
+            <Button style={{ position: 'absolute', right: '0px' }} type='primary' size={'small'} onClick={() => { setModalProVisible(true) }} >添加产品</Button>
             <Modal
                 mask={false}
                 title={'产品'}
@@ -150,25 +207,27 @@ function GetProductTable(props) {
             // ]}
             >
                 <Spin style={{ display: visibleLoading }} indicator={antIcon} />
-                <Table
-                    style={{ display: visibleTable }}
-                    rowSelection={rowSelection}
-                    columns={Data.columns}
-                    dataSource={arr}
-                    // scroll={{ x: 300, y: 200 }}
-                    // style={{ width: 200, height: 150 }}
-                    pagination={{ pageSize: pagination.limit }}
+               
 
-                    //点击行显示表格行信息
-                    onRow={(record) => ({
-                        onClick: () => {
-                            console.log(record);
-                            record = record
-                            setRecord(record)
-                        },
-                    })}
+                    <Table
+                        style={{ display: visibleTable }}
+                        rowSelection={rowSelection}
+                        columns={Data.columns}
+                        dataSource={arr}
+                        // scroll={{ x: 300, y: 200 }}
+                        // style={{ width: 200, height: 150 }}
+                        pagination={{ pageSize: pagination.limit }}
 
-                />
+                        //点击行显示表格行信息
+                        onRow={(record) => ({
+                            onClick: () => {
+                                console.log(record);
+                                record = record
+                                setRecord(record)
+                            },
+                        })}
+
+                    />
             </Modal>
 
 

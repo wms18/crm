@@ -133,18 +133,17 @@ function GetCustomer(props) {
 
 
     return (
-        <div>
 
-            <Form.Item
-                // name="clientId"
-                label="客户名称"
-                rules={[
-                    {
-                        required: true,
-                        message: '客户姓名不能为空',
-                    },
-                ]}
-            >
+            // <Form.Item
+            //     // name="clientId"
+            //     label="客户名称"
+            //     rules={[
+            //         {
+            //             required: true,
+            //             message: '客户姓名不能为空',
+            //         },
+            //     ]}
+            // >
 
                 <div style={{ position: 'relative', height: '40px' }} >
                     <Select
@@ -246,9 +245,7 @@ function GetCustomer(props) {
 
 
                 </div>
-            </Form.Item>
-        </div>
-
+            // </Form.Item>
     )
 
 

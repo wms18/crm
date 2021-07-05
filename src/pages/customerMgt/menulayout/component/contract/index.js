@@ -55,6 +55,8 @@ class Contract extends Component {
 
       getLinkBizOppCustomerId: '',   //获取商机拿到的客户id
       linkBizOpp: '',
+      BizOppID: '',    //添加的商机id
+      produceIds: [],
 
       pagination: '',
       currentPage: 1,
@@ -67,7 +69,7 @@ class Contract extends Component {
       record: "",
 
       // 搜素合同名称
-      keyword: '',
+      keyword:'',
 
 
       // 新增产品信息
@@ -97,70 +99,52 @@ class Contract extends Component {
     this.getProductId = this.getProductId.bind(this)
     this.getCustomerID = this.getCustomerID.bind(this)
     this.getBizOppID = this.getBizOppID.bind(this)
+    this.getEemployeeCheckId = this.getEemployeeCheckId.bind(this)
+    this.getEmployeeSignId = this.getEmployeeSignId.bind(this)
 
   }
 
+  
+  getEemployeeCheckId(val) {   //审核人
+    console.log(val);
+    this.setState({
+      employeeCheckId:val
+    })
+  }
+
+  getEmployeeSignId(val) {    //签字人
+    console.log(val);
+    this.setState({
+      employeeSignId:val
+    })
+  }
 
   getBizOppID(val) {   //关联商机传过来的商机信息
     console.log(val);
+    this.setState({
+      BizOppID: val ? val[0].id : ''
+    })
+
   }
 
-  getProductId(val) {
+  getProductId(val) {  //拿到产品信息
     console.log(val);
+    let arr = []
+    val ? val.map((item) => {
+      arr.push(item.id)
+    })
+      :
+      arr = []
+
+    this.setState({
+      produceIds: arr
+    }, () => {
+      console.log(this.state.produceIds);
+
+    })
+
   }
 
-
-  // getLinkBizOppInfo(id) {
-  //   axios({
-  //     method: 'get',
-  //     url: `${base.url}/commercialOpportunity/one`,
-  //     params: {
-  //       token: this.state.token,
-  //       id: id
-  //     }
-  //   })
-  //     .then((res) => {
-  //       console.log(res);
-  //       if (res.data.code == 'ERROR') {
-  //       } else {
-  //         console.log("商机信息",res)
-  //         this.setState({
-  //           linkBizOpp: {
-  //             name: res.data.data.name,
-  //             commercialOpportunityId: res.data.data.commercialOpportunityId
-  //           }
-  //         })
-  //       }
-  //     })
-  //     .catch((res) => {
-  //       console.log(res);
-  //     })
-  // }
-
-  // getCustomerLinkBizOppID(id) {   //拿到关联后的客户id再获取商机具体信息
-  //   axios({
-  //     method: "get",
-  //     url: `${base.url}/client/getOneClient`,
-  //     params: {
-  //       token: this.state.token,
-  //       clientId: id
-  //     }
-  //   })
-  //     .then((res) => {
-  //       console.log("获取商机",res);
-  //       if (res.data.code == 'ERRPR') {
-  //       } else {
-  //         this.setState({
-  //           linkBizOppID: res.data.data.linkCommercialOpportunity   //拿到关联的商机id
-  //         }, () => {
-  //           this.getLinkBizOppInfo(res.data.data.linkCommercialOpportunity)
-  //         })
-  //       }
-  //     })
-  //     .catch((res) => {
-  //       console.log(res);
-  //     })
-  // }
 
 
   // 获取客户id
@@ -170,11 +154,6 @@ class Contract extends Component {
     this.setState({
       getLinkBizOppCustomerId: val ? val[0].id : ''
     })
-    // this.setState({  
-    //   getLinkBizOppCustomerId: val[0].id
-    // }, () => {
-    //   this.getCustomerLinkBizOppID(val[0].id)
-    // })
   }
 
   createFollowupRecord() {
@@ -242,7 +221,7 @@ class Contract extends Component {
       url: `${base.url}/contract/getContract`,
       params: {
         token: this.state.token,
-        keyword: '',
+        keyword:this.state.keyword,
         currentPage: this.state.currentPage,
         limit: this.state.limit
       },
@@ -289,17 +268,17 @@ class Contract extends Component {
         data: qs.stringify({
           beginTime: data.beginTime,
           clientId: data.clientId,
-          commercialOpportunityId: data.commercialOpportunityId,
+          commercialOpportunityId: this.state.BizOppID,
           content: data.content,
           contractCoding: data.contractCoding,
-          // id: data.id,
+          clientId: this.state.getLinkBizOppCustomerId,
           contractName: data.contractName,
           currency: data.currency,
-          employeeCheckId: data.employeeCheckId,
+          employeeCheckId: this.state.employeeCheckId,
           employeeSignId: this.state.employeeSignId,
           endTime: data.endTime,
           orderTime: data.orderTime,
-          produceIds: data.produceIds,
+          produceIds: this.state.produceIds,
           totalPrice: data.totalPrice,
         })
       }).then((res) => {
@@ -564,13 +543,10 @@ class Contract extends Component {
                   <Form.Item
                     name="employeeSignId"
                     label="签字人"
-                  // rules={[
-                  //   required: true,
-                  //   message:'预计成交时间不能为空'
-                  //   ]}
+                
                   >
-                    {/* <Input /> */}
-                    <GetEmployee></GetEmployee>
+                    {/* 签字人对应子组件对应的负责人方法 */}
+                    <GetEmployee contentResponsible={(val) => { this.getEmployeeSignId(val) }}  ></GetEmployee>
 
                   </Form.Item>
                   <Form.Item
@@ -583,7 +559,8 @@ class Contract extends Component {
                       }
                     ]}
                   >
-                    <GetEmployee></GetEmployee>
+                    {/* 审核人 对应的子组件接受的创建人*/}
+                    <GetEmployee contentCreate={(val) => { this.getEemployeeCheckId(val) }} ></GetEmployee>  
                   </Form.Item>
 
                 </div>

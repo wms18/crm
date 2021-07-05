@@ -3,9 +3,11 @@ import './style.css'
 import axios from 'axios'
 import qs from 'qs'
 import base from '../../axios/axios'
-import { Input, Modal, Table, Button, Spin, Select, Menu, Dropdown, Form, message } from 'antd'
+import { Input, Modal, Table, Button, Spin, Select, Menu, Dropdown, Form, message, ConfigProvider } from 'antd'
 import { LoadingOutlined, DownOutlined } from '@ant-design/icons';
 import Data from './js'
+import zhCN from 'antd/es/locale/zh_CN';
+
 // import GetCustomer from '../getCustomer'
 
 const { Search } = Input
@@ -39,6 +41,7 @@ function GetContractTable(props) {
     let [selectTags, setSelectTags] = useState([])
     let [hasBizOpp, setHasBizOpp] = useState(true)
     let [customerID, setCustomerID] = useState()
+    let [hasData, setHasData] = useState(false)
 
     useEffect(() => {
         console.log(props);
@@ -46,7 +49,7 @@ function GetContractTable(props) {
             setCustomerID(props.id)
             setHasBizOpp(false)
             // visibleLoading()
-        }else{
+        } else {
             // setCustomerID(props.id)
             setHasBizOpp(true)
         }
@@ -78,7 +81,7 @@ function GetContractTable(props) {
 
             let arr = []
             selectedRows.map((item) => {
-                arr.push(item.contractCoding)
+                arr.push(item.contractName)
                 return arr
             })
             arrTags = arr
@@ -104,13 +107,13 @@ function GetContractTable(props) {
         //获取合同列表
         axios({
             method: 'get',
-            url: `${base.url}/contract/getContract`,
+            url: `${base.url}/client/getContract`,
             params: {
                 token: token,
                 clientId: id,
-                keyword: keyword,
-                currentPage: currentPage,
-                limit: limit
+                // keyword: keyword,
+                // currentPage: currentPage,
+                // limit: limit
             }
         })
 
@@ -126,6 +129,10 @@ function GetContractTable(props) {
                     setArr(arr)
 
                 } else {
+                    if (res.data.data.length == 0) {
+                        hasData = true
+                        setHasData(hasData)
+                    }
                     visibleLoading = 'none'
                     setVisibleLoading(visibleLoading)
                     visibleTable = 'block'
@@ -134,7 +141,7 @@ function GetContractTable(props) {
                     arr = []
                     setArr(arr)
                     let temp = [...arr]  //解構對象，再set,不让指向同一内存地址导致Table组件不更新    
-                    res.data.data.data.map((item, index) => {
+                    res.data.data.map((item, index) => {
                         temp.push({
                             key: (index + 1).toString(),
                             id: item.id,
@@ -181,76 +188,77 @@ function GetContractTable(props) {
 
 
     return (
-        <div>
 
-            <Form.Item
-                // name="clientId"
-                label="合同名称"
-                rules={[
-                    {
-                        required: true,
-                        message: '合同姓名不能为空',
-                    },
-                ]}
-            >
+        <Form.Item
+            // name="clientId"
+            label="合同名称"
+            rules={[
+                {
+                    required: true,
+                    message: '合同姓名不能为空',
+                },
+            ]}
+        >
 
-                <div style={{ position: 'relative', height: '40px' }} >
-                    <Select
-                        placeholder='+添加'
-                        disabled={hasBizOpp}
-                        dropdownClassName="hiddenDropdown"
-                        mode='tags'
-                        value={tags}
-                        allowClear={true}
-                        onClear={() => {
-                            arrTags = ''
-                            setArrTags(arrTags)
-                            tags = undefined
-                            setTags(tags)
-                            // selectedRows = ''
-                            // setSelectedRows(selectedRows)
-                            sendContractCoding()
-                        }}
+            <div style={{ position: 'relative', height: '40px' }} >
+                <Select
+                    placeholder='+添加'
+                    disabled={hasBizOpp}
+                    dropdownClassName="hiddenDropdown"
+                    mode='tags'
+                    value={tags}
+                    allowClear={true}
+                    onClear={() => {
+                        arrTags = ''
+                        setArrTags(arrTags)
+                        tags = undefined
+                        setTags(tags)
+                        // selectedRows = ''
+                        // setSelectedRows(selectedRows)
+                        sendContractCoding()
+                    }}
 
-                        style={{ position: 'absolute', right: '0px' }} style={{ width: 184 }}
+                    style={{ position: 'absolute', right: '0px' }} style={{ width: 184 }}
 
-                        onClick={() => {
-                            console.log(arr);
-                            if (hasBizOpp) {
+                    onClick={() => {
+                        console.log(arr);
+                        if (hasBizOpp) {
 
-                            } else {
-                                setModalProVisible(true)
+                        } else {
+                            setModalProVisible(true)
 
-                            }
-                        }} >添加产品</Select>
-                    <Modal
-                        destroyOnClose={true}
-                        mask={false}
-                        title={'合同'}
-                        visible={modalProVisible}
-                        width={600}
-                        bodyStyle={{ height: 350, position: 'relative' }}
+                        }
+                    }} >添加产品</Select>
+                <Modal
+                    destroyOnClose={true}
+                    mask={false}
+                    title={'合同'}
+                    visible={modalProVisible}
+                    width={600}
+                    bodyStyle={{ height: 350, position: 'relative' }}
 
-                        // height={500}
-                        // style={{height:500}}
-                        style={{ position: "absolute", right: 10 }}
-                        okText="保存"
-                        cancelText="取消"
-                        onOk={() => {
-                            setModalProVisible(false)
-                            // sendBizOppID()
-                            tags = arrTags
-                            setTags(tags)
-                            console.log(tags);
-                            sendContractCoding(selectedRows)
-                        }}
-                        onCancel={() => { setModalProVisible(false) }}
+                    // height={500}
+                    // style={{height:500}}
+                    style={{ position: "absolute", right: 10 }}
+                    okText="保存"
+                    cancelText="取消"
+                    onOk={() => {
+                        setModalProVisible(false)
+                        // sendBizOppID()
+                        tags = arrTags
+                        setTags(tags)
+                        console.log(tags);
+                        sendContractCoding(selectedRows)
+                    }}
+                    onCancel={() => { setModalProVisible(false) }}
 
-                    >
-                        <div style={{ textAlign: 'center', padding: '0px 0px  15px 0' }}>
-                            <Search style={{ width: '200px' }} placeholder='请输入合同名称' ></Search>
-                        </div>
-                        <Spin style={{ display: visibleLoading }} indicator={antIcon} />
+                >
+                    <div style={{ textAlign: 'center', padding: '0px 0px  15px 0' }}>
+                        <Search style={{ width: '200px' }} placeholder='请输入合同名称' ></Search>
+                    </div>
+                    <Spin style={{ display: visibleLoading }} indicator={antIcon} />
+
+                    <ConfigProvider locale={zhCN}>
                         <Table
                             style={{ display: visibleTable }}
                             rowSelection={{
@@ -273,33 +281,35 @@ function GetContractTable(props) {
                             })}
 
                         />
-                        <div style={{ position: 'absolute', bottom: '20px' }} >
-                            <Button type='primary' style={{ marginRight: '20px' }}
-                                onClick={() => {
-                                    console.log(1);
-                                    if (currentPage == 1) {
-                                        message.warning('已是第一页')
-                                    }
-                                }}
-                            >上一页</Button>
-                            <Button type='default'
-                                onClick={() => {
-                                    console.log(1);
-                                    if (currentPage == pagination.totalPage) {
-                                        message.warning('已是最后一页')
-                                    }
-                                }}
-                            >下一页</Button>
-                        </div>
+                    </ConfigProvider>
 
-                    </Modal>
+                    <div style={{ position: 'absolute', bottom: '20px' }} >
+                        <Button type='primary' style={{ marginRight: '20px' }}
+                            onClick={() => {
+                                console.log(1);
+                                if (currentPage == 1) {
+                                    message.warning('已是第一页')
+                                }
+                            }}
+                            disabled={hasData}
+                        >上一页</Button>
+                        <Button type='default'
+                            onClick={() => {
+                                console.log(1);
+                                if (currentPage == pagination.totalPage) {
+                                    message.warning('已是最后一页')
+                                }
+                            }}
+                            disabled={hasData}
+                        >下一页</Button>
+                    </div>
+
+                </Modal>
 
 
 
-                </div>
-            </Form.Item>
-            {/* <GetCustomer name   ></GetCustomer> */}
-        </div>
+            </div>
+        </Form.Item>
 
     )
 
