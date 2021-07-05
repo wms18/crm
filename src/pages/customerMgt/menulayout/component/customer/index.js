@@ -14,6 +14,8 @@ import {
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
+import MapControl from "../../../../../components/mapControl";
+import GdMap from "../../../../../components/gdMap";
 
 
 const { TabPane } = Tabs
@@ -540,7 +542,7 @@ class Customer extends Component {
     setTimeout(() => {
       console.log('record', this.state.record);
       if (this.state.isCreate) {
-        this.formRef.current.resetFields();
+        // this.formRef.current.resetFields();
       } else {
 
         this.formRef.current.setFieldsValue({
@@ -779,6 +781,15 @@ class Customer extends Component {
                   >
                     <Input />
                   </Form.Item>
+                </div>
+                <div>
+                  <Form.Item
+                    name="address"
+                    label="详细地址">
+                      {/* <MapControl></MapControl> */}
+                      <GdMap></GdMap>
+                  </Form.Item>
+
                 </div>
 
               </Form>

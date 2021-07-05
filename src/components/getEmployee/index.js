@@ -10,8 +10,8 @@ class GetEmployee extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            name:this.props.name,
-            prevPropName:'',
+            name: this.props.name,
+            prevPropName: '',
             employeeArr: '',
             token: window.localStorage.getItem('token'),
             checkDiabled: false,
@@ -27,8 +27,8 @@ class GetEmployee extends Component {
             //通过对比nextProps和prevState，返回一个用于更新状态的对象
             return {
                 name: props.name,
-                prevPropName:props.name
-                
+                prevPropName: props.name
+
             }
         }
         //不需要更新状态，返回null
@@ -48,20 +48,23 @@ class GetEmployee extends Component {
 
     }
 
-    transValue(key) {
-        console.log(key);
-        this.props.contentCreate ? this.props.contentCreate(key) : this.props.contentResponsible(key)
-    }
 
-
-    onChange(key, value) {
+    onChange(key,value) {
         console.log(value);
+        // this.transValue(value)
+        this.props.contentCreate ? this.props.contentCreate(Number(value.key)) : this.props.contentResponsible(Number(value.key))
         this.setState({
             id: value.key
         }, () => {
-            this.transValue(value.key)
+
         })
 
+    }
+
+
+    transValue(val) {
+        console.log(val);
+        this.props.contentCreate ? this.props.contentCreate(val) : this.props.contentResponsible(val)
     }
 
     getEmployeeName() {
@@ -71,7 +74,7 @@ class GetEmployee extends Component {
             }
         })
             .then((res) => {
-                // console.log(res);
+                console.log(res);
                 if (res.data.code === 'ERROR') {
 
                 } else {
@@ -90,7 +93,7 @@ class GetEmployee extends Component {
             <Select
                 showArrow={true}
                 showSearch={true}
-                style={{ width: 200 }}
+                style={{ width: 184 }}
                 // mode='tags'
                 optionLabelProp="value"
                 onChange={this.onChange}
@@ -98,7 +101,7 @@ class GetEmployee extends Component {
             >
                 {this.state.employeeArr.length > 0 ? this.state.employeeArr.map((item, index) => {
                     return (
-                        <Option key={index} value={item.username}>
+                        <Option key={item.id} value={item.username}>
                             <div style={{ display: 'flex', flexDirection: 'row' }}>
                                 <div >
                                     {item.arr ?

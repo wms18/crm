@@ -85,7 +85,7 @@ function GetBizOppTable(props) {
         selectionType: 'radio',
         hideDefaultSelections: true, // 去掉全选
         onChange: (selectedRowKeys, selectedRows) => {
-
+            console.log(selectedRows);
             selectedRows = selectedRows
             setSelectedRows(selectedRows)
 
@@ -105,7 +105,7 @@ function GetBizOppTable(props) {
         // setSelectTags(selectTags)
     }
 
-    function sendBizOppID(selectedRows) {
+    function sendBizOppID() {
         // tags = arrTags
         // setTags(tags)
 
