@@ -8,6 +8,18 @@ import LinkBusiness from "../task/link";
 import Edit from "./edit";
 
 function Approval() {
+    let clients; // 空Map
+    let mans;
+    let businesss;
+    let contracts;
+    let initIdsObj = {
+        clients,
+        mans,
+        businesss,
+        contracts,
+    }
+    let [idsObj, setIdsObj] = useState(initIdsObj)   // 4个ids
+    let [editObj,setEditObj] = useState()
     let token = window.localStorage.getItem('token')
     let arr = ['我发起的', '我审批的']
     let [approveIndex, setApproveIndex] = useState(0)    //arr
@@ -15,14 +27,19 @@ function Approval() {
     let [status, setStatus] = useState(0)    //审批状态
     let [type, setType] = useState(0)    //审批类型
     let [approvalList, setApprovalList] = useState([])   //列表
-    let results = ["未审核", "通过", "拒绝", '已撤回']
+    let results = ["未审核", "通过", "已拒绝", '已撤回']
     let [selectStaff, setSelectStaff] = useState([]) //选择员工
     let [allStaff, setAllStaff] = useState([])   //所有员工
     let [drawerInformation, setDrawerInformation] = useState('') //抽屉信息
+    let [approveType, setApproveType] = useState('') //请假类型
+    let [selectTime, setSelectTime] = useState([])   //审批时间
+    let [content, setContent] = useState('')     //审批内容
+    let [valueTime, setValueTime] = useState([]) //时间
+    let [drawerId, setDrawerId] = useState('')   //抽屉id
+    let [editId,setEditId] = useState('')
     const {SHOW_PARENT} = TreeSelect;
 
     useEffect(() => {
-        myApproval()
         list()
         all()
     }, [])
@@ -47,10 +64,15 @@ function Approval() {
 
     const handleOk = () => {
         setIsModalVisible(false);
+        newApprove()
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
+        form.setFieldsValue({'type': ''})
+        form.setFieldsValue({'content': ''})
+        setValueTime([])
+        setSelectStaff([])
     };
     const {Option} = Select;
     const layout = {
@@ -65,6 +87,8 @@ function Approval() {
     //请假类型
     const onGenderChange = (value) => {
         console.log(`selected ${value}`);
+        approveType = value
+        setApproveType(approveType)
     };
     const onFinish = (values) => {
         console.log(values);
@@ -72,12 +96,18 @@ function Approval() {
     //审批内容
     let approvalContent = (value) => {
         console.log(value)
+        content = value
+        setContent(content)
     }
     //选择时间
     const {RangePicker} = DatePicker;
     let onChangeTime = (value, dateString) => {
         console.log('Selected Time: ', value);
         console.log('Formatted Selected Time: ', dateString);
+        selectTime = dateString
+        setSelectTime(selectTime)
+        valueTime = value
+        setValueTime(valueTime)
     }
 
     let onOkTime = (value) => {
@@ -104,9 +134,9 @@ function Approval() {
                 endTime: time[1] === undefined ? '' : time[1],
             }
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
-                alert(response.data.message)
+                console.log(response.data.message)
             } else {
                 approvalList = response.data.data
                 setApprovalList(approvalList)
@@ -127,7 +157,7 @@ function Approval() {
                 endTime: time[1] === undefined ? '' : time[1],
             }
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
                 console.log(response.data.message)
             } else {
@@ -144,8 +174,11 @@ function Approval() {
         console.log('Formatted Selected Time: ', dateString);
         time = dateString
         setTime(time)
-        list()
-        myApproval()
+        if (approveIndex === 0) {
+            list()
+        } else {
+            myApproval()
+        }
     }
 
     let onOk = (value) => {
@@ -156,16 +189,23 @@ function Approval() {
         console.log(`selected ${value}`);
         status = value
         setStatus(status)
-        list()
-        myApproval()
+        if (approveIndex === 0) {
+            list()
+        } else {
+            myApproval()
+        }
     }
     //审批类型
     let handleType = (value) => {
         console.log(`selected ${value}`);
         type = value
         setType(type)
-        list()
-        myApproval()
+        if (approveIndex === 0) {
+            list()
+        } else {
+            myApproval()
+        }
+
     }
     //选择员工
     const treeData = [];
@@ -187,6 +227,7 @@ function Approval() {
         onChange: onChangeStaff,
         treeCheckable: true,
         multiple: true,
+        disabled: selectStaff.length === 0 ? false : true,
         showCheckedStrategy: SHOW_PARENT,
         placeholder: '请选择员工',
         style: {
@@ -201,6 +242,8 @@ function Approval() {
     };
     //点击抽屉
     let handleDrawer = (id) => {
+        drawerId = id
+        setDrawerId(drawerId)
         axios({
             method: 'get',
             url: base.url + '/approve/getApproveById',
@@ -227,11 +270,19 @@ function Approval() {
             url: base.url + '/approve/withDrawApprove?token=' + token,
             params: {
                 approveId: id,
+                result: 4,
             }
         }).then((response) => {
             console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
+            } else {
+                handleDrawer(drawerId)
+                if (approveIndex === 0) {
+                    list()
+                } else {
+                    myApproval()
+                }
             }
         }).catch((error) => {
             alert(error)
@@ -240,8 +291,26 @@ function Approval() {
     //编辑审批
     const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
 
-    const showModalEdit = () => {
+    const showModalEdit = (id) => {
         setIsModalVisibleEdit(true);
+        // axios({
+        //     method: 'get',
+        //     url: base.url + '/approve/getApproveById',
+        //     params: {
+        //         token: token,
+        //         approveId: id
+        //     }
+        // }).then((response) => {
+        //     console.log(response)
+        //     if (response.data.code === 'ERROR') {
+        //         console.log(response.data.message)
+        //     } else {
+        //         editId = response.data.data
+        //         setEditId(editId)
+        //     }
+        // }).catch((error) => {
+        //     alert(error)
+        // })
     };
 
     const handleOkEdit = () => {
@@ -251,7 +320,149 @@ function Approval() {
     const handleCancelEdit = () => {
         setIsModalVisibleEdit(false);
     };
+    //新建审批
+    let newApprove = () => {
+        axios({
+            method: 'post',
+            url: base.url + '/approve/createApprove',
+            params: {
+                token: token,
+            },
+            data: {
+                approveTypeId: approveType,
+                beginTime: selectTime[0],
+                endTime: selectTime[1],
+                employeeCheckId: selectStaff[0],
+                content: content,
+                business: {
+                    1: idsObj.clients,
+                    2: idsObj.mans,
+                    3: idsObj.businesss,
+                    4: idsObj.contracts,
+                }
+            }
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                console.log(response.data.message)
+            } else {
+                if (approveIndex === 0) {
+                    list()
+                } else {
+                    myApproval()
+                }
 
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+        form.setFieldsValue({'type': ''})
+        form.setFieldsValue({'content': ''})
+        setValueTime([])
+        setSelectStaff([])
+    }
+    //删除审批
+    let deleteApproval = (id) => {
+        axios({
+            method: 'DELETE',
+            url: base.url + '/approve/deleteApprove?token=' + token,
+            params: {
+                approveId: id
+            }
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code === 'ERROR') {
+                console.log(response.data.message)
+            } else {
+                list()
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+    }
+    //拒绝
+    let refuse = (id) => {
+        axios({
+            method: 'post',
+            url: base.url + '/approve/refuseApprove',
+            params: {
+                token: token,
+                approveId: id,
+                result: 3
+            }
+        }).then((response) => {
+            console.log(response)
+            if (response.data.code==='ERROR'){
+                console.log(response.data.message)
+            }else {
+                alert('已拒绝')
+                myApproval()
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+    }
+    //通过
+    let pass = (id) =>{
+        axios({
+            method:'post',
+            url:base.url+'/approve/permitApprove',
+            params:{
+                token:token,
+                approveId:id,
+                result:2
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code==='ERROR'){
+                console.log(response.data.message)
+            }else {
+                alert('已通过')
+                myApproval()
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+    }
+    //编辑
+    let edit = () =>{
+        console.log(editObj)
+        axios({
+            method:'post',
+            url:base.url+'/approve/editApprove?token='+token,
+            params:{
+                approveId:editId,
+            },
+            data:{
+                approveTypeId: editObj.approveTypeId,
+                beginTime: editObj.beginTime,
+                endTime: editObj.endTime,
+                employeeCheckId: editObj.employeeCheckId,
+                content: editObj.content ,
+                business: {
+                    1: editObj.clients,
+                    2: editObj.mans,
+                    3: editObj.businesss,
+                    4: editObj.contracts,
+                }
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code === 'ERROR'){
+                console.log(response.data.message)
+            }else {
+                alert('编辑成功')
+                if (approveIndex === 0) {
+                    list()
+                } else {
+                    myApproval()
+                }
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+
+    }
     return (
         <div className={'approval'}>
             <div className={'approvalTop'}>
@@ -261,7 +472,13 @@ function Approval() {
                             <span key={index}
                                   className={index === approveIndex ? 'approvalActive approveSp' : 'approveSp'}
                                   onClick={() => {
-                                      setApproveIndex(index)
+                                      approveIndex = index
+                                      setApproveIndex(approveIndex)
+                                      if (approveIndex === 0) {
+                                          list()
+                                      } else {
+                                          myApproval()
+                                      }
                                   }}
                             >{item}</span>
                         )
@@ -285,9 +502,10 @@ function Approval() {
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                             <Form {...layout}
                                   layout="vertical"
-                                  form={form} name="control-hooks" onFinish={onFinish}>
+                                  form={form}
+                                  name="control-hooks"
+                                  onFinish={onFinish}>
                                 <Form.Item
-
                                     name="type"
                                     label="请假类型"
                                     rules={[
@@ -323,7 +541,7 @@ function Approval() {
                                         },
                                     ]}
                                 >
-                                    <Input style={{width: 300}} onChange={(e) => {
+                                    <Input style={{width: 300}} value={content} onChange={(e) => {
                                         approvalContent(e.target.value)
                                     }}/>
                                 </Form.Item>
@@ -341,6 +559,7 @@ function Approval() {
                         <Space direction="vertical" size={12}>
                             <ConfigProvider locale={zhCN}>
                                 <RangePicker
+                                    value={valueTime}
                                     style={{width: 755}}
                                     showTime={{format: 'HH:mm'}}
                                     format="YYYY-MM-DD HH:mm"
@@ -354,6 +573,7 @@ function Approval() {
                                 关联业务
                             </Button>
                             <Modal title="关联业务模块"
+                                   maskStyle={{backgroundColor: '#fff'}}
                                    width={800}
                                    bordered={true}
                                    bodyStyle={{padding: 0}}
@@ -362,8 +582,12 @@ function Approval() {
                                    onCancel={() => {
                                        setIsBusinessModalVisible(false);
                                    }}>
-                                <LinkBusiness onOk={(value)=>{
+                                <LinkBusiness onOk={(value) => {
+                                    console.log(value)
+                                    idsObj = value
+                                    setIdsObj(idsObj)
                                     setIsBusinessModalVisible(false);
+
                                 }}/>
                             </Modal>
                         </div>
@@ -386,7 +610,7 @@ function Approval() {
                     <Option value="0">全部</Option>
                     <Option value="1">未审核</Option>
                     <Option value="2">通过</Option>
-                    <Option value="3">拒绝</Option>
+                    <Option value="3">已拒绝</Option>
                     <Option value="4">已撤回</Option>
                 </Select>
                 <span style={{marginRight: '10px'}}>发起时间</span>
@@ -426,21 +650,47 @@ function Approval() {
                                         <Popover content={
                                             <div className={'approvalEdit'}>
                                                 <div>
-                                                    <p className={item.result - 1 === 1 ? 'hidden' : ''}
-                                                       onClick={showModalEdit}>编辑</p>
+                                                    <p className={item.result === 1 ? 'hidden' : ''}
+                                                       onClick={()=>{
+                                                           editId = item.id
+                                                           setEditId(editId)
+                                                           showModalEdit(item.id)
+                                                       }}>编辑</p>
                                                     <Modal title="编辑审批"
+                                                           maskStyle={{backgroundColor: '#fff'}}
                                                            width={800}
+                                                           footer={null}
                                                            visible={isModalVisibleEdit} onOk={handleOkEdit}
                                                            onCancel={handleCancelEdit}>
-                                                        <Edit edit={item}/>
+
+                                                        <Edit edit={item} okAprove={(value)=>{
+                                                            console.log(value)
+                                                            editObj= value
+                                                            setEditObj(editObj)
+                                                            edit()
+                                                            setIsModalVisibleEdit(false);
+                                                            // if (approveIndex === 0) {
+                                                            //     list()
+                                                            // } else {
+                                                            //     myApproval()
+                                                            // }
+                                                        }} cancelApprove={()=>{
+                                                            setIsModalVisibleEdit(false);
+                                                        }}/>
                                                     </Modal>
                                                 </div>
-                                                <p className={item.result - 1 === 1 ? 'hidden' : ''}>删除</p>
-                                                <p className={item.result - 1 === 3 || 4 ? 'hidden' : ''}>撤回</p>
+                                                <p className={item.result === 1 ? 'hidden' : ''} onClick={() => {
+                                                    deleteApproval(item.id)
+                                                }}>删除</p>
+                                                <p className={(item.result === 4 ? 'hidden' : '') || (item.result === 3 ? 'hidden' : '')}
+                                                   onClick={()=>{
+                                                       withDrawApprove(item.id)
+                                                   }}
+                                                >撤回</p>
                                             </div>
                                         }
                                                  placement="bottom" zIndex={100} trigger="click">
-                                            <span className={item.result - 1 === 2 ? 'hidden' : ''} style={{
+                                            <span className={item.result === 2 ? 'hidden' : ''} style={{
                                                 margin: '0 20px',
                                                 fontSize: '18px',
                                                 cursor: 'pointer'
@@ -454,6 +704,7 @@ function Approval() {
                                     }}>{item.content}</div>
                                 </div>
                                 <Drawer
+                                    maskStyle={{backgroundColor: '#fff'}}
                                     title="请假审批"
                                     width={800}
                                     placement="right"
@@ -465,7 +716,7 @@ function Approval() {
                                         <div className={'approvalDrawer'}>
                                             <div style={{width: '300px'}}>
                                                 <span>请假类型：</span>
-                                                <span>{results[drawerInformation.result - 1]}</span>
+                                                <span>{drawerInformation.name}</span>
                                             </div>
                                             <div style={{width: '300px'}}>
                                                 <span>审批内容：</span>
@@ -482,12 +733,24 @@ function Approval() {
                                                 <span>{drawerInformation.endTime}</span>
                                             </div>
                                         </div>
-                                        <div style={{margin: '20px',}}>
-                                            <Button onClick={() => {
-                                                withDrawApprove(drawerInformation.id)
-                                            }}>撤回审批</Button>
-                                            <Button style={{margin: '0 20px'}} type="primary" danger>拒绝</Button>
-                                            <Button type={"primary"}>通过</Button>
+                                        <div style={{margin: '20px',}} className={approveIndex === 0 ? 'hidden' : ''}>
+                                            <div >
+                                                <Button className={drawerInformation.result === 4 ? 'hidden' : ''}
+                                                    onClick={() => {
+                                                    withDrawApprove(drawerInformation.id)
+                                                }}>撤回审批</Button>
+                                                <Button style={{margin: '0 20px'}}
+                                                        className={drawerInformation.result === 3 ? 'hidden' : ''}
+                                                        type="primary" danger
+                                                        onClick={() => {
+                                                            refuse(drawerInformation.id)
+                                                        }}>拒绝</Button>
+                                                <Button type={"primary"}
+                                                        style={{margin: '0 20px'}}
+                                                        onClick={()=>{
+                                                    pass(drawerInformation.id)
+                                                }}>通过</Button>
+                                            </div>
                                         </div>
                                     </div>
                                 </Drawer>

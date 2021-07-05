@@ -18,7 +18,6 @@ let initIdsObj = {
 
 function NewTask(props) {
     const [form] = Form.useForm();
-
     let token = window.localStorage.getItem('token')
     let arrPrior = ['高', '中', '低', '无']   //优先级
     let [prior, setPrior] = useState('') //优先级
@@ -237,6 +236,17 @@ function NewTask(props) {
                 </div>
             </div>
             <div className={"ok-button"}>
+                <Button style={{marginRight:'20px'}} onClick={()=>{
+                    props.onCancel()
+                    setPrior("")
+                    setTaskItem("")
+                    setMan([])
+                    setTextArea("")
+                    setTime("")
+                    setIdsObj(initIdsObj)
+                    setTimeValue([null, null])
+                    form.setFieldsValue({"username": ""}) // 清空任务名称
+                }}>取消</Button>
                 <Button type={"primary"} onClick={() => {
                     props.handleMessage(data = ({
                         prior: prior,

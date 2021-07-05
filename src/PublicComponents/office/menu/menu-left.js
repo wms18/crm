@@ -9,6 +9,7 @@ import Notice from "../notice/notice";
 import Mail from "../mail/mail";
 import Approval from "../approval/approval";
 import Journal from "../journal/journal";
+import {Link, Route, HashRouter} from "react-router-dom";
 import {
     DesktopOutlined,
     CarryOutOutlined,
@@ -18,53 +19,62 @@ import {
     TeamOutlined,
     ScheduleOutlined
 } from '@ant-design/icons';
-
+import ReceptionTop from "../../top";
 const {Content, Sider} = Layout;
 
 function MenuLeft() {
     return (
-        <Layout style={{minHeight: '100vh'}}>
-            <Sider>
-                <div className="logo"/>
-                <Right/>
+        <div>
+            {/*<ReceptionTop/>*/}
+            <Layout style={{minHeight: '100vh',overflow: 'auto',}}>
+                <HashRouter>
+                    <Sider>
+                        <div className="logo"/>
+                        <Right/>
+                        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
 
-                <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
+                            <Menu.Item key="1" icon={<DesktopOutlined/>}>
+                                <Link to={'/office'}>工作台</Link>
+                            </Menu.Item>
+                            <Menu.Item key="2" icon={<ScheduleOutlined/>}>
+                                <Link to={'/office/schedule'}>日程</Link>
 
-                    <Menu.Item key="1" icon={<DesktopOutlined/>}>
-                        工作台
-                    </Menu.Item>
-                    <Menu.Item key="2" icon={<ScheduleOutlined/>}>
-                        日程
-                    </Menu.Item>
-                    <Menu.Item key="3" icon={<CarryOutOutlined/>}>
-                        任务
-                    </Menu.Item>
-                    <Menu.Item key="4" icon={<MailOutlined/>}>
-                        公告
-                    </Menu.Item>
-                    <Menu.Item key="5" icon={<ProfileOutlined/>}>
-                        日志
-                    </Menu.Item>
-                    <Menu.Item key="6" icon={<ClearOutlined/>}>
-                        审批
-                    </Menu.Item>
-                    <Menu.Item key="7" icon={<TeamOutlined/>}>
-                        通讯录
-                    </Menu.Item>
-                </Menu>
-            </Sider>
-            <div>
-                {/*<Middle/>*/}
-                <SchedulePage></SchedulePage>
-                {/*<Task></Task>*/}
-                {/*<Notice></Notice>*/}
-                {/*<Mail></Mail>*/}
-                {/*<Approval></Approval>*/}
-                {/*<Journal></Journal>*/}
-            </div>
+                            </Menu.Item>
+                            <Menu.Item key="3" icon={<CarryOutOutlined/>}>
+                                <Link to={'/office/task'}>任务</Link>
 
+                            </Menu.Item>
+                            <Menu.Item key="4" icon={<MailOutlined/>}>
+                                <Link to={'/office/notice'}>公告</Link>
 
-        </Layout>
+                            </Menu.Item>
+                            <Menu.Item key="5" icon={<ProfileOutlined/>}>
+                                <Link to={'/office/journal'}>日志</Link>
+
+                            </Menu.Item>
+                            <Menu.Item key="6" icon={<ClearOutlined/>}>
+                                <Link to={'/office/approval'}>审批</Link>
+
+                            </Menu.Item>
+                            <Menu.Item key="7" icon={<TeamOutlined/>}>
+                                <Link to={'/office/mail'}>通讯录</Link>
+
+                            </Menu.Item>
+                        </Menu>
+                    </Sider>
+                    <div>
+                        <Route path={'/office'} exact component={Middle}></Route>
+                        <Route path={'/office/schedule'} component={SchedulePage}></Route>
+                        <Route path={'/office/task'} component={Task}></Route>
+                        <Route path={'/office/notice'} component={Notice}></Route>
+                        <Route path={'/office/journal'} component={Journal}></Route>
+                        <Route path={'/office/approval'} component={Approval}></Route>
+                        <Route path={'/office/mail'} component={Mail}></Route>
+                    </div>
+                </HashRouter>
+
+            </Layout>
+        </div>
     )
 }
 

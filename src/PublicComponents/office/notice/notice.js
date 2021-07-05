@@ -254,7 +254,7 @@ function Notice() {
         })
     }
     return (
-        <div style={{padding: '20px', width: '800px'}}>
+        <div style={{padding: '20px', width: '930px'}}>
             <div className={'notice'}>
                 <div className={'noticeTop'}>
                     <span className={'noticeSp'}>公告</span>

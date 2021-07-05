@@ -32,6 +32,7 @@
 }
 .active{
     border-bottom: 2px solid #3E84E9;
+    color:#3E84E9;
 }
 .avatar{
     width: 35px;
@@ -50,7 +51,7 @@
     width: calc(100% + 20px);
     overflow-y:scroll ;
     overflow-x: hidden;
-    height: 700px;
+    height: 500px;
 }
 .site-layout{
     background-color: #f0f2f5;

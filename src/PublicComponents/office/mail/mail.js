@@ -40,7 +40,7 @@ function Mail() {
     let arr = ['员工']
     let [mailIndex,setMailIndex] = useState(0)
     return(
-        <div className={'mail'} style={{width:'800px',margin:'20px'}}>
+        <div className={'mail'} style={{width:'930px',margin:'20px'}}>
             <div className={'mailTop'}>
                 {arr.map((item,index)=>{
                     return(

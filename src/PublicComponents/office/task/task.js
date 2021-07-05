@@ -248,7 +248,7 @@ function Task() {
         setIsBusinessModalVisible(true);
     };
     //客户接口
-    let taskclient = (value) => {
+    let taskclient = (  ) => {
         console.log(idsObj)
         console.log(idsObj.clients)
         axios({
@@ -745,11 +745,11 @@ function Task() {
                                     <div>
                                         {taskList.map((item, index) => {
                                             return (
-                                                <Checkbox key={index} className={item.id === taskId ? '' : 'hidden'}
+                                                <Checkbox key={index} disabled={true} className={item.id === taskId ? '' : 'hidden'}
                                                           onChange={onChangeCheckbox}>{item.taskName}</Checkbox>
                                             )
                                         })}
-                                        <span className={taskCheckBox === true ? '' : 'hidden'}>已完成</span>
+                                        {/*<span className={taskCheckBox === true ? '' : 'hidden'}>已完成</span>*/}
                                     </div>
                                     <div><span>负责人：<span>{charge[0]}</span></span></div>
                                 </div>
@@ -805,13 +805,12 @@ function Task() {
                                             visible={visibleMan}
                                             onVisibleChange={handleVisibleChange}
                                             content={contentMan} title="选择成员" trigger="click">
-                                          <span>✚</span>
                                         </Popover>
                                     </span>
                                 </div>
                                 <div style={{marginBottom: '30px'}}>
                                     关联业务
-                                    {client.map((item,index)=>{
+                                    {client === null?'':client.map((item,index)=>{
                                         return(
                                             <div key={index} className={'taskClient'} >
                                                 <span>{item.name}-{item.clientName}</span>

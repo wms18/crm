@@ -5,7 +5,8 @@ import './journal.css'
 import base from "../../../axios/axios";
 import axios from "axios";
 import qs from 'qs'
-function Journal() {
+function Journal(props) {
+
     let token = window.localStorage.getItem('token')
     let dateArr = ['日报', '周报', '月报']
     let [dateActive, setDateActive] = useState(0)    //日报
@@ -23,6 +24,7 @@ function Journal() {
     let [next,setNext] = useState('')   //明日工作内容
     let [selectStaff, setSelectStaff] = useState([]) //选择员工
     let [problem,setProblem] = useState('') //问题
+
     useEffect(() => {
         all()
         allJournal()
@@ -92,6 +94,8 @@ function Journal() {
         setTaskText('')
     }
     //写日志
+
+
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const showModal = () => {
@@ -279,6 +283,7 @@ function Journal() {
                     </Button>
                     <Modal title="写日志"
                            visible={isModalVisible}
+                           maskStyle={{backgroundColor: '#fff'}}
                            cancelText={'取消'}
                            okText={'提交'}
                            onOk={handleOk}

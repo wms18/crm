@@ -348,16 +348,18 @@ function LinkBusiness(props) {
         ],
     };
     const dataContract = [];
-    for (let i = 0; i < taskContract.length; i++) {
-        dataContract.push({
-            key: taskContract[i].id,
-            name: taskContract[i].contractCoding,
-            name1: taskContract[i].contractName,
-            name2: taskContract[i].clientName,
-            name3: taskContract[i].contractPrice,
-            time: taskContract[i].createTime,
-            time1: taskContract[i].orderTime,
-        });
+    if (taskContract.length !== 0) {
+        for (let i = 0; i < taskContract.length; i++) {
+            dataContract.push({
+                key: taskContract[i].id,
+                name: taskContract[i].contractCoding,
+                name1: taskContract[i].contractName,
+                name2: taskContract[i].clientName,
+                name3: taskContract[i].contractPrice,
+                time: taskContract[i].createTime,
+                time1: taskContract[i].orderTime,
+            });
+        }
     }
     let onChangeContract = (page) => {
         currentContract = page
@@ -396,7 +398,7 @@ function LinkBusiness(props) {
                     keyword: search,
                 }
             }).then((response) => {
-                // console.log(response)
+                console.log(response)
                 if (response.data.code === 'ERROR') {
                     alert(response.data.message)
                 } else {
@@ -453,7 +455,7 @@ function LinkBusiness(props) {
                         </Space>
                     </div>
                     <div>
-                        <button className={'businessBtn'}>新建</button>
+                        {/*<button className={'businessBtn'}>新建</button>*/}
                     </div>
                 </div>
                 {/*客户*/}
@@ -505,16 +507,16 @@ function LinkBusiness(props) {
                             contracts,
                         }
                         for (let i = 0; i < clientId.length; i++) {
-                            clients[clientId[i]]=clientName[i]
+                            clients[clientId[i]] = clientName[i]
                         }
                         for (let i = 0; i < manId.length; i++) {
-                            mans[manId[i]]=manName[i]
+                            mans[manId[i]] = manName[i]
                         }
                         for (let i = 0; i < businessId.length; i++) {
-                            businesss[businessId[i]]=businessName[i]
+                            businesss[businessId[i]] = businessName[i]
                         }
                         for (let i = 0; i < contractName.length; i++) {
-                            contracts[contractId[i]]=contractName[i]
+                            contracts[contractId[i]] = contractName[i]
                         }
                         props.onOk(ids)
                         setClientId([])

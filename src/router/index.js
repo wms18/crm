@@ -28,6 +28,15 @@ import Payment from '../pages/customerMgt/menulayout/component/payment';
 import ProductTable from '../pages/customerMgt/menulayout/component/prodocutTable';
 import Clue from '../pages/customerMgt/menulayout/component/clue'
 import Dashboaedlayout from '../pages/customerMgt/menulayout/component/dashboardlayout'
+import MenuLeft from "../PublicComponents/office/menu/menu-left";
+import Middle from "../PublicComponents/office/work/middle/middle";
+import Task from "../PublicComponents/office/task/task";
+import Notice from "../PublicComponents/office/notice/notice";
+import Journal from "../PublicComponents/office/journal/journal";
+import Approval from "../PublicComponents/office/approval/approval";
+import Mail from "../PublicComponents/office/mail/mail";
+import SchedulePage from "../PublicComponents/office/calendar/calendar";
+import Newjournal from "../PublicComponents/office/journal/newjournal";
 const routes = [
     {
         path: '/',
@@ -102,7 +111,7 @@ const routes = [
             },
             {
                 path: '/customerMgt/contract',
-                component: Contract 
+                component: Contract
             },
             {
                 path: '/customerMgt/payment',
@@ -114,6 +123,40 @@ const routes = [
             },
         ]
     },
+    {
+        path: '/office',
+        component:MenuLeft,
+        children: [
+            {
+                path: '/office',
+                component:Middle
+            },
+            {
+                path: '/office/schedule',
+                component:SchedulePage,
+            },
+            {
+                path: '/office/task',
+                component:Task
+            },
+            {
+                path: '/office/notice',
+                component:Notice
+            },
+            {
+                path: '/office/journal',
+                component:Journal,
+            },
+            {
+                path: '/office/approval',
+                component:Approval
+            },
+            {
+                path: '/office/mail',
+                component:Mail
+            },
+        ]
+    }
 ];
 
 

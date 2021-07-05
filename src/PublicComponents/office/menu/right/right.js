@@ -9,7 +9,7 @@ function Right() {
     return(
         <div className="demo ">
             <div className={'right_demo'}>
-                <Tooltip placement="right" title={text} >
+                <Tooltip placement="right" title={text} zIndex={100}>
                     <span className={'right_fast'}>快速创建
                     <span className={'right_sp'}> > </span>
                     </span>

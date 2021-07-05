@@ -13,11 +13,24 @@ import base from "../../../axios/axios";
 moment.locale('zh-cn');
 
 function SchedulePage() {
+    const [form] = Form.useForm();
+    let clients; // 空Map
+    let mans ;
+    let businesss ;
+    let contracts;
+    let ids = {
+        clients,
+        mans,
+        businesss,
+        contracts,
+    }
+    let [data,setData] = useState(ids)
     let token=window.localStorage.getItem('token')
     let [allStaff, setAllStaff] = useState([])   //所有员工
     let [selectStaff, setSelectStaff] = useState([]) //选择员工
     let [title,setTitle] = useState('') //主题
     let [time,setTime] = useState([])   //时间
+    let [timeValue,setTimeValue] = useState([]) //时间
     let [content,setContent] = useState('')    //内容
     const [isBusinessModalVisible, setIsBusinessModalVisible] = useState(false);
 
@@ -76,7 +89,42 @@ function SchedulePage() {
     };
 
     const handleOk = () => {
-        setIsModalVisible(false);
+        axios({
+            method:'post',
+            url:base.url+'/schedule/add',
+            params:{
+                token:token
+            },
+            data:{
+                beginTime:time[0],
+                endTime:time[1],
+                content:content,
+                employeeIds:selectStaff,
+                title:title,
+                business:{
+                    1: data.clients,
+                    2: data.mans,
+                    3: data.businesss,
+                    4: data.contracts,
+                }
+            }
+        }).then((response)=>{
+            console.log(response)
+            if (response.data.code==='ERROR'){
+                console.log(response.data.message)
+            }else {
+                alert('新建日程成功')
+                setIsModalVisible(false);
+                setTimeValue([null,null])
+                setSelectStaff([])
+                setContent('')
+                form.setFieldsValue({"title": ""}) // 清空标题
+                setData(ids)
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+
     };
 
     const handleCancel = () => {
@@ -89,6 +137,8 @@ function SchedulePage() {
         console.log('Formatted Selected Time: ', dateString);
         time=dateString
         setTime(time)
+        timeValue = value
+        setTimeValue(timeValue)
     }
 
     let onOk = (value) => {
@@ -126,6 +176,7 @@ function SchedulePage() {
         content=value
         setContent(content)
     }
+
     return (
         <div style={{margin: '20px'}}>
             <div style={{position: 'absolute', margin: '15px'}}>
@@ -139,8 +190,8 @@ function SchedulePage() {
                 {/*输入内容*/}
                 <Form
                     {...layout}
+                    form={form}
                     layout="vertical"
-                    name="basic"
                     initialValues={{
                         remember: true,
                     }}
@@ -150,7 +201,6 @@ function SchedulePage() {
                     <Form.Item
                         label="主题"
                         name="title"
-
                         rules={[
                             {
                                 required: true,
@@ -158,7 +208,7 @@ function SchedulePage() {
                             },
                         ]}
                     >
-                        <Input placeholder={'请输入内容'} onChange={(e)=>{
+                        <Input placeholder={'请输入内容'} value={title} onChange={(e)=>{
                             handleTitle(e.target.value)
                         }} />
                     </Form.Item>
@@ -175,6 +225,7 @@ function SchedulePage() {
                                 showTime={{format: 'HH:mm'}}
                                 format="YYYY-MM-DD HH:mm"
                                 onChange={onChange}
+                                value={timeValue}
                                 onOk={onOk}
                                 style={{width: '130%'}}
                             />
@@ -209,6 +260,9 @@ function SchedulePage() {
                                setIsBusinessModalVisible(false);
                            }}>
                         <LinkBusiness onOk={(value) => {
+                            console.log(value)
+                            data=value
+                            setData(data||ids)
                             setIsBusinessModalVisible(false);
                         }}/>
                     </Modal>
