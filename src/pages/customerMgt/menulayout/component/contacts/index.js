@@ -4,6 +4,8 @@ import base from '../../../../../axios/axios';
 import qs from 'qs'
 import './style.css'
 import GetBizOpp from './GetBizOpp'
+import GetCustomer from '../../../../../components/getCustomer';
+import MapControl from '../../../../../components/mapControl'
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space
@@ -39,10 +41,16 @@ class Contacts extends Component {
 
       transferVisible: false,
 
+
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
+
+      csrName: '',  //编辑时传入的客户名称
+      customerID: '',   //新建时传入的客户id
+      address: '',    //编辑时传给地图组组件的值
+      detailAddr: '', //新建时传入的详细地址
       pagination: '',
       currentPage: 1,
       limit: 10,
@@ -53,19 +61,10 @@ class Contacts extends Component {
       // 表格行点击时产品信息
       record: "",
 
-      // 搜素产品名称
+      // 搜素联系人名称
       keyWord: '',
 
 
-      // 新增产品信息
-      number: '',
-      price: '',
-      produceCoding: '',
-      produceIntroduce: '',
-      produceName: '',
-      produceType: '',
-      putaway: "",
-      specification: ''
 
 
     }
@@ -81,8 +80,78 @@ class Contacts extends Component {
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
+    this.getCustomerID = this.getCustomerID.bind(this)
+    this.editContactInfo = this.editContactInfo.bind(this)
   }
 
+  //编辑客户信息 
+  editContactInfo() {
+
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    var reg = /\s/;
+    if (
+      0 > 1
+      // data.nextTalkTime == undefined || data.clientLevel == undefined
+      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
+      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
+
+    ) {
+      message.error('请填写必填选项并不要输入空格');
+    } else {
+      axios({
+        method: 'post',
+        url: `${base.url}/linkman/edit`,
+        params: {
+          token: this.state.token,
+        },
+        data: qs.stringify({
+          clientId: this.state.customerID,
+          content: data.content,
+          decision: data.decision,
+          detailAddress: this.state.detailAddr,
+          email: data.email,
+          linkmanName: data.linkmanName,
+          nextTalkTime: data.nextTalkTime,
+          phone: data.phone,
+          role: data.role,
+          sex: data.sex,
+        })
+      })
+        .then((res) => {
+          console.log(res);
+          if (res.data.code === "ERROR") {
+            message.error('请重试');
+            // this.onCancel()
+          } else {
+            message.success(res.data.message);
+            this.onCancel()
+            this.getContacts()
+          }
+        }).catch((error) => {
+          console.log(error);
+        })
+    }
+
+  }
+
+  //从地图组件获取详细地址
+  getAddr(val) {
+    console.log(val);
+    this.setState({
+      detailAddr: val
+
+    })
+
+  }
+
+
+  getCustomerID(val) {
+    console.log(val);
+    this.setState({
+      customerID: val ? val[0].id : ''
+    })
+  }
 
 
   createFollowupRecord() {
@@ -195,9 +264,13 @@ class Contacts extends Component {
 
   getContacts() {
     //获取联系人
-    axios.get(`${base.url}/linkman/my-responsible?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+    axios({
+      method: 'get',
+      url: `${base.url}/linkman/all`,
       params: {
         token: this.state.token,
+        currentPage: this.state.currentPage,
+        limit: this.state.limit
       },
     })
       .then((res) => {
@@ -234,12 +307,11 @@ class Contacts extends Component {
           token: this.state.token,
         },
         data: qs.stringify({
-          clientId: data.clientId,
+          clientId: this.state.customerID,
           content: data.content,
           decision: data.decision,
-          detailAddress: data.detailAddress,
+          detailAddress: this.state.detailAddr,
           email: data.email,
-          // id: data.id,
           linkmanName: data.linkmanName,
           nextTalkTime: data.nextTalkTime,
           phone: data.phone,
@@ -286,8 +358,6 @@ class Contacts extends Component {
         token: this.state.token,
         keyword: val
       },
-      // data: qs.stringify({
-      // })
     })
       .then((res) => {
         console.log(res);
@@ -339,20 +409,21 @@ class Contacts extends Component {
       } else {
 
         this.formRef.current.setFieldsValue({
-          certificate: this.state.record.certificate,
-          certificateId: this.state.record.certificateId,
-          clientFrom: this.state.record.clientFrom,
-          clueFrom: this.state.record.clueFrom,
-          clientLevel: this.state.record.clientLevel,
           clientName: this.state.record.clientName,
-          content: this.state.record.content,
+          createTime: this.state.record.createTime,
+          decision: this.state.record.decision,
           detailAddress: this.state.record.detailAddress,
-          dingtalk: this.state.record.dingtalk,
-          employeeCreateId: this.state.record.employeeCreateId,
-          employeeResponsibleId: this.state.record.employeeResponsibleId,
-          nextTalkTime: this.state.record.nextTalkTime,
+          email: this.state.record.email,
+          employeeCreateName: this.state.record.employeeCreateName,
+          employeeResponsibleName: this.state.record.employeeResponsibleName,
+          linkmanName: this.state.record.linkmanName,
+          mobile: this.state.record.mobile,
           nextTalkTime: this.state.record.nextTalkTime,
           phone: this.state.record.phone,
+          nextTalkTime: this.state.record.nextTalkTime,
+          role: this.state.record.role,
+          sex: this.state.record.sex,
+          updateTime: this.state.record.updateTime.sex,
           // record: this.state.record.record,
         })
       }
@@ -360,9 +431,12 @@ class Contacts extends Component {
   };
 
   onCancel() {
+
     this.setState({
       visible: false,
-      isCreate: true
+      isCreate: true,
+      address: '',  //编辑显示信息传入子组件的详细地址
+      csrName: ''  //编辑显示信息传入子组件的客户名称
     })
     setTimeout(() => {
       this.formRef.current.resetFields();
@@ -416,7 +490,14 @@ class Contacts extends Component {
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
-              onOk={this.submit}
+              onOk={() => {
+                this.state.isCreate ?
+                  this.submit()
+                  :
+                  this.editContactInfo()
+
+              }}
+
               bodyStyle={{ height: '280px', overflowY: 'auto' }}
 
             >
@@ -440,7 +521,8 @@ class Contacts extends Component {
                       },
                     ]}
                   >
-                    <Input />
+                    <GetCustomer customer={this.state.csrName} methods={(val) => { this.getCustomerID(val) }} ></GetCustomer>
+
                   </Form.Item>
                   <Form.Item
                     name="content"
@@ -457,14 +539,15 @@ class Contacts extends Component {
                     label="是否未关键决策人"
 
                   >
-                    <Select>
+                    <Select style={{ width: 184 }} >
                       <Option value={true} >是</Option>
                       <Option value={false} >否</Option>
                     </Select>
                   </Form.Item>
+
                   <Form.Item
-                    name="detailAddress"
-                    label="详细地址"
+                    name="role"
+                    label="职位"
                   >
                     <Input />
                   </Form.Item>
@@ -479,10 +562,13 @@ class Contacts extends Component {
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="id"
-                    label="联系人ID"
+                    name="sex"
+                    label="性别"
                   >
-                    <Input />
+                    <Select style={{ width: 184 }} >
+                      <Option value={true}>男</Option>
+                      <Option value={false}>女</Option>
+                    </Select>
                   </Form.Item>
 
                 </div>
@@ -523,20 +609,13 @@ class Contacts extends Component {
                 </div>
                 <div>
                   <Form.Item
-                    name="role"
-                    label="职位"
+                    name="detailAddress"
+                    label="详细地址"
                   >
-                    <Input />
+                    {/* <Input /> */}
+                    <MapControl detailAddr={this.state.address} method={(val) => { this.getAddr(val) }} ></MapControl>
                   </Form.Item>
-                  <Form.Item
-                    name="sex"
-                    label="性别"
-                  >
-                    <Select>
-                      <Option value={true}>男</Option>
-                      <Option value={false}>女</Option>
-                    </Select>
-                  </Form.Item>
+
                 </div>
 
               </Form>
@@ -647,8 +726,9 @@ class Contacts extends Component {
                         this.setVisible()
                         this.setState({
                           isCreate: false,
-                          formTitle: '新建联系人'
-
+                          formTitle: '新建联系人',
+                          address: this.state.record.detailAddress,  //编辑显示信息传入子组件的详细地址
+                          csrName: this.state.record.clientName  //编辑显示信息传入子组件的客户名称
                         })
                       }}
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <button onclick="c()" ></button>
+    </div>
+</body>
+
+<script>
+
+    function c() {
+        const a = {
+            b: 2,
+            foo: function () { console.log(this.b) }
+        }
+
+        function b(foo) {
+            a.foo()
+        }
+       console.log(b());
+    }
+
+</script>
+
+</html>

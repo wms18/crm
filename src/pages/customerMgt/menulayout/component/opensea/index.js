@@ -1,29 +1,32 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import base from '../../../../../axios/axios';
+import base from "../../../../../axios/axios";
 import qs from 'qs'
 import './style.css'
+import GetBizOpp from "./getBussinessOpp";
+import GetContract from "./getContract";
+import GetPayment from "./getPayment";
+import GetEmployee from "../../../../../components/getEmployee";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Tag, Popconfirm
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
-import Data from "./js/index";
+import Data from "./js";
+import MapControl from "../../../../../components/mapControl";
+import GdMap from "../../../../../components/gdMap";
 
-const { Step } = Steps;
+
 const { TabPane } = Tabs
-const { Option, TextArea } = Select
-const { Search } = Input
+const { Option } = Select
+const { Search, TextArea } = Input
 const { Content, Footer, Header } = Layout
 
-
-
-
-class OpenSea extends Component {
+class Opensea extends Component {
 
   componentDidMount() {
-    this.getOpenSea()
+    this.getCustomer()
     this.getEmployeeName()
   }
 
@@ -35,7 +38,15 @@ class OpenSea extends Component {
 
       token: window.localStorage.getItem('token'),
 
+      remind: 0, //跟进记录是否加入日程
+      nextTime: '',  //跟进记录的下次联系时间    
+      followRecord: '',  //跟进记录的内容
+      recordType: "",  //记录类型
 
+      //更改成交状态的显示框
+      changeDealStatus: false,
+      dealStatus: '',
+      empResponseID: '',
 
       isCreate: true,
       formTitle: '新建公海',
@@ -46,6 +57,8 @@ class OpenSea extends Component {
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
+      editAddr: '',
+      CsrAddr: '',
       pagination: '',
       currentPage: 1,
       limit: 10,
@@ -53,55 +66,474 @@ class OpenSea extends Component {
 
       employeeArr: '',
 
-      // 表格行点击时产品信息
+      // 表格行点击时公海信息
       record: "",
 
       // 搜素公海名称
-      keyword: '',
+      keyword :'',
 
 
-      // 新增产品信息
-      number: '',
-      price: '',
-      produceCoding: '',
-      produceIntroduce: '',
-      produceName: '',
-      produceType: '',
-      putaway: "",
-      specification: ''
+
 
 
     }
     this.onChange = this.onChange.bind(this)
     this.setVisible = this.setVisible.bind(this)
     this.onCancel = this.onCancel.bind(this)
-    this.getOpenSea = this.getOpenSea.bind(this)
+    this.onCreate = this.onCreate.bind(this)
+    this.submit = this.submit.bind(this)
+    this.getCustomer = this.getCustomer.bind(this)
+    this.createCustomer = this.createCustomer.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
+    this.onChangeDate = this.onChangeDate.bind(this)
+    this.onChangeRecordType = this.onChangeRecordType.bind(this)
+    this.onChangeRemind = this.onChangeRemind.bind(this)
+    this.onChangeFollowRecord = this.onChangeFollowRecord.bind(this)
+    this.createFollowUpRecord = this.createFollowUpRecord.bind(this)
+    this.getFollowUpRecord = this.getFollowUpRecord.bind(this)
+    this.onChangeFollowDate = this.onChangeFollowDate.bind(this)
+    this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
+    this.dropdownMenu = this.dropdownMenu.bind(this)
+    this.onChangeDealStatus = this.onChangeDealStatus.bind(this)
+    this.giveMethCreate = this.giveMethCreate.bind(this)
+    this.giveMethResponsible = this.giveMethResponsible.bind(this)
+    this.getOneClient = this.getOneClient.bind(this)
+    this.getOneClient = this.getOneClient.bind(this)
+    this.deleteCustomer = this.deleteCustomer.bind(this)
+    this.editCsrInfo = this.editCsrInfo.bind(this)
+    this.putIntoSea = this.putIntoSea.bind(this)
+    this.lockCsr = this.lockCsr.bind(this)
+    this.unLockCsr = this.unLockCsr.bind(this)
+    this.alterDealstatus = this.alterDealstatus.bind(this)
+    this.changeEmpRespon = this.changeEmpRespon.bind(this)
+    this.alterEmpRespon = this.alterEmpRespon.bind(this)
+    this.transferSubmit = this.transferSubmit.bind(this)
+
+  }
+
+  //更改负责人的id
+  changeEmpRespon(val) {
+    this.setState({
+      empResponseID: val
+    })
+
+
+  }
+
+  alterEmpRespon() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/changeResponsibleEmployee`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id,
+        employeeId: this.state.empResponseID
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已转移负责人')
+          this.setState({
+            transferVisible: !this.state.transferVisible
+          })
+          this.getCustomer()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  //更改成交状态
+  alterDealstatus() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/changeDealStatus`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id,
+        dealStatus: this.state.dealStatus
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已改变成交状态')
+          this.setState({
+            changeDealStatus: false
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  lockCsr() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/lockClient`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code === 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+
+          message.success('已锁定公海,将不会掉入公海')
+
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+  unLockCsr() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/unlockClient`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code === 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已解锁公海')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  putIntoSea() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/intoSea`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code === 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          this.getCustomer()
+          message.success('已成功放入公海')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  getAddr(val) {
+    console.log(val);
+    this.setState({
+      CsrAddr: val
+    })
+  }
+
+  getOneClient(id, isCreate) {
+    axios({
+      method: 'get',
+      url: `${base.url}/client/getOneClient`,
+      params: {
+        clientId: id
+      }
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((res) => {
+        console.log(res);
+      })
   }
 
 
-  createFollowupRecord() {
-    axios.post(`${base.url}/follow/add`, {
+  giveMethCreate(key) {
+    this.setState({
+      employeeCreateId: key
+    }, () => {
+
+    })
+  }
+  giveMethResponsible(key) {
+    this.setState({
+      employeeResponsibleId: key
+    }, () => {
+    })
+  }
+
+  onChangeDealStatus(val) {
+    console.log(val);
+    this.setState({
+      dealStatus: val
+    })
+  }
+
+  deleteFollowUpRecord(id) {
+    console.log(id);
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/delete`,
+      params: {
+        token: this.state.token,
+        followId: id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success(res.data.message)
+          this.getFollowUpRecord()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+
+  }
+
+  getFollowUpRecord() {
+    axios({
+      method: 'get',
+      url: `${base.url}/follow/get-record`,
+      params: {
+        token: this.state.token,
+        businessId: this.state.record.id,
+        businessTypeId: 1  //公海类型，id为1
+      },
+
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code === 'ERROR') {
+
+        } else {
+          this.setState({
+            followUpRecordArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  onChangeFollowRecord(e) {
+    this.setState({
+      followRecord: e.target.value
+    })
+  }
+
+  //是否添加到日程提醒
+  onChangeRemind(e) {
+    let remind = e.target.checked ? 1 : 0
+    this.setState({
+      remind: remind
+    })
+  }
+
+  onChangeRecordType(val) {
+    console.log(val);
+    this.setState({
+      recordType: val
+    })
+  }
+
+  deleteCustomer() {
+    axios({
+      method: 'delete',
+      url: `${base.url}/client/deleteClient`,
+      params: {
+        token: this.state.token,
+        id: this.state.record.id
+      },
+
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.success('请重试')
+          // this.getFollowUpRecord()
+        } else {
+          message.success('已成功删除')
+          this.getCustomer()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  createFollowUpRecord() {
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/add?`,
       params: {
         token: this.state.token
       },
       data: qs.stringify({
         businessId: this.state.record.id,
-        businessTypeId: 1,
+        businessTypeId: 1, //公海类型id为1
         followRecord: this.state.followRecord,
-        nextTime: this.state.nextTalkTime,
-        recordType: '上门拜访',
-        remind: 0
-
+        nextTime: this.state.nextTime,
+        recordType: this.state.recordType,
+        remind: this.state.remind
       })
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.message == '保存成功') {
+          message.success('新增成功')
+          this.getFollowUpRecord()
+        } else {
+          message.warning('请重试')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
 
+
+
+  onChangeFollowDate(date, dateString) {
+    console.log(typeof (dateString));
+    this.setState({
+      nextTime: dateString
     })
   }
 
 
+  onChangeDate(date, dateString) {
+    console.log(date, dateString);
+  }
+  dropdownMenu() {
+    const menu = (
+      <Menu>
+        <Menu.Item
+
+          onClick={() => {
+            Modal.confirm({
+              title: '提示',
+              icon: <ExclamationCircleOutlined />,
+              content: '确认放入公海么?',
+              okText: '确定',
+              okType: '',
+              cancelText: '取消',
+              onOk: () => {
+                this.putIntoSea()
+              }
+              ,
+              onCancel() {
+                message.warning('已取消放入公海')
+              },
+            });
+          }}>
+          放入公海
+        </Menu.Item>
+
+        <Menu.Item
+          onClick={() => {
+            this.setState({
+              changeDealStatus: true
+            })
+          }}
+        >
+          更改成交状态
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            Modal.confirm({
+              title: '提示',
+              icon: <ExclamationCircleOutlined />,
+              content: '确定要锁定这个公海么？锁定后将不会掉入公海',
+              okText: '确认',
+              okType: '',
+              cancelText: '取消',
+              onOk: () => {
+                this.lockCsr()
+              }
+              ,
+              onCancel() {
+                message.warning('已取消锁定')
+              },
+            });
+          }}
+        >
+          锁定
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            Modal.confirm({
+              title: '提示',
+              icon: <ExclamationCircleOutlined />,
+              content: '确定要解鎖这个公海么？',
+              okText: '确认',
+              okType: '',
+              cancelText: '取消',
+              onOk: () => {
+                this.unLockCsr()
+              }
+              ,
+              onCancel() {
+                message.warning('已取消解锁')
+              },
+            });
+          }}
+        >
+          解锁
+        </Menu.Item>
+
+        <Menu.Item
+          onClick={() => {
+            Modal.confirm({
+              title: '确认删除',
+              icon: <ExclamationCircleOutlined />,
+              content: '确认删除此公海么？',
+              okText: '是',
+              okType: '',
+              cancelText: '否',
+              onOk: () => {
+                this.deleteCustomer()
+              }
+              ,
+              onCancel() {
+                // console.log('Cancel');
+                message.warning('已取消删除')
+              },
+            });
+          }}
+        >
+          删除
+        </Menu.Item>
+
+
+      </Menu>
+    )
+    return menu
+  }
 
 
   getEmployeeName() {
@@ -115,7 +547,7 @@ class OpenSea extends Component {
 
         } else {
           this.setState({
-            employeeArr: res.data.data
+            employeeArr: res.data.data,
           })
         }
       })
@@ -124,22 +556,27 @@ class OpenSea extends Component {
       })
   }
 
+
+  //转移负责人弹窗关闭
   setTransferVisible() {
     this.setState({
       transferVisible: !this.state.transferVisible
     })
   }
 
+
+  //转移负责人弹窗保存
   transferSubmit() {
     // setTransferVisible
+    this.alterEmpRespon()
   }
 
-  getOpenSea() {
+  getCustomer() {
     //获取公海
     axios.get(`${base.url}/opensea/getOpenseas?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
-        keyword: this.state.keyword,
+        keyword: this.state.keyword
       },
     })
       .then((res) => {
@@ -156,13 +593,115 @@ class OpenSea extends Component {
   }
 
 
-  
+  createCustomer() {
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    var reg = /\s/;
+    if (
+      0 > 1
+      // data.nextTalkTime == undefined || data.clientLevel == undefined
+      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
+      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
+
+    ) {
+      message.error('请填写必填选项并不要输入空格');
+    } else {
+      axios({
+        method: "post",
+        url: `${base.url}/client/create?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit,
+        params: {
+          token: this.state.token,
+        },
+        // .replace(/\s+/g,'')
+        data: qs.stringify({
+          certificate: data.certificate,
+          certificateId: data.certificateId,
+          clientFrom: data.clientFrom,
+          clientName: data.clientName,
+          clientLevel: data.clientLevel,
+          content: data.content,
+          dingtalk: data.dingtalk,
+          nextTalkTime: data.nextTalkTime,
+          phone: data.phone,
+          employeeCreateId: this.state.employeeCreateId,
+          employeeResponsibleId: this.state.employeeResponsibleId,
+          detailAddress: this.state.CsrAddr
+        })
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
+          message.error('请重试');
+          // this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.onCancel()
+
+          this.getCustomer()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+
+  }
+
+  editCsrInfo() {
+    const data = this.formRef.current.getFieldsValue();
+    console.log(data);
+    axios({
+      method: 'post',
+      url: `${base.url}/client/editClient`,
+      params: {
+        token: this.state.token
+      },
+      data: qs.stringify({
+        clientId: this.state.record.id,
+        certificate: data.certificate,
+        certificateId: data.certificateId,
+        clientFrom: data.clientFrom,
+        clientName: data.clientName,
+        clientLevel: data.clientLevel,
+        content: data.content,
+        dingtalk: data.dingtalk,
+        nextTalkTime: data.nextTalkTime,
+        phone: data.phone,
+        employeeCreateId: this.state.employeeCreateId,
+        employeeResponsibleId: this.state.employeeResponsibleId,
+        detailAddress: this.state.CsrAddr
+      })
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success('编辑成功')
+          this.getCustomer()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+
+  formRef = React.createRef()
+  submit() {
+
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    console.log(data)
+    this.state.isCreate ? this.createCustomer() : this.editCsrInfo()
+
+
+  }
+
 
   onSearch(val) {
     console.log(val);
     console.log(typeof (val));
     //获取公海
-    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+    axios.get(`${base.url}/client/getClient?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
         keyword: val
@@ -187,7 +726,10 @@ class OpenSea extends Component {
 
   onClose() {
     this.setState({
-      drawerVisible: false
+      drawerVisible: false,
+
+      //当drawer
+      editAddr: '',
     })
   }
   showDrawer() {
@@ -196,13 +738,15 @@ class OpenSea extends Component {
     })
   }
 
-  onChange(page, pageSize) {    //currentPage切换
+
+  //表格分页
+  onChange(page, pageSize) {    
     console.log(page, pageSize);
     this.setState({
       currentPage: page,
       limit: pageSize
     }, () => {      //setstate异步回调箭头函数
-      this.getOpenSea()
+      this.getCustomer()
     })
 
 
@@ -213,7 +757,31 @@ class OpenSea extends Component {
     this.setState({
       visible: !this.state.visible
     })
-  
+    setTimeout(() => {
+      console.log('record', this.state.record);
+      if (this.state.isCreate) {
+        // this.formRef.current.resetFields();
+      } else {
+
+        this.formRef.current.setFieldsValue({
+          certificate: this.state.record.certificate,
+          certificateId: this.state.record.certificateId,
+          clientFrom: this.state.record.clientFrom,
+          clueFrom: this.state.record.clueFrom,
+          clientLevel: this.state.record.clientLevel,
+          clientName: this.state.record.clientName,
+          content: this.state.record.content,
+          // detailAddress: this.state.record.detailAddress,
+          dingtalk: this.state.record.dingtalk,
+          // employeeCreateName: this.state.record.employeeCreateName,
+          // employeeResponsibleName: this.state.record.employeeResponsibleName,
+          nextTalkTime: this.state.record.nextTalkTime,
+          // nextTalkTime: this.state.record.nextTalkTime,
+          phone: this.state.record.phone,
+          // record: this.state.record.record,
+        })
+      }
+    }, 100);
   };
 
   onCancel() {
@@ -221,12 +789,29 @@ class OpenSea extends Component {
       visible: false,
       isCreate: true
     })
- 
+    setTimeout(() => {
+      this.formRef.current.resetFields();
+    }, 100);
   }
 
+  onCreate(values) {
+    console.log('Received values of form: ', values);
+    this.setState({
+      visible: false
+    })
+  }
 
+  start = () => {
+    this.setState({ loading: true });
+    // ajax request after empty completing
+    setTimeout(() => {
+      this.setState({
+        selectedRowKeys: [],
+        loading: false,
+      });
+    }, 1000);
+  };
 
-  
   onSelectChange = selectedRowKeys => {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
@@ -241,13 +826,15 @@ class OpenSea extends Component {
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <div>
-        <div  style={{width:"100%",backgroundColor: 'rgb(245, 246, 249)'}}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px', width: '50%' }}>
-            <span style={{ fontSize: '18px' }}>公海管理</span>
-            <Search placeholder='请输入公海名称' style={{ width: '200px' }} onSearch={this.onSearch}
-              allowClear
-            ></Search>
-          </div >
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
+          <span style={{ fontSize: '18px' }}>公海管理</span>
+          <Search placeholder='请输入公海名称' style={{ width: '200px' }} onSearch={this.onSearch}
+            allowClear
+          ></Search>
+          <div>
+           
+           
+          </div>
         </div>
 
         <div>
@@ -265,8 +852,8 @@ class OpenSea extends Component {
 
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                pagination={{ pageSize: this.state.pagination.limit }}
+                scroll={{ x: 1500, y: '300px' }}
+                // pagination={{ pageSize: this.state.pagination.limit }}
                 defaultCurrent={1}
                 onRow={(record) => ({
                   onClick: () => {
@@ -274,23 +861,30 @@ class OpenSea extends Component {
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      clientName: record.clientName
+                      drawerTitle: record.clientFrom,
+                      dealStatus: record.dealStatus
 
+
+                    }, () => {
+                      let isCreate = 'create'
+                      let isResponsible = 'responsible'
+                      console.log(this.state.record.id);
+                      this.getFollowUpRecord()
                     })
                   },
                 })}
 
               ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+              <div style={{ position: 'absolute', bottom: '-30vw', right: '0px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    showSizeChanger
                     defaultPageSize={10}
-                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
+                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.pagination.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
                 </ConfigProvider>
               </div>
               <Drawer
-                mask={false}
-                title={this.state.clientName}
+                title={this.state.record.clientName}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}
@@ -302,97 +896,34 @@ class OpenSea extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                    <Button
-                      type='primary'
-                      size={'small'}
-                      onClick={() => {
-                        this.setTransferVisible()
-                      }}
-                    >转移</Button>
+                   
 
-                    <Modal
-                      visible={this.state.transferVisible}
-                      title="转移公海"
-                      // okText="保存"
-                      // cancelText="取消"
-                      // onOk={this.transferSubmit}
-                      footer={[
-                        <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
-                        <Button onClick={this.setTransferVisible} type='default'>取消</Button>
-                      ]}
-                    >
-                      <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
+                   
+                   
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
-                        </div>
-                      </div>
 
-                    </Modal>
+                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
+                      <Button type='default' size={'small'} style={{ marginLeft: '20px' }}>更多</Button>
+                    </Dropdown>
+
                   
-
-
-                    {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
-                    <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
-                      onClick={() => {
-                        Modal.confirm({
-                          title: '确认删除',
-                          icon: <ExclamationCircleOutlined />,
-                          content: '确认删除此公海么？',
-                          okText: '是',
-                          okType: '',
-                          cancelText: '否',
-                          onOk: () => {
-                            // this.handleOk(id)//确认按钮的回调方法，在下面
-                            message.success('已成功刪除')
-                          }
-                          ,
-                          onCancel() {
-                            message.warning('已取消刪除')
-                          },
-                        });
-                      }}
-                    >刪除</Button>
-                    {/* </Dropdown> */}
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px' }}>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>客户级别</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>公海级别</span>
                       <span style={{ fontSize: 14 }}>{this.state.record.clientLevel}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>成交状态</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.dealStatus}</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsibleId}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.dealStatus ? this.state.record.dealStatus : '未成交'}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>创建人</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.employeeCreateName}</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsibleName}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -401,7 +932,6 @@ class OpenSea extends Component {
                     </div>
 
                   </div>
-
 
                   <div>
                     <Tabs defaultActiveKey="1" >
@@ -437,7 +967,7 @@ class OpenSea extends Component {
                               </div>
                               <div>
                                 <div>创建人</div>
-                                <div>{this.state.record.employeeCreateId}</div>
+                                <div>{this.state.record.employeeCreateName}</div>
                               </div>
                               <div>
                                 <div>创建时间</div>
@@ -468,7 +998,7 @@ class OpenSea extends Component {
                               </div>
                               <div>
                                 <div>负责人</div>
-                                <div>{this.state.record.employeeResponsible}</div>
+                                <div>{this.state.record.employeeResponsibleName}</div>
                               </div>
                             </div>
                           </div>
@@ -481,14 +1011,18 @@ class OpenSea extends Component {
                       <TabPane tab="跟进记录" key="2">
 
                         <div style={{ padding: '0 0 20px 0' }}>
-                          <Input style={{ height: 100 }}></Input>
+                          <TextArea style={{ height: 100 }}
+                            onChange={this.onChangeFollowRecord}
+                          ></TextArea>
                         </div>
                         <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div>
                             记录类型
                             &nbsp;
                             &nbsp;
-                            <Select style={{ width: 200 }}>
+                            <Select style={{ width: 200 }}
+                              onChange={this.onChangeRecordType}
+                            >
                               <Option value='上门拜访'>上门拜访</Option>
                               <Option value='电话邀约'>电话邀约</Option>
                               <Option value='线下单杀'>线下单杀</Option>
@@ -500,21 +1034,95 @@ class OpenSea extends Component {
                             &nbsp;
                             <ConfigProvider locale={zhCN}>
                               <Space direction="vertical" style={{ marginRight: "20px" }}>
-                                <DatePicker onChange={this.onChangeDate} />
+                                <DatePicker onChange={this.onChangeFollowDate} />
                               </Space>,
                             </ConfigProvider>
-                            <Checkbox style={{ fontSize: 12 }}>
+                            <Checkbox style={{ fontSize: 12 }} onChange={this.onChangeRemind} >
                               添加到日常提醒
                             </Checkbox>
                           </div>
                           <div>
-                            <Button size={'small'}>发布</Button>
+                            <Button size={'small'}
+                              onClick={this.createFollowUpRecord}
+                            >发布</Button>
                           </div>
                         </div>
                         <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
                           <Tabs defaultActiveKey="1" >
                             <TabPane tab="跟进记录" key="1">
-                              1
+
+                              {
+                                this.state.followUpRecordArr ? this.state.followUpRecordArr.map((item, index) => {
+                                  return (
+                                    <div key={index} style={{ margin: '30px 0' }}>
+                                      <div style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                        <div>
+                                          <span>跟进记录</span>
+                                          &nbsp;
+                                          &nbsp;
+                                          <Popconfirm
+                                            title="你确定要删除这条记录么?"
+                                            onConfirm={() => {
+                                              this.deleteFollowUpRecord(item.id)
+                                            }
+                                            }
+                                            onCancel={() => {
+                                              message.warning('已取消')
+                                            }}
+                                            okText="删除"
+                                            cancelText="取消"
+                                          >
+
+                                            <span className='iconfont icon-lajitong' ></span>
+                                          </Popconfirm>
+                                        </div>
+
+                                        <div style={{
+                                          display: 'flex',
+                                          flexDirection: 'row',
+                                          alignItems: 'center'
+                                        }}>
+                                          <div
+                                            style={{
+                                              width: '34px',
+                                              height: '34px',
+                                              backgroundColor: 'blue',
+                                              borderRadius: '50%',
+                                              color: 'white',
+                                              textAlign: 'center',
+                                              lineHeight: '34px',
+                                              marginRight: '8px'
+                                            }} F
+                                          >
+                                            {item.employeeAvatar ?
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                              :
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                            }
+                                          </div>
+                                          <div>
+
+
+                                            <div style={{ fontSize: '13px' }}>{item.employeeName}</div>
+                                            <div style={{ color: 'rgb(153, 153, 153)', marginTop: '3px', fontSize: '12px' }} >{item.createTime}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.followRecord}
+                                      </div>
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.recordType ? <Tag>{item.recordType}</Tag> : ''}
+                                        {item.nextTime ? <Tag>{item.nextTime}</Tag> : ''}
+                                      </div>
+                                    </div>
+                                  )
+                                })
+                                  :
+                                  ""
+                              }
+
                             </TabPane>
                             <TabPane tab="日志" key="2">
                               2
@@ -532,20 +1140,15 @@ class OpenSea extends Component {
                         </div>
                       </TabPane>
 
-
-                      <TabPane tab="联系人" key="3">
+                      <TabPane tab="商机" key="5">
+                        <GetBizOpp value={this.state.record.id}></GetBizOpp>
                       </TabPane>
-                      <TabPane tab="合同" key="4">
+                      <TabPane tab="合同" key="6">
+                        <GetContract value={this.state.record.id}></GetContract>
                       </TabPane>
-                      <TabPane tab="产品" key="5">
+                      <TabPane tab="回款信息" key="7">
+                        <GetPayment value={this.state.record.id}></GetPayment>
                       </TabPane>
-                      <TabPane tab="相关团队" key="6">
-                      </TabPane>
-                      <TabPane tab="附件" key="7">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="8">
-                      </TabPane>
-
                     </Tabs>
                   </div>
 
@@ -554,15 +1157,18 @@ class OpenSea extends Component {
               </Drawer>
             </div>
 
+
           </div>
         </div>
+
+
 
       </div >
     );
   }
 }
 
-export default OpenSea;
+export default Opensea;
 
 
 

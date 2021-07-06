@@ -16,6 +16,7 @@ class GetEmployee extends Component {
             token: window.localStorage.getItem('token'),
             checkDiabled: false,
             id: '',  //員工id
+            empName: ''
         }
 
         this.onChange = this.onChange.bind(this)
@@ -46,15 +47,18 @@ class GetEmployee extends Component {
         // console.log(this.getDerivedStateFromProps());
         this.getEmployeeName()
 
+        this.setState({ empName: this.props.empResponseName ? this.props.empResponseName : '' })
     }
 
 
-    onChange(key,value) {
+    onChange(key, value) {
         console.log(value);
         // this.transValue(value)
         this.props.contentCreate ? this.props.contentCreate(Number(value.key)) : this.props.contentResponsible(Number(value.key))
         this.setState({
-            id: value.key
+            id: value.key,
+            empName: value.value
+
         }, () => {
 
         })
@@ -91,6 +95,7 @@ class GetEmployee extends Component {
     render() {
         return (
             <Select
+                value={this.state.empName}
                 showArrow={true}
                 showSearch={true}
                 style={{ width: 184 }}
@@ -131,90 +136,3 @@ class GetEmployee extends Component {
 export default GetEmployee;
 
 
-
-// componentDidMount() {
-//     this.getEmployeeName()
-// }
-
-// state = {
-//     transferVisible: false,
-//     employeeArr: ''
-
-// }
-
-
-// getEmployeeName() {
-//     axios.get(`${base.url}/employee/getEmployeeName`, {
-//         params: {
-//             token: this.state.token
-//         }
-//     })
-//         .then((res) => {
-//             if (res.data.code === 'ERROR') {
-
-//             } else {
-//                 this.setState({
-//                     employeeArr: res.data.data
-//                 })
-//             }
-//         })
-//         .catch((res) => {
-//             console.log(res);
-//         })
-// }
-
-// setTransferVisible() {
-//     this.setState({
-//         transferVisible: !this.state.transferVisible
-//     })
-// }
-
-// render() {
-//     return (
-//         <div>
-//             <Input
-//                 onClick={() => {
-//                     this.setTransferVisible()
-//                 }}
-//             ></Input>
-
-//             <Modal
-//                 visible={this.state.transferVisible}
-//                 title="获取员工"
-//                 // okText="保存"
-//                 // cancelText="取消"
-//                 // onOk={this.transferSubmit}
-//                 footer={[
-//                     <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
-//                     <Button onClick={this.setTransferVisible} type='default'>取消</Button>
-//                 ]}
-//             >
-//                 <div>
-//                     变更负责人
-//                     <div>
-//                         <span>+点击选择</span>
-//                         <Select
-//                             showSearch={true}
-//                             style={{ width: 200 }}
-//                             mode='tags'
-//                             optionLabelProp="value"
-//                         >
-//                             {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-//                                 return (<Option value={item.username} >
-//                                     <Checkbox>
-//                                         <div>
-//                                             <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-//                                             <Row style={{ display: 'inline' }}>{item.username}</Row>
-//                                         </div>
-
-//                                     </Checkbox>
-//                                 </Option>)
-//                             }) : ''}
-//                         </Select>
-//                     </div>
-//                 </div>
-
-//             </Modal>
-//         </div>
-//     )
-// }
