@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import base from '../../../../../axios/axios';
+import base from "../../../../../axios/axios";
 import qs from 'qs'
 import './style.css'
-import GetBizOpp from "./getBussinessOpp";
+import GetBizOpp from './getBussinessOpp'
 import GetContract from "./getContract";
 import GetPayment from "./getPayment";
 import GetEmployee from "../../../../../components/getEmployee";
@@ -13,9 +13,9 @@ import {
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
-import Data from "./js/index";
+import Data from './js/index'
 import MapControl from "../../../../../components/mapControl";
-import GdMap from "../../../../../components/gdMap";
+import GdMap from '../../../../../components/gdMap'
 
 
 const { TabPane } = Tabs
@@ -46,6 +46,7 @@ class Customer extends Component {
       //更改成交状态的显示框
       changeDealStatus: false,
       dealStatus: '',
+      empResponseID: '',
 
       isCreate: true,
       formTitle: '新建客户',
@@ -56,6 +57,8 @@ class Customer extends Component {
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
+      editAddr: '',
+      CsrAddr: '',
       pagination: '',
       currentPage: 1,
       limit: 10,
@@ -63,22 +66,14 @@ class Customer extends Component {
 
       employeeArr: '',
 
-      // 表格行点击时产品信息
+      // 表格行点击时客户信息
       record: "",
 
-      // 搜素产品名称
+      // 搜素客户名称
       keyWord: '',
 
 
-      // 新增产品信息
-      number: '',
-      price: '',
-      produceCoding: '',
-      produceIntroduce: '',
-      produceName: '',
-      produceType: '',
-      putaway: "",
-      specification: ''
+
 
 
     }
@@ -106,7 +101,155 @@ class Customer extends Component {
     this.giveMethCreate = this.giveMethCreate.bind(this)
     this.giveMethResponsible = this.giveMethResponsible.bind(this)
     this.getOneClient = this.getOneClient.bind(this)
+    this.getOneClient = this.getOneClient.bind(this)
+    this.deleteCustomer = this.deleteCustomer.bind(this)
+    this.editCsrInfo = this.editCsrInfo.bind(this)
+    this.putIntoSea = this.putIntoSea.bind(this)
+    this.lockCsr = this.lockCsr.bind(this)
+    this.unLockCsr = this.unLockCsr.bind(this)
+    this.alterDealstatus = this.alterDealstatus.bind(this)
+    this.changeEmpRespon = this.changeEmpRespon.bind(this)
+    this.alterEmpRespon = this.alterEmpRespon.bind(this)
+    this.transferSubmit = this.transferSubmit.bind(this)
 
+  }
+
+  //更改负责人的id
+  changeEmpRespon(val) {
+    this.setState({
+      empResponseID: val
+    })
+
+
+  }
+
+  alterEmpRespon() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/changeResponsibleEmployee`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id,
+        employeeId: this.state.empResponseID
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已转移负责人')
+          this.setState({
+            transferVisible: !this.state.transferVisible
+          })
+          this.getCustomer()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  //更改成交状态
+  alterDealstatus() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/changeDealStatus`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id,
+        dealStatus: this.state.dealStatus
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已改变成交状态')
+          this.setState({
+            changeDealStatus: false
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  lockCsr() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/lockClient`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code === 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+
+          message.success('已锁定客户,将不会掉入公海')
+
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+  unLockCsr() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/unlockClient`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code === 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已解锁客户')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  putIntoSea() {
+    axios({
+      method: 'post',
+      url: `${base.url}/client/intoSea`,
+      params: {
+        token: this.state.token,
+        clientId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code === 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          this.getCustomer()
+          message.success('已成功放入公海')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  getAddr(val) {
+    console.log(val);
+    this.setState({
+      CsrAddr: val
+    })
   }
 
   getOneClient(id, isCreate) {
@@ -218,6 +361,31 @@ class Customer extends Component {
     })
   }
 
+  deleteCustomer() {
+    axios({
+      method: 'delete',
+      url: `${base.url}/client/deleteClient`,
+      params: {
+        token: this.state.token,
+        id: this.state.record.id
+      },
+
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.success('请重试')
+          // this.getFollowUpRecord()
+        } else {
+          message.success('已成功删除')
+          this.getCustomer()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
   createFollowUpRecord() {
     axios({
       method: 'post',
@@ -247,6 +415,9 @@ class Customer extends Component {
         console.log(res);
       })
   }
+
+
+
   onChangeFollowDate(date, dateString) {
     console.log(typeof (dateString));
     this.setState({
@@ -272,14 +443,11 @@ class Customer extends Component {
               okType: '',
               cancelText: '取消',
               onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                // <Alert message="已取消转移" type="success" showIcon />
-                message.success('已成功放入公海')
+                this.putIntoSea()
               }
               ,
               onCancel() {
                 message.warning('已取消放入公海')
-                // <Alert message="已取消转移" type="info" showIcon />
               },
             });
           }}>
@@ -305,8 +473,7 @@ class Customer extends Component {
               okType: '',
               cancelText: '取消',
               onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                message.success('已成功锁定')
+                this.lockCsr()
               }
               ,
               onCancel() {
@@ -327,8 +494,7 @@ class Customer extends Component {
               okType: '',
               cancelText: '取消',
               onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                message.success('已成功解鎖')
+                this.unLockCsr()
               }
               ,
               onCancel() {
@@ -350,12 +516,12 @@ class Customer extends Component {
               okType: '',
               cancelText: '否',
               onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                console.log('确认');
+                this.deleteCustomer()
               }
               ,
               onCancel() {
-                console.log('Cancel');
+                // console.log('Cancel');
+                message.warning('已取消删除')
               },
             });
           }}
@@ -381,7 +547,7 @@ class Customer extends Component {
 
         } else {
           this.setState({
-            employeeArr: res.data.data
+            employeeArr: res.data.data,
           })
         }
       })
@@ -390,14 +556,19 @@ class Customer extends Component {
       })
   }
 
+
+  //转移负责人弹窗关闭
   setTransferVisible() {
     this.setState({
       transferVisible: !this.state.transferVisible
     })
   }
 
+
+  //转移负责人弹窗保存
   transferSubmit() {
     // setTransferVisible
+    this.alterEmpRespon()
   }
 
   getCustomer() {
@@ -446,13 +617,15 @@ class Customer extends Component {
           certificate: data.certificate,
           certificateId: data.certificateId,
           clientFrom: data.clientFrom,
-          clientLevel: data.clientName,
+          clientName: data.clientName,
+          clientLevel: data.clientLevel,
           content: data.content,
           dingtalk: data.dingtalk,
           nextTalkTime: data.nextTalkTime,
           phone: data.phone,
           employeeCreateId: this.state.employeeCreateId,
-          employeeResponsibleId: this.state.employeeResponsibleId
+          employeeResponsibleId: this.state.employeeResponsibleId,
+          detailAddress: this.state.CsrAddr
         })
       }).then((res) => {
         console.log(res);
@@ -461,15 +634,54 @@ class Customer extends Component {
           // this.onCancel()
         } else {
           message.success(res.data.message);
-          // this.onCancel()
+          this.onCancel()
 
-          this.getCustomert()
+          this.getCustomer()
         }
       }).catch((error) => {
         console.log(error);
       })
     }
 
+  }
+
+  editCsrInfo() {
+    const data = this.formRef.current.getFieldsValue();
+    console.log(data);
+    axios({
+      method: 'post',
+      url: `${base.url}/client/editClient`,
+      params: {
+        token: this.state.token
+      },
+      data: qs.stringify({
+        clientId: this.state.record.id,
+        certificate: data.certificate,
+        certificateId: data.certificateId,
+        clientFrom: data.clientFrom,
+        clientName: data.clientName,
+        clientLevel: data.clientLevel,
+        content: data.content,
+        dingtalk: data.dingtalk,
+        nextTalkTime: data.nextTalkTime,
+        phone: data.phone,
+        employeeCreateId: this.state.employeeCreateId,
+        employeeResponsibleId: this.state.employeeResponsibleId,
+        detailAddress: this.state.CsrAddr
+      })
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success('编辑成功')
+          this.getCustomer()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
   }
 
 
@@ -479,7 +691,8 @@ class Customer extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createCustomer()
+    this.state.isCreate ? this.createCustomer() : this.editCsrInfo()
+
 
   }
 
@@ -513,7 +726,10 @@ class Customer extends Component {
 
   onClose() {
     this.setState({
-      drawerVisible: false
+      drawerVisible: false,
+
+      //当drawer
+      editAddr: '',
     })
   }
   showDrawer() {
@@ -522,7 +738,9 @@ class Customer extends Component {
     })
   }
 
-  onChange(page, pageSize) {    //currentPage切换
+
+  //表格分页
+  onChange(page, pageSize) {    
     console.log(page, pageSize);
     this.setState({
       currentPage: page,
@@ -553,12 +771,12 @@ class Customer extends Component {
           clientLevel: this.state.record.clientLevel,
           clientName: this.state.record.clientName,
           content: this.state.record.content,
-          detailAddress: this.state.record.detailAddress,
+          // detailAddress: this.state.record.detailAddress,
           dingtalk: this.state.record.dingtalk,
-          employeeCreateName: this.state.record.employeeCreateName,
-          employeeResponsibleName: this.state.record.employeeResponsibleName,
+          // employeeCreateName: this.state.record.employeeCreateName,
+          // employeeResponsibleName: this.state.record.employeeResponsibleName,
           nextTalkTime: this.state.record.nextTalkTime,
-          nextTalkTime: this.state.record.nextTalkTime,
+          // nextTalkTime: this.state.record.nextTalkTime,
           phone: this.state.record.phone,
           // record: this.state.record.record,
         })
@@ -638,7 +856,7 @@ class Customer extends Component {
               >
                 <div>
                   <Form.Item
-                    name="certificate "
+                    name="certificate"
                     label="客户证件类型"
                     rules={[
                       {
@@ -725,16 +943,22 @@ class Customer extends Component {
 
 
                 <div>
-                  <Form.Item
+                  {/* <Form.Item
                     name="detailAddress"
                     label="详细地址"
 
                   >
                     <Input />
-                  </Form.Item>
+                  </Form.Item> */}
                   <Form.Item
                     name="dingtalk"
                     label="钉钉"
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="content"
+                    label="备注"
                   >
                     <Input />
                   </Form.Item>
@@ -742,12 +966,7 @@ class Customer extends Component {
 
                 </div>
                 <div>
-                  <Form.Item
-                    name="content"
-                    label="备注"
-                  >
-                    <Input />
-                  </Form.Item>
+
                   <Form.Item
                     name="nextTalkTime"
                     label="下次联系时间"
@@ -760,14 +979,22 @@ class Customer extends Component {
                   >
                     <Input />
                   </Form.Item>
-
-                </div>
-                <div>
                   <Form.Item
                     name="nextTalkTime"
                     label="下次联系时间"
                   >
                     <Input />
+                  </Form.Item>
+                </div>
+                <div>
+                  <Form.Item
+                    name="address"
+                    label="详细地址"
+
+                  >
+
+                    <MapControl detailAddr={this.state.editAddr} method={(val) => { this.getAddr(val) }}  ></MapControl>
+                    {/* <GdMap></GdMap> */}
                   </Form.Item>
                   <Form.Item
                     name="phone"
@@ -781,16 +1008,10 @@ class Customer extends Component {
                   >
                     <Input />
                   </Form.Item>
-                </div>
-                <div>
-                  <Form.Item
-                    name="address"
-                    label="详细地址">
-                      {/* <MapControl></MapControl> */}
-                      <GdMap></GdMap>
-                  </Form.Item>
 
                 </div>
+
+
 
               </Form>
             </Modal>
@@ -812,8 +1033,8 @@ class Customer extends Component {
 
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                pagination={{ pageSize: this.state.pagination.limit }}
+                scroll={{ x: 1500, y: '300px' }}
+                // pagination={{ pageSize: this.state.pagination.limit }}
                 defaultCurrent={1}
                 onRow={(record) => ({
                   onClick: () => {
@@ -830,22 +1051,21 @@ class Customer extends Component {
                       let isResponsible = 'responsible'
                       console.log(this.state.record.id);
                       this.getFollowUpRecord()
-                      // this.getOneClient(record.employeeCreateName,isCreate)
-                      // this.getOneClient(record.employeeResponsibleName,isResponsible)
                     })
                   },
                 })}
 
               ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+              <div style={{ position: 'absolute', bottom: '-30vw', right: '0px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    showSizeChanger
                     defaultPageSize={10}
-                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
+                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.pagination.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
                 </ConfigProvider>
               </div>
               <Drawer
-                title={this.state.drawerTitle}
+                title={this.state.record.clientName}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}
@@ -862,12 +1082,16 @@ class Customer extends Component {
                       size={'small'}
                       onClick={() => {
                         this.setTransferVisible()
+                        this.setState({
+                          empResponseID: this.state.record.employeeResponsibleId
+                        })
                       }}
                     >转移</Button>
 
                     <Modal
                       visible={this.state.transferVisible}
                       title="转移客户"
+                      mask={false}
                       // okText="保存"
                       // cancelText="取消"
                       // onOk={this.transferSubmit}
@@ -877,38 +1101,29 @@ class Customer extends Component {
                       ]}
                     >
                       <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", width: '263px', margin: '0 auto', alignItems: 'center' }}>
+                          <span>变更负责人</span>
+                          <GetEmployee empResponseName={this.state.record.employeeResponsibleName} contentResponsible={(val) => { this.changeEmpRespon(val) }}  ></GetEmployee>
+
                         </div>
                       </div>
 
                     </Modal>
                     <Button type='primary' size={'small'}
+                      style={{ marginLeft: 20 }}
                       onClick={() => {
                         this.setVisible()
                         this.setState({
-                          isCreate: false,
-                          formTitle: '新建客户'
+                          editAddr: this.state.record.detailAddress
+                        })
 
+                        this.setState({
+                          isCreate: false,
+                          formTitle: '新建客户',
+                          employeeCreateId: this.state.record.employeeCreateId,
+                          employeeResponsibleId: this.state.record.employeeResponsibleId,
+                          detailAddress: this.state.record.detailAddress,
                         })
                       }}
 
@@ -916,25 +1131,28 @@ class Customer extends Component {
 
 
                     <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
-                      <Button type='default' size={'small'} style={{ marginLeft: '10px' }}>更多</Button>
+                      <Button type='default' size={'small'} style={{ marginLeft: '20px' }}>更多</Button>
                     </Dropdown>
 
                     <Modal
                       visible={this.state.changeDealStatus}
                       mask={false}
                       title="更改成交状态"
-                      style={{ width: '400px !important' }}
-                      // onOk={}
+                      // bodyStyle={{ width: '300px' }}
+                      onOk={() => {
+                        this.alterDealstatus()
+                        console.log('更改')
+                      }}
                       onCancel={() => {
                         this.setState({
                           changeDealStatus: false
                         })
                       }}
                     >
-                      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between" }}>
+                      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", width: '263px', margin: '0 auto', alignItems: 'center' }}>
                         <span>成交状态：</span>
                         <Select showArrow={true} value={this.state.dealStatus}
-                          style={{ width: 350 }}
+                          style={{ width: 200 }}
                           onChange={this.onChangeDealStatus}
                         >
                           <Option value='已成交' >已成交</Option>
@@ -954,7 +1172,7 @@ class Customer extends Component {
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>成交状态</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.dealStatus ? this.state.record.mobile : '未成交'}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.dealStatus ? this.state.record.dealStatus : '未成交'}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -1003,7 +1221,7 @@ class Customer extends Component {
                               </div>
                               <div>
                                 <div>创建人</div>
-                                <div>{this.state.record.employeeCreateId}</div>
+                                <div>{this.state.record.employeeCreateName}</div>
                               </div>
                               <div>
                                 <div>创建时间</div>
@@ -1034,7 +1252,7 @@ class Customer extends Component {
                               </div>
                               <div>
                                 <div>负责人</div>
-                                <div>{this.state.record.employeeResponsible}</div>
+                                <div>{this.state.record.employeeResponsibleName}</div>
                               </div>
                             </div>
                           </div>
@@ -1176,11 +1394,6 @@ class Customer extends Component {
                         </div>
                       </TabPane>
 
-
-                      <TabPane tab="联系人" key="3">
-                      </TabPane>
-                      <TabPane tab="相关团队" key="4">
-                      </TabPane>
                       <TabPane tab="商机" key="5">
                         <GetBizOpp value={this.state.record.id}></GetBizOpp>
                       </TabPane>
@@ -1189,10 +1402,6 @@ class Customer extends Component {
                       </TabPane>
                       <TabPane tab="回款信息" key="7">
                         <GetPayment value={this.state.record.id}></GetPayment>
-                      </TabPane>
-                      <TabPane tab="附件" key="8">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="9">
                       </TabPane>
                     </Tabs>
                   </div>

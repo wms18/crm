@@ -46,7 +46,12 @@ function GetCustomer(props) {
     useEffect(() => {
         console.log(props);
         getCustomer()
-    }, [])
+
+        if (props.customer) {
+            tags = [props.customer]
+            setTags(tags)
+        }
+    }, [props.customer])
 
 
     const rowSelection = {
@@ -134,118 +139,118 @@ function GetCustomer(props) {
 
     return (
 
-            // <Form.Item
-            //     // name="clientId"
-            //     label="客户名称"
-            //     rules={[
-            //         {
-            //             required: true,
-            //             message: '客户姓名不能为空',
-            //         },
-            //     ]}
-            // >
+        // <Form.Item
+        //     // name="clientId"
+        //     label="客户名称"
+        //     rules={[
+        //         {
+        //             required: true,
+        //             message: '客户姓名不能为空',
+        //         },
+        //     ]}
+        // >
 
-                <div style={{ position: 'relative', height: '40px' }} >
-                    <Select
-                        // disabled={hasBizOpp}
-                        dropdownClassName="hiddenDropdown"
-                        mode='tags'
-                        value={tags}
-                        allowClear={true}
-                        onClear={() => {
-                            tags = ''
-                            setTags(tags)
-                            // sendCustomerID(tags)
-
-
-                            // console.log('清除框');
-                            // tags = ''
-                            // setTags(tags)
-                            selectedRows = ''
-                            setSelectedRows(selectedRows)
-                            sendCustomerID('')
-
-                        }}
-
-                        style={{ position: 'absolute', right: '0px' }} style={{ width: 184 }}
-                        onClick={() => {
-                            // setModalProVisible(true)
-                            setModalProVisible(true)
+        <div style={{ position: 'relative', height: '40px' }} >
+            <Select
+                // disabled={hasBizOpp}
+                dropdownClassName="hiddenDropdown"
+                mode='tags'
+                value={tags}
+                allowClear={true}
+                onClear={() => {
+                    tags = ''
+                    setTags(tags)
+                    // sendCustomerID(tags)
 
 
-                        }}
-                    >
-                    </Select>
-                    <Modal
-                        destroyOnClose={true}
-                        mask={false}
-                        title={'客户'}
-                        visible={modalProVisible}
-                        width={600}
-                        bodyStyle={{ height: 350, position: 'relative' }}
-                        // height={500}
-                        // style={{height:500}}
-                        style={{ position: "absolute", right: 10 }}
-                        okText="保存"
-                        cancelText="取消"
-                        onOk={() => {
-                            setModalProVisible()
+                    // console.log('清除框');
+                    // tags = ''
+                    // setTags(tags)
+                    selectedRows = ''
+                    setSelectedRows(selectedRows)
+                    sendCustomerID('')
 
-                            sendCustomerID(selectedRows)
-                            tags = selectTags
-                            setTags(tags)
-                            console.log(tags);
+                }}
 
-                        }}
-                        onCancel={() => {
-                            setModalProVisible(false)
-                        }}
-
-                    >
-                        <div style={{ textAlign: 'center', padding: '0px 0px  15px 0' }}>
-                            <Search style={{ width: '200px' }} placeholder='请输入客户名称' ></Search>
-                        </div>
-                        <Spin style={{ display: visibleLoading }} indicator={antIcon} />
-                        <Table
-                            style={{ display: visibleTable }}
-                            rowSelection={{
-                                type: selectionType,
-                                ...rowSelection
-                            }}
-
-                            columns={Data.columns}
-                            dataSource={arr}
-                            scroll={{ y: 130 }}
-                            pagination={{ pageSize: pagination.limit }}
-
-                            //点击行显示表格行信息
-                            onRow={(record) => ({
-                                onClick: () => {
-                                    console.log(record);
-                                    record = record
-                                    setRecord(record)
-                                },
-                            })}
-
-                        />
-                        <div style={{ position: 'absolute', bottom: '20px' }} >
-                            <Button type='primary' style={{ marginRight: '20px' }}  >上一页</Button>
-                            <Button type='default'
-                                onClick={() => {
-                                    console.log(1);
-                                    if (currentPage == pagination.totalPage) {
-                                        message.warning('已是最后一页')
-                                    }
-                                }}
-                            >下一页</Button>
-                        </div>
-
-                    </Modal>
+                style={{ position: 'absolute', right: '0px' }} style={{ width: 184 }}
+                onClick={() => {
+                    // setModalProVisible(true)
+                    setModalProVisible(true)
 
 
+                }}
+            >
+            </Select>
+            <Modal
+                destroyOnClose={true}
+                mask={false}
+                title={'客户'}
+                visible={modalProVisible}
+                width={600}
+                bodyStyle={{ height: 350, position: 'relative' }}
+                // height={500}
+                // style={{height:500}}
+                style={{ position: "absolute", right: 10 }}
+                okText="保存"
+                cancelText="取消"
+                onOk={() => {
+                    setModalProVisible()
 
+                    sendCustomerID(selectedRows)
+                    tags = selectTags
+                    setTags(tags)
+                    console.log(tags);
+
+                }}
+                onCancel={() => {
+                    setModalProVisible(false)
+                }}
+
+            >
+                <div style={{ textAlign: 'center', padding: '0px 0px  15px 0' }}>
+                    <Search style={{ width: '200px' }} placeholder='请输入客户名称' ></Search>
                 </div>
-            // </Form.Item>
+                <Spin style={{ display: visibleLoading }} indicator={antIcon} />
+                <Table
+                    style={{ display: visibleTable }}
+                    rowSelection={{
+                        type: selectionType,
+                        ...rowSelection
+                    }}
+
+                    columns={Data.columns}
+                    dataSource={arr}
+                    scroll={{ y: 130 }}
+                    pagination={{ pageSize: pagination.limit }}
+
+                    //点击行显示表格行信息
+                    onRow={(record) => ({
+                        onClick: () => {
+                            console.log(record);
+                            record = record
+                            setRecord(record)
+                        },
+                    })}
+
+                />
+                <div style={{ position: 'absolute', bottom: '20px' }} >
+                    <Button type='primary' style={{ marginRight: '20px' }}  >上一页</Button>
+                    <Button type='default'
+                        onClick={() => {
+                            console.log(1);
+                            if (currentPage == pagination.totalPage) {
+                                message.warning('已是最后一页')
+                            }
+                        }}
+                    >下一页</Button>
+                </div>
+
+            </Modal>
+
+
+
+        </div>
+        // </Form.Item>
     )
 
 

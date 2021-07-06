@@ -184,11 +184,11 @@ class Clue extends Component {
     })
       .then((res) => {
         console.log(res);
-        if (res.data.code = 'ERROR') {
-          message.warning('请重试')
-        } else {
-          message.success('新增成功')
+        if (res.data.message == '保存成功') {
+          message.success(res.data.message)
           this.getFollowUpRecord()
+        } else {
+          message.warning('请重试')
         }
       })
       .catch((res) => {

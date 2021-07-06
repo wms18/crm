@@ -12,10 +12,10 @@ import BizOpp from './component/bO'
 import Clue from './component/clue'
 import Contract from './component/contract'
 import Contacts from './component/contacts'
-import Opensea from './component/opensea'
+import Opensea from './component/opensea/'
 import Payment from './component/payment'
 import TodoList from './component/todolist'
-import Customer from './component/customer';
+import Customer from './component/customer'
 
 
 import {

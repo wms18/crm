@@ -5,6 +5,9 @@ import { Select } from 'antd';
 import jsonp from 'fetch-jsonp';
 import querystring from 'querystring';
 import fetchJsonp from 'fetch-jsonp'
+import AMap from 'AMap'
+import { useEffect } from 'react';
+
 
 
 
@@ -16,7 +19,22 @@ function MapControl(props) {
 
     let [data, setData] = useState([])
     let [value, setValue] = useState(undefined)
+    let [address, setAddress] = useState('')
+    let [addrCenter, setAddrCenter] = useState([116.480766, 39.932931])
 
+
+    useEffect(() => {
+
+        //编辑时,调用地图组件,需显示已有的地址
+        console.log(props.detailAddr);
+        if (props.detailAddr) {
+            value = props.detailAddr
+            setValue(value)
+            address = props.detailAddr
+            setAddress(props.detailAddr)
+        }
+      
+    }, [props.detailAddr])
 
     let timeout;
     let currentValue;
@@ -28,28 +46,65 @@ function MapControl(props) {
         currentValue = value;
 
         function fake() {
-            const str = querystring.encode({
-                code: 'utf-8',
-                q: value,
+
+            var position = new AMap.LngLat(113.6596, 34.697547);//标准写法var position = new AMap.LngLat(116, 39);//标准写法
+
+            var map = new AMap.Map('gd-map', {
+                viewMode: '2D',
+                pitch: 50,
+                zoom: 11,
+                center: [113.6596, 34.697547]
+                // center: position
             });
-            jsonp(`https://suggest.taobao.com/sug?${str}`)
-                .then(response => response.json())
-                .then(d => {
+
+
+            AMap.plugin('AMap.Autocomplete', function () {
+                // 实例化Autocomplete
+                var autoOptions = {
+                    //city 限定城市，默认全国
+                    city: '全国'
+                }
+                var autoComplete = new AMap.Autocomplete(autoOptions);
+                autoComplete.search(value, function (status, result) {
+                    // 搜索成功时，result即是对应的匹配数据
+                    console.log(status);
+                    console.log(result);
+                    // locRS = result.tips
+                    // setLocRS(result)
+                    // console.log(locRS);
                     if (currentValue === value) {
-                        const { result } = d;
-                        const data = [];
-                        result.forEach(r => {
-                            data.push({
-                                value: r[0],
-                                text: r[0],
-                            });
-                        });
+                        // const { result } = d;
+                        let data = [];
+                        result.tips ?
+                            result.tips.forEach(item => {
+                                data.push({
+                                    adcode: item.adcode,
+                                    address: item.district + item.address + item.name,
+                                    location: item.location
+                                    // text: r[0],
+                                });
+                            })
+                            :
+                            data = [];
+                        console.log(data);
                         callback(data);
                     }
-                });
+
+
+
+                })
+            })
+
+
+
         }
 
         timeout = setTimeout(fake, 300);
+    }
+
+
+    function getAddr(e) {
+        console.log(e.target.value);
     }
     function handleSearch(value) {
         if (value) {
@@ -61,54 +116,19 @@ function MapControl(props) {
 
 
     function handleChange(value) {
+        address = value
+        setAddress(address)
+        console.log(value);
+        value = value
         setValue(value);
+        // props.method?props.method(value):console.log()
+        props.method(value)
+
+
     };
-    const options = data.map(d => <Option key={d.value}>{d.text}</Option>);
+    const options = data.map(item => <Option key={item.adcode} value={item.address}  >{item.address}</Option>);
     return (
 
-        // <div>
-        //     <button onClick={() => setShow(!show)}>
-        //         {show ? '隐藏' : '显示'}
-        //     </button>
-        //     <div style={{ width: '100%', height: '300px' }}>
-        //         <Map zoom={4}>
-        //             <Marker visiable={show} title="北京市" position={new AMap.LngLat(116.405285, 39.904989)} />
-        //             <Marker visiable={show} title="天津市" position={new AMap.LngLat(117.190182, 39.125596)} />
-        //             <Marker visiable={show} title="河北省" position={new AMap.LngLat(114.502461, 38.045474)} />
-        //             <Marker visiable={show} title="山西省" position={new AMap.LngLat(112.549248, 37.857014)} />
-        //             <Marker visiable={show} title="内蒙古自治区" position={new AMap.LngLat(111.670801, 40.818311)} />
-        //             <Marker visiable={show} title="辽宁省" position={new AMap.LngLat(123.429096, 41.796767)} />
-        //             <Marker visiable={show} title="吉林省" position={new AMap.LngLat(125.3245, 43.886841)} />
-        //             <Marker visiable={show} title="黑龙江省" position={new AMap.LngLat(126.642464, 45.756967)} />
-        //             <Marker visiable={show} title="上海市" position={new AMap.LngLat(121.472644, 31.231706)} />
-        //             <Marker visiable={show} title="江苏省" position={new AMap.LngLat(118.767413, 32.041544)} />
-        //             <Marker visiable={show} title="浙江省" position={new AMap.LngLat(120.153576, 30.287459)} />
-        //             <Marker visiable={show} title="安徽省" position={new AMap.LngLat(117.283042, 31.86119)} />
-        //             <Marker visiable={show} title="福建省" position={new AMap.LngLat(119.306239, 26.075302)} />
-        //             <Marker visiable={show} title="江西省" position={new AMap.LngLat(115.892151, 28.676493)} />
-        //             <Marker visiable={show} title="山东省" position={new AMap.LngLat(117.000923, 36.675807)} />
-        //             <Marker visiable={show} title="河南省" position={new AMap.LngLat(113.665412, 34.757975)} />
-        //             <Marker visiable={show} title="湖北省" position={new AMap.LngLat(114.298572, 30.584355)} />
-        //             <Marker visiable={show} title="湖南省" position={new AMap.LngLat(112.982279, 28.19409)} />
-        //             <Marker visiable={show} title="广东省" position={new AMap.LngLat(113.280637, 23.125178)} />
-        //             <Marker visiable={show} title="广西壮族自治区" position={new AMap.LngLat(108.320004, 22.82402)} />
-        //             <Marker visiable={show} title="海南省" position={new AMap.LngLat(110.33119, 20.031971)} />
-        //             <Marker visiable={show} title="重庆市" position={new AMap.LngLat(106.504962, 29.533155)} />
-        //             <Marker visiable={show} title="四川省" position={new AMap.LngLat(104.065735, 30.659462)} />
-        //             <Marker visiable={show} title="贵州省" position={new AMap.LngLat(106.713478, 26.578343)} />
-        //             <Marker visiable={show} title="云南省" position={new AMap.LngLat(102.712251, 25.040609)} />
-        //             <Marker visiable={show} title="西藏自治区" position={new AMap.LngLat(91.132212, 29.660361)} />
-        //             <Marker visiable={show} title="陕西省" position={new AMap.LngLat(108.948024, 34.263161)} />
-        //             <Marker visiable={show} title="甘肃省" position={new AMap.LngLat(103.823557, 36.058039)} />
-        //             <Marker visiable={show} title="青海省" position={new AMap.LngLat(101.778916, 36.623178)} />
-        //             <Marker visiable={show} title="宁夏回族自治区" position={new AMap.LngLat(106.278179, 38.46637)} />
-        //             <Marker visiable={show} title="新疆维吾尔自治区" position={new AMap.LngLat(87.617733, 43.792818)} />
-        //             <Marker visiable={show} title="台湾省" position={new AMap.LngLat(121.509062, 25.044332)} />
-        //             <Marker visiable={show} title="香港特別行政區" position={new AMap.LngLat(114.173355, 22.320048)} />
-        //             <Marker visiable={show} title="澳門特別行政區" position={new AMap.LngLat(113.54909, 22.198951)} />
-        //         </Map>
-        //     </div>
-        // </div>
         <div>
             <Select
                 showSearch
@@ -121,16 +141,16 @@ function MapControl(props) {
                 onSearch={handleSearch}
                 onChange={handleChange}
                 notFoundContent={null}
-                style={{ width: 184, marginBottom: '10px' }}
+                style={{ width: 220, marginBottom: '10px' }}
             >
                 {options}
             </Select>
-            <div class style={{ width: 184, height: 100, marginBottom: '10px' }}>
+            <div class style={{ width: 220, height: 100, marginBottom: '10px' }}>
                 <APILoader akay="521aa38413f6fa4205189eaf5bf2c1db">
                     <Map />
                 </APILoader>
             </div>
-            <Input></Input>
+            <Input value={address} onChange={getAddr} readOnly ></Input>
         </div>
 
     )
@@ -143,17 +163,3 @@ export default MapControl;
 
 
 
-// class SearchInput extends React.Component {
-//     state = {
-//         
-//     };
-
-
-//     render() {
-//         return (
-
-//     );
-//     }
-// }
-
-// ReactDOM.render(<SearchInput placeholder="input search text" style={{ width: 200 }} />, mountNode);
