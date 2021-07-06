@@ -134,6 +134,9 @@ function Notice() {
 
     };
     const handleOkEdit = (id) => {
+        if (noticeTheme === '' || content === ''||noticeTime===''){
+            alert('请重新输入')
+        }else {
         setIsModalVisibleEdit(false);
         axios({
             method: 'post',
@@ -157,6 +160,7 @@ function Notice() {
         }).catch((error) => {
             alert(error)
         })
+        }
     };
     //删除
     let deleteNotice = (id) => {
@@ -254,7 +258,7 @@ function Notice() {
         })
     }
     return (
-        <div style={{padding: '20px', width: '930px'}}>
+        <div style={{ width: '930px'}}>
             <div className={'notice'}>
                 <div className={'noticeTop'}>
                     <span className={'noticeSp'}>公告</span>

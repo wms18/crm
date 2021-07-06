@@ -82,7 +82,7 @@ function Middle() {
         })
     }
     return (
-        <div style={{margin: '20px 20px 0 20px'}}>
+        <div >
             <div className={'middle'}>
                 <div className={'middle_sp'}>
                     {arr.map((item, index) => {
@@ -163,7 +163,7 @@ function Middle() {
                                         <div>
                                             <div className={'avatar'}>
                                                 <Avatar
-                                                    src={<Image src={item.employees.avatar}/>}
+                                                    src={<Image src={item.employees[0].avatar}/>}
                                                 />
                                             </div>
                                             <div className={'one'}>
@@ -191,7 +191,7 @@ function Middle() {
                                         <div>
                                             <div className={'avatar'}>
                                                 <Avatar
-                                                    src={<Image src={item.employees.avatar}/>}
+                                                    src={<Image src={item.employees[0].avatar}/>}
                                                 />
                                             </div>
                                             <div className={'one'}>

@@ -1,11 +1,12 @@
 .journalCont{
     width: 920px;
-    height: calc(100vh - 40px);
+    height: calc(100vh - 90px);
     background-color: #ffffff;
-    margin: 20px;
+    /*margin: 20px;*/
     border-radius: 6px;
     border:1px solid #e6e6e6;
     padding: 20px;
+    margin-top: 60px;
 }
 .journalTop{
     display: flex;
@@ -72,7 +73,7 @@
 }
 .journalFoot{
     width: 100%;
-    height: 520px;
+    height: 490px;
     overflow: hidden;
     margin:20px 0;
 }
@@ -80,5 +81,6 @@
     width: calc(100% + 13px);
     overflow-y:scroll ;
     overflow-x: hidden;
-    height: 520px;
+    height: 476px;
+    padding: 0 10px;
 }

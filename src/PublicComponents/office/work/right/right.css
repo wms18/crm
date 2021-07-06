@@ -2,6 +2,7 @@
     float: right;
     /*width: 100%;*/
     /*height: 100%;*/
+    margin-top: 60px;
 }
 .right_check{
     display: inline-block;
@@ -18,10 +19,10 @@
     width:100%;
     height: 100%;
     overflow: hidden;
-    margin-top: 20px;
+    /*margin-top: 20px;*/
 }
 .right_two{
-    width: 100%;
+    width: calc(312px + 20px);
     overflow-y:scroll ;
     overflow-x: hidden;
     height: 180px;
@@ -42,3 +43,12 @@
     justify-content: space-between;
     align-items: center;
 }
+.scheduleList{
+    cursor: pointer;
+    padding:0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+}
+

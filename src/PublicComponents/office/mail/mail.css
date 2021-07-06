@@ -18,12 +18,12 @@
 }
 .mailList{
     width: 100%;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 250px);
     padding: 10px 20px;
 }
 .mail{
     width: 100%;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 100px);
     background-color: #fff;
     padding: 0 20px;
     box-sizing: border-box;

@@ -115,6 +115,10 @@ function Newapproval(props) {
     }
     //新建审批
     let newApprove = () => {
+        if (approveType === '' || selectTime[0] === '' || selectStaff[0] === '' || idsObj===''){
+            alert('请填写内容')
+            return
+        }else {
         axios({
             method: 'post',
             url: base.url + '/approve/createApprove',
@@ -144,6 +148,7 @@ function Newapproval(props) {
         }).catch((error) => {
             alert(error)
         })
+        }
         form.setFieldsValue({'type': ''})
         form.setFieldsValue({'content': ''})
         setValueTime([])

@@ -727,7 +727,7 @@ function Task() {
                                     okText="确定"
                                     cancelText="取消"
                                 >
-                                    <Button style={{margin: '0 20px'}}>删除</Button>
+                                    <Button danger type={"primary"} style={{margin: '0 20px'}}>删除</Button>
                                 </Popconfirm>
 
                             </div>}
@@ -882,7 +882,7 @@ function Task() {
                                                         <span style={{marginRight: '20px'}} onClick={() => {
                                                             deleteContent(item.id)
                                                         }}>删除</span>
-                                                        <span>回复</span>
+                                                        {/*<span>回复</span>*/}
                                                     </div>
                                                 </div>
                                                 <div>

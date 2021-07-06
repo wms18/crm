@@ -25,14 +25,12 @@ const {Content, Sider} = Layout;
 function MenuLeft() {
     return (
         <div>
-            {/*<ReceptionTop/>*/}
             <Layout style={{minHeight: '100vh',overflow: 'auto',}}>
                 <HashRouter>
-                    <Sider>
+                    <Sider style={{height:'100vh',marginTop:'60px',position:'fixed'}}>
                         <div className="logo"/>
                         <Right/>
                         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-
                             <Menu.Item key="1" icon={<DesktopOutlined/>}>
                                 <Link to={'/office'}>工作台</Link>
                             </Menu.Item>
@@ -62,7 +60,7 @@ function MenuLeft() {
                             </Menu.Item>
                         </Menu>
                     </Sider>
-                    <div>
+                    <div style={{margin:'20px 20px 10px 220px'}}>
                         <Route path={'/office'} exact component={Middle}></Route>
                         <Route path={'/office/schedule'} component={SchedulePage}></Route>
                         <Route path={'/office/task'} component={Task}></Route>

@@ -46,3 +46,7 @@
     background-color: #3E84E9;
     color: #ffffff;
 }
+.ant-tooltip{
+    left: 170px !important;
+    top: 65px !important;
+}

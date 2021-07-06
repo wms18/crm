@@ -1,11 +1,11 @@
 .taskContent {
     width: 920px;
-    height: calc(100vh - 40px);
+    height: calc(100vh - 107px);
     background-color: #ffffff;
     border: 1px solid #e6e6e6;
     border-radius: 4px;
-    padding: 10px;
-    margin: 20px;
+    padding:0 10px;
+    margin-top: 60px;
 }
 
 .taskTop {

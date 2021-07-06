@@ -5,7 +5,7 @@
     padding: 0 20px;
     box-sizing: border-box;
     border: 1px solid #e6e6e6;
-    /*margin:20px;*/
+    margin-top:60px;
 }
 .noticeTop{
     height: 50px;
@@ -51,7 +51,7 @@
 }
 .middle_one1{
     width:100%;
-    height: calc(100vh - 164px);
+    height: calc(100vh - 221px);
     overflow: hidden;
     margin-top: 20px;
 

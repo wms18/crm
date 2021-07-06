@@ -1,11 +1,13 @@
 import './approval.css'
 import {Button, Select, DatePicker, Space, ConfigProvider, Popover, Drawer, Modal, Form, Input, TreeSelect} from 'antd';
 import React, {useState, useEffect} from "react";
+import {CheckOutlined} from '@ant-design/icons'
 import zhCN from "antd/lib/locale/zh_CN";
 import axios from "axios";
 import base from "../../../axios/axios";
 import LinkBusiness from "../task/link";
 import Edit from "./edit";
+import {ClearOutlined} from "@ant-design/icons";
 
 function Approval() {
     let clients; // 空Map
@@ -209,12 +211,15 @@ function Approval() {
     }
     //选择员工
     const treeData = [];
-    for (let j = 0; j < allStaff.length; j++) {
-        treeData.push({
-            title: allStaff[j].username,
-            value: allStaff[j].id,
-        })
+    if (allStaff !== null){
+        for (let j = 0; j < allStaff.length; j++) {
+            treeData.push({
+                title: allStaff[j].username,
+                value: allStaff[j].id,
+            })
+        }
     }
+
     let onChangeStaff = value => {
         console.log('onChange ', value);
         selectStaff = value
@@ -647,10 +652,11 @@ function Approval() {
                                     <div>
                                         <span>{item.name}</span>—
                                         <span>{results[item.result - 1]}</span>
+                                        <span className={item.result === 2 ? 'hidden' : ''}>
                                         <Popover content={
                                             <div className={'approvalEdit'}>
                                                 <div>
-                                                    <p className={item.result === 1 ? 'hidden' : ''}
+                                                    <p className={item.result === 1 ? 'hidden' : '' }
                                                        onClick={()=>{
                                                            editId = item.id
                                                            setEditId(editId)
@@ -669,17 +675,13 @@ function Approval() {
                                                             setEditObj(editObj)
                                                             edit()
                                                             setIsModalVisibleEdit(false);
-                                                            // if (approveIndex === 0) {
-                                                            //     list()
-                                                            // } else {
-                                                            //     myApproval()
-                                                            // }
                                                         }} cancelApprove={()=>{
                                                             setIsModalVisibleEdit(false);
                                                         }}/>
                                                     </Modal>
                                                 </div>
-                                                <p className={item.result === 1 ? 'hidden' : ''} onClick={() => {
+                                                <p className={item.result === 1 ? 'hidden' : '' }
+                                                   onClick={() => {
                                                     deleteApproval(item.id)
                                                 }}>删除</p>
                                                 <p className={(item.result === 4 ? 'hidden' : '') || (item.result === 3 ? 'hidden' : '')}
@@ -695,7 +697,16 @@ function Approval() {
                                                 fontSize: '18px',
                                                 cursor: 'pointer'
                                             }}>···</span>
+
                                         </Popover>
+                                            </span>
+                                        <span className={item.result === 2 ? 'passIcon' : 'hidden'} style={{
+                                            margin: '0 20px 0 18px',
+                                            fontSize: '18px',
+                                            cursor: 'pointer',
+                                        }}>
+                                                <i className="fa fa-check" aria-hidden="true"></i>
+                                            </span>
                                     </div>
                                 </div>
                                 <div type="primary" onClick={showDrawer}>

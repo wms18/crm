@@ -178,8 +178,8 @@ function SchedulePage() {
     }
 
     return (
-        <div style={{margin: '20px'}}>
-            <div style={{position: 'absolute', margin: '15px'}}>
+        <div style={{marginTop:'60px'}}>
+            <div style={{position: 'absolute', margin: '15px',height:'500px'}}>
                 <Button type="primary" onClick={showModal}>
                     创建日程
                 </Button>
@@ -268,7 +268,7 @@ function SchedulePage() {
                     </Modal>
                 </div>
             </Modal>
-            <ConfigProvider locale={zhCN}>
+            <ConfigProvider locale={zhCN} fullscreen={false}>
                 <Calendar onPanelChange={onPanelChange}/>
             </ConfigProvider>
         </div>

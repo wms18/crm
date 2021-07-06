@@ -57,7 +57,10 @@ function Creat() {
         data = value
         setData(data)
         console.log("子传给父的值", value)
-        setIsModalVisible(false)
+        if (data.time[0] === '' ||data.content === '' || data.man === '' || data.prior === '' || data.taskItem===''){
+            alert('请输入内容')
+        }else {
+        setIsModalVisibleTask(false)
         axios({
             method: 'post',
             url: base.url + '/task/add',
@@ -84,11 +87,11 @@ function Creat() {
                 alert(response.data.message)
             } else {
                 alert('新建任务成功')
-                setIsModalVisibleTask(false);
             }
         }).catch((error) => {
             alert(error)
         })
+        }
     }
     //日程
     const [isModalVisibleSchedule, setIsModalVisibleSchedule] = useState(false);
@@ -196,7 +199,7 @@ function Creat() {
                 <span>
                      <div onClick={showModalSchedule}>日程</div>
                     <Modal title="新建日程"
-                           width={700}
+                           width={555}
                            footer={null}
                            maskStyle={{backgroundColor: '#fff'}}
                            visible={isModalVisibleSchedule}
