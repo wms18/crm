@@ -6,9 +6,9 @@ import Creatpopover from '../components/Creatpopover'
 import sdTable from '../components/sdtable'
 
 
-import Dashbord from './component/dashboardlayout'   //仪表盘组件
+import Dashbord from '../../dashboardlayout'
 import ProductTable from './component/prodocutTable';
-import BizOpp from './component/bO'
+import BizOpp from '../../bizOpp';
 import Clue from './component/clue'
 import Contract from './component/contract'
 import Contacts from './component/contacts'
@@ -56,12 +56,14 @@ function Menulayout() {
     <HashRouter>
       <Layout>
         <Sider
+
           style={{
             overflow: 'auto',
-            height: '100vh',
+            height: 'calc(100vh - 60px)',
             position: 'fixed',
             left: 0,
-            zIndex: 1
+            zIndex: 1,
+            marginTop:'60px'
           }}
         >
           <Creatpopover></Creatpopover>

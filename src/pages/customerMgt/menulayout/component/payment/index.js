@@ -51,6 +51,8 @@ class Payment extends Component {
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
+
+      returnNumber:'',   //查询回款用的编号
       pagination: '',
       currentPage: 1,
       limit: 10,
@@ -89,6 +91,7 @@ class Payment extends Component {
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
     this.getCustomerID = this.getCustomerID.bind(this)
+    this.deletePayment = this.deletePayment.bind(this)
 
   }
 
@@ -139,8 +142,8 @@ class Payment extends Component {
     console.log(dateString);
     this.setState({
       submissionTime: dateString
-    },()=>{
-      
+    }, () => {
+
     })
   }
 
@@ -170,13 +173,36 @@ class Payment extends Component {
 
         } else {
           this.setState({
-            tableArr: res.data.data.data,
-            pagination: res.data.data.pagination
+            tableArr: res.data.data?res.data.data.data:'',
+            pagination: res.data.data?res.data.data.pagination:''
           })
         }
       })
   }
 
+
+  deletePayment() {
+    axios({
+      method: "post",
+      url: `${base.url}/return-money/delete?ids=` + this.state.record.id,
+      params: {
+        token: this.state.token,
+      },
+    }).then((res) => {
+      console.log(res);
+      if (res.data.code == "ERROR") {
+        message.warning('请重试');
+        // this.onCancel()
+      } else {
+        message.success(res.data.message);
+        // this.onCancel()
+
+        this.getPaymentt()
+      }
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
 
   createPayment() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
@@ -200,18 +226,18 @@ class Payment extends Component {
           token: this.state.token,
           clientId: this.state.customerID,
           content: data.content,
-          contractCoding : this.state.contractCoding ,
+          contractCoding: this.state.contractCoding,
           employeeCheckId: this.state.employeeCheckedId,
           content: data.content,
           periods: data.periods,
-          receiveTime  : this.state.submissionTime ,
-          receiveWay : data.receiveWay ,
-          returnNumber  : data.returnNumber  ,
-          reviceMoney  : data.reviceMoney  ,
+          receiveTime: this.state.submissionTime,
+          receiveWay: data.receiveWay,
+          returnNumber: data.returnNumber,
+          reviceMoney: data.reviceMoney,
         },
         // .replace(/\s+/g,'')
         // data: qs.stringify({
-        
+
         // })
       }).then((res) => {
         console.log(res);
@@ -247,23 +273,23 @@ class Payment extends Component {
     console.log(val);
     console.log(typeof (val));
     //获取回款
-    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+    axios.get(`${base.url}/return-money/search?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
-        keyword: val
+        returnNumber: val,   //回款编号
       },
       // data: qs.stringify({
       // })
     })
       .then((res) => {
         console.log(res);
-        if (res.data.code === "ERROR") {
+        if (res.data.code == "ERROR") {
 
         }
         else {
           this.setState({
-            tableArr: res.data.data.data,
-            pagination: res.data.data.pagination
+            tableArr: res.data.data?res.data.data.data:'',
+            pagination: res.data.data?res.data.data.pagination:''
           })
         }
       })
@@ -290,8 +316,6 @@ class Payment extends Component {
       this.getPayment()
     })
 
-
-
   }
 
   setVisible() {
@@ -305,17 +329,19 @@ class Payment extends Component {
       } else {
 
         this.formRef.current.setFieldsValue({
-          clientId: this.state.record.clientId,
-          commercialPrice: this.state.record.commercialPrice,
-          commercialStage: this.state.record.commercialStage,
-          commercialStatusGroup: this.state.record.commercialStatusGroup,
           content: this.state.record.content,
-          discount: this.state.record.discount,
-          name: this.state.record.name,
-          produceIds: this.state.record.produceIds,
-          submissionTime: this.state.record.submissionTime,
-          totalPrice: this.state.record.totalPrice,
-          // record: this.state.record.record,
+          contractTotal: this.state.record.contractTotal,
+          createTime: this.state.record.createTime,
+          clientLevel: this.state.record.clientLevel,
+          periods: this.state.record.periods,
+          receiveMoney: this.state.record.receiveMoney,
+          // nextTalkTime: this.state.record.nextTalkTime, 
+          receiveTime: this.state.record.receiveTime,
+          receiveWay: this.state.record.receiveWay,
+          result: this.state.record.result,
+          returnNumber: this.state.record.returnNumber,
+          status: this.state.record.status,
+          updateTime: this.state.record.updateTime,
         })
       }
     }, 100);
@@ -365,7 +391,7 @@ class Payment extends Component {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
           <span style={{ fontSize: '18px' }}>回款管理</span>
-          <Search placeholder='请输入回款名称' style={{ width: '200px' }} onSearch={this.onSearch}
+          <Search placeholder='请输入回款名称'   style={{ width: '200px' }} onSearch={this.onSearch}
             allowClear
           ></Search>
           <div>
@@ -439,7 +465,7 @@ class Payment extends Component {
                     ]}
                   >
                     <ConfigProvider locale={zhCN}>
-                      <DatePicker  style={{width:184}} onChange={this.onChangeDate} />
+                      <DatePicker style={{ width: 184 }} onChange={this.onChangeDate} />
                     </ConfigProvider>
 
                   </Form.Item>
@@ -489,7 +515,7 @@ class Payment extends Component {
                     name="content"
                     label="备注"
                   >
-                    <TextArea style={{ width: 184, height: 60 }}   ></TextArea>
+                    <TextArea style={{ width: 184, height: 60 }} ></TextArea>
                   </Form.Item>
 
 
@@ -534,7 +560,12 @@ class Payment extends Component {
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
                 scroll={{ x: 1500, y: '26vw' }}
-                pagination={{ pageSize: this.state.pagination.limit }}
+                pagination={{
+                  pageSize: this.state.pagination.limit ?
+                    this.state.pagination.limit
+                    :
+                    10
+                }}
                 defaultCurrent={1}
                 onRow={(record) => ({
                   onClick: () => {
@@ -597,6 +628,7 @@ class Payment extends Component {
                           onOk: () => {
                             // this.handleOk(id)//确认按钮的回调方法，在下面
                             message.success('已成功刪除')
+                            this.deletePayment()
                           }
                           ,
                           onCancel() {
@@ -616,16 +648,16 @@ class Payment extends Component {
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>回款金额</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.totalPrice}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.receiveMoney}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>回款状态</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.commercialStage}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.status}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsible}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsibleName}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -648,29 +680,25 @@ class Payment extends Component {
                           <div className='pro-info'>
                             <div>
                               <div>
-                                <div>回款名称</div>
-                                <div>{this.state.record.clientName}</div>
+                                <div>回款编号</div>
+                                <div>{this.state.record.returnNumber}</div>
                               </div>
                               <div>
-                                <div>电话</div>
-                                <div>{this.state.record.phone}</div>
+                                <div>合同编号</div>
+                                <div>{this.state.record.contractCoding}</div>
                               </div>
                               <div>
-                                <div>回款来源</div>
-                                <div>{this.state.record.clueFrom}</div>
+                                <div>回款方式</div>
+                                <div>{this.state.record.receiveWay}</div>
                               </div>
                               <div>
-                                <div>备注</div>
-                                <div>{this.state.record.content}</div>
-                              </div>
-                              <div>
-                                <div>下次联系时间</div>
-                                <div>{this.state.record.nextTalkTime}</div>
-
+                                <div>期数</div>
+                                <div>{this.state.record.periods}</div>
                               </div>
                               <div>
                                 <div>创建人</div>
-                                <div>{this.state.record.employeeCreateId}</div>
+                                <div>{this.state.record.employeeCreateName}</div>
+
                               </div>
                               <div>
                                 <div>创建时间</div>
@@ -680,20 +708,16 @@ class Payment extends Component {
 
                             <div>
                               <div>
-                                <div>回款类型</div>
-                                <div>{this.state.record.clientType}</div>
+                                <div>客户名称</div>
+                                <div>{this.state.record.clientName}</div>
                               </div>
                               <div>
-                                <div>回款等级</div>
-                                <div>{this.state.record.clientLevel}</div>
+                                <div>回款金额</div>
+                                <div>{this.state.record.receiveMoney}</div>
                               </div>
                               <div>
-                                <div>部门ID</div>
-                                <div>{this.state.record.departmentId}</div>
-                              </div>
-                              <div>
-                                <div>公司</div>
-                                <div>{this.state.record.company}</div>
+                                <div>备注</div>
+                                <div>{this.state.record.content}</div>
                               </div>
                               <div>
                                 <div>更新时间</div>
@@ -701,7 +725,11 @@ class Payment extends Component {
                               </div>
                               <div>
                                 <div>负责人</div>
-                                <div>{this.state.record.employeeResponsible}</div>
+                                <div>{this.state.record.employeeResponsibleName}</div>
+                              </div>
+                              <div>
+                                <div>状态</div>
+                                <div>{this.state.record.result}</div>
                               </div>
                             </div>
                           </div>

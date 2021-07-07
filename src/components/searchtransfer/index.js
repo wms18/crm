@@ -5,48 +5,48 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import base from '../../axios/axios';
 
-const mockData = [];
-for (let i = 0; i < 20; i++) {
-  mockData.push({
-    key: i.toString(),
-    title: `标题${i + 1}`,
-    description: `内容${i + 1}`,
-  });
-}
-
-const initialTargetKeys = mockData.filter(item => +item.key > 10).map(item => item.key);
 
 
 
 const Searchtransfer = (props) => {
-  let [mockData, setMockData] = useState([])
+
+
   let [dep, setDep] = useState()
   const [token, setToken] = useState(window.localStorage.getItem('token'))
-  const [targetKeys, setTargetKeys] = useState(initialTargetKeys);
+  const [targetKeys, setTargetKeys] = useState();
   const [selectedKeys, setSelectedKeys] = useState([]);
+  let [mockData, setMockData] = useState([])
+  let [nextTargetKeys, setNextTargetKeys] = useState([])
 
   useEffect(() => {
+
     console.log(props);
     props.dep ? getDep() : getEmployee()
     props.dep ? setDep(true) : setDep(false)
   }, [props])
 
   const onChange = (nextTargetKeys, direction, moveKeys) => {
-    console.log('targetKeys:', nextTargetKeys);
-    console.log('direction:', direction);
-    console.log('moveKeys:', moveKeys);
+
+    //
+    console.log('选中的员工id:', nextTargetKeys);
+    nextTargetKeys=nextTargetKeys
+    setNextTargetKeys(nextTargetKeys)
+
+    // if()
+    if (nextTargetKeys.length > 0) {
+      props.dep ? props.getDepId({ type: 'dep', arr: nextTargetKeys })
+        :
+        props.getEmpId({ type: 'emp', arr: nextTargetKeys })
+    }
+
     setTargetKeys(nextTargetKeys);
   };
 
   const onSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    console.log('sourceSelectedKeys:', sourceSelectedKeys);
-    console.log('targetSelectedKeys:', targetSelectedKeys);
     setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
   };
 
   const onScroll = (direction, e) => {
-    console.log('direction:', direction);
-    console.log('target:', e.target);
   };
 
   //获得所有部门
@@ -60,6 +60,30 @@ const Searchtransfer = (props) => {
     })
       .then((res) => {
         console.log(res);
+        if (res.data.code == 'ERROR') {
+
+        } else {
+          let arr = []
+          res.data.data ?
+            res.data.data.map((item) => {
+              arr.push({
+                key: item.id.toString(),
+                title: item.name,
+              });
+              return arr
+
+            })
+            :
+            arr = []
+          mockData = arr
+          setMockData(arr)
+          console.log(mockData);
+          let initialTargetKeys = mockData.filter(item => +item.key > 10).map(item => item.key);
+          initialTargetKeys = initialTargetKeys
+          setTargetKeys(initialTargetKeys)
+
+
+        }
       })
       .catch((res) => {
         console.log(res);
@@ -76,6 +100,27 @@ const Searchtransfer = (props) => {
     })
       .then((res) => {
         console.log(res);
+        if (res.data.code == 'ERROR') {
+
+        } else {
+          let arr = []
+          res.data.data.data.map((item) => {
+            arr.push({
+              key: item.id.toString(),
+              title: item.username,
+            });
+            return arr
+          })
+          mockData = arr
+          setMockData(arr)
+          console.log(mockData);
+          let initialTargetKeys = mockData.filter(item => +item.key > 10).map(item => item.key);
+          initialTargetKeys = initialTargetKeys
+          setTargetKeys(initialTargetKeys)
+
+
+
+        }
       })
       .catch((res) => {
         console.log(res);

@@ -1,3 +1,4 @@
+```
 ├─axios 							axios
 ├─components				公共组件
 │  ├─addedProduct						关联产品组件
@@ -34,3 +35,5 @@
 │              ├─prodocutTable							产品
 │              └─todolist										代办事项
 └─router							路由					
+```
+

@@ -1,14 +1,12 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import base from '../../../../../axios/axios';
+import base from '../../axios/axios'
 import qs from 'qs'
 import './style.css'
 import GetProduct from "./getProduct";
-import AddedProduct from "../../../../../components/addedProduct";  //新增的产品列表
-import GetCustomer from "../../../../../components/getCustomer";
-import GetEmployee from '../../../../../components/getEmployee';
-import GetBizOppTable from "../../../../../components/getBizOppTable";
-
+import GetProductTable from "../../components/getProductTable";
+import GetCustomer from "../../components/getCustomer";
+import AddedProduct from "../../components/addedProduct";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
@@ -26,12 +24,31 @@ const { Content, Footer, Header } = Layout
 
 
 
-class Contract extends Component {
+class BizOpp extends Component {
 
   componentDidMount() {
-    // console.log(111);
-    this.getContract()
-    // this.getEmployeeName()
+
+    axios.get('http://47.117.138.37:8088/dashboard/powerPoint', {
+      params: {
+        token: this.state.token,
+      }
+      ,
+      data: qs.stringify({
+        startTime: '2000-01-01',
+        endTime: '2021-06-01',
+        ids: [{
+          ids: 1
+        },
+        { ids: 2 }],
+
+      })
+    })
+      .then((res) => {
+        console.log(res);
+      })
+
+    this.getBizOpp()
+    this.getEmployeeName()
   }
 
   constructor(props) {
@@ -41,22 +58,19 @@ class Contract extends Component {
       drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
+      modalProVisible: false,
 
-
-
+      productArr: '',   //新建时添加的产品信息,是数组
+      customerId: '',  //新建时添加的客户id
       isCreate: true,
-      formTitle: '新建合同',
+      formTitle: '新建商机',
 
       transferVisible: false,
 
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
+      addedProduct: '',   //已添加的产品信息
       loading: false,
-
-      getLinkBizOppCustomerId: '',   //获取商机拿到的客户id
-      linkBizOpp: '',
-      BizOppID: '',    //添加的商机id
-      produceIds: [],
 
       pagination: '',
       currentPage: 1,
@@ -68,7 +82,7 @@ class Contract extends Component {
       // 表格行点击时产品信息
       record: "",
 
-      // 搜素合同名称
+      // 搜素商机名称
       keyword: '',
 
 
@@ -89,72 +103,56 @@ class Contract extends Component {
     this.onCancel = this.onCancel.bind(this)
     this.onCreate = this.onCreate.bind(this)
     this.submit = this.submit.bind(this)
-    this.getContract = this.getContract.bind(this)
-    this.createContract = this.createContract.bind(this)
+    this.getBizOpp = this.getBizOpp.bind(this)
+    this.createBizOpp = this.createBizOpp.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
-    this.getProductId = this.getProductId.bind(this)
-    this.getCustomerID = this.getCustomerID.bind(this)
-    this.getBizOppID = this.getBizOppID.bind(this)
-    this.getEemployeeCheckId = this.getEemployeeCheckId.bind(this)
-    this.getEmployeeSignId = this.getEmployeeSignId.bind(this)
-
+    this.setModalProVisible = this.setModalProVisible.bind(this)
+    this.getCustomerId = this.getCustomerId.bind(this)
   }
 
-
-  getEemployeeCheckId(val) {   //审核人
-    console.log(val);
+  getCustomerId(val) {
+    // console.log(val[0].id);
+    // this.setState({
+    //     customerId:val[0].id
+    // })
     this.setState({
-      employeeCheckId: val
-    })
-  }
-
-  getEmployeeSignId(val) {    //签字人
-    console.log(val);
-    this.setState({
-      employeeSignId: val
-    })
-  }
-
-  getBizOppID(val) {   //关联商机传过来的商机信息
-    console.log(val);
-    this.setState({
-      BizOppID: val ? val[0].id : ''
-    })
-
-  }
-
-  getProductId(val) {  //拿到产品信息
-    console.log(val);
-    let arr = []
-    val ? val.map((item) => {
-      arr.push(item.id)
-    })
-      :
-      arr = []
-
-    this.setState({
-      produceIds: arr
+      customerId: val ? val[0].id : ''
     }, () => {
-      console.log(this.state.produceIds);
-
     })
 
   }
 
+  getProductId(val) {   //从孙组件拿到productId-arr
 
-
-  // 获取客户id
-  getCustomerID(val) {
-    console.log(val);
-    console.log("获取客户id", val);
+    let arr = []
+    // console.log(val);
+    val.map((item) => {
+      arr.push(item.id)
+      return arr
+    })
     this.setState({
-      getLinkBizOppCustomerId: val ? val[0].id : ''
+      productArr: arr
+    }, () => {
     })
   }
+
+
+  setModalProVisible() {
+    this.setState({
+      modalProVisible: !this.state.modalProVisible
+    })
+  }
+
+  getContainer = () => {
+    return this.container;
+  };
+  saveContainer = container => {
+    this.container = container;
+  };
 
   createFollowupRecord() {
     axios.post(`${base.url}/follow/add`, {
@@ -189,7 +187,6 @@ class Contract extends Component {
       }
     })
       .then((res) => {
-        console.log(res);
         if (res.data.code == 'ERROR') {
 
         } else {
@@ -213,17 +210,12 @@ class Contract extends Component {
     // setTransferVisible
   }
 
-  getContract() {
-    // 获取合同
-    // console.log(222);
-    axios({
-      method: 'get',
-      url: `${base.url}/contract/getContract`,
+  getBizOpp() {
+    //获取商机
+    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
         keyword: this.state.keyword,
-        currentPage: this.state.currentPage,
-        limit: this.state.limit
       },
     })
       .then((res) => {
@@ -237,13 +229,10 @@ class Contract extends Component {
           })
         }
       })
-      .catch((res) => {
-        console.log(res);
-      })
   }
 
 
-  createContract() {
+  createBizOpp() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data);
     console.log(this.state.submissionTime);
@@ -260,27 +249,23 @@ class Contract extends Component {
     } else {
       axios({
         method: "post",
-        url: `${base.url}/contract/createContract`,
+        url: `${base.url}/commercialOpportunity/create`,
         params: {
           token: this.state.token,
         },
         // .replace(/\s+/g,'')
         data: qs.stringify({
-          beginTime: data.beginTime,
-          clientId: data.clientId,
-          commercialOpportunityId: this.state.BizOppID,
+          clientId: this.state.customerId,
+          commercialPrice: data.commercialPrice,
+          commercialStage: data.commercialStage,
+          commercialStatusGroup: data.commercialStatusGroup,
           content: data.content,
-          contractCoding: data.contractCoding,
-          clientId: this.state.getLinkBizOppCustomerId,
-          contractName: data.contractName,
-          currency: data.currency,
-          employeeCheckId: this.state.employeeCheckId,
-          employeeSignId: this.state.employeeSignId,
-          endTime: data.endTime,
-          orderTime: data.orderTime,
-          produceIds: this.state.produceIds,
-          // totalPrice: data.totalPrice,
-          contractPrice: data.contractPrice,
+          // id: data.id,
+          discount: data.discount,
+          name: data.name,
+          produceIds: this.state.productArr,
+          submissionTime: this.state.submissionTime,
+          totalPrice: data.totalPrice,
         })
       }).then((res) => {
         console.log(res);
@@ -288,10 +273,10 @@ class Contract extends Component {
           message.error('请重试');
           // this.onCancel()
         } else {
-          message.success('新增成功');
+          message.success(res.data.message);
           // this.onCancel()
 
-          this.getContractt()
+          this.getBizOppt()
         }
       }).catch((error) => {
         console.log(error);
@@ -307,7 +292,7 @@ class Contract extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createContract()
+    this.createBizOpp()
 
   }
 
@@ -315,7 +300,7 @@ class Contract extends Component {
   onSearch(val) {
     console.log(val);
     console.log(typeof (val));
-    //获取合同
+    //获取商机
     axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
@@ -356,7 +341,7 @@ class Contract extends Component {
       currentPage: page,
       limit: pageSize
     }, () => {      //setstate异步回调箭头函数
-      this.getContract()
+      this.getBizOpp()
     })
 
 
@@ -384,7 +369,6 @@ class Contract extends Component {
           produceIds: this.state.record.produceIds,
           submissionTime: this.state.record.submissionTime,
           totalPrice: this.state.record.totalPrice,
-          totalPrice: this.state.record.contractPrice,
           // record: this.state.record.record,
         })
       }
@@ -434,18 +418,20 @@ class Contract extends Component {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
-          <span style={{ fontSize: '18px' }}>合同管理</span>
-          <Search placeholder='请输入合同名称' style={{ width: '200px' }} onSearch={this.onSearch}
+          <span style={{ fontSize: '18px' }}>商机管理</span>
+          <Search placeholder='请输入商机名称' style={{ width: '200px' }} onSearch={this.onSearch}
             allowClear
           ></Search>
           <div>
             <Button type='primary'
               onClick={this.setVisible}
-            >新建合同</Button>
+            >新建商机</Button>
             <Modal
+              style={{ position: "relative" }}
+
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
-              title={this.state.isCreate ? '新建合同' : '编辑合同'}
+              title={this.state.isCreate ? '新建商机' : '编辑商机'}
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
@@ -463,144 +449,123 @@ class Contract extends Component {
               >
                 <div>
                   <Form.Item
-                    name="contractCoding"
-                    label="合同编号"
+                    name="clientId"
+                    label="客户名称"   //客户名称
                     rules={[
                       {
                         required: true,
-                        message: '合同编号不能为空'
-                      }
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="contractName"
-                    label="合同名称"
-                    rules={[
-                      {
-                        required: true,
-                        message: '合同名称不能为空',
+                        message: '客户姓名不能为空',
                       },
                     ]}
                   >
-                    <Input />
+                    <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
+
+                  </Form.Item>
+                  <Form.Item
+                    name="commercialPrice"
+                    label="商机金额"
+                  >
+                    <Input></Input>
                   </Form.Item>
                 </div>
 
 
                 <div>
                   <Form.Item
-                    name="cilentId"
-                    label="客户名称"
-                  >
-                    <GetCustomer methods={(val) => {
-                      this.getCustomerID(val)
-
-                    }}  ></GetCustomer>
-                  </Form.Item>
-                  <GetBizOppTable
-                    id={this.state.getLinkBizOppCustomerId}
-                    linkBizOpp={this.state.linkBizOpp} methods={(val) => { this.getBizOppID(val) }}  ></GetBizOppTable>
-                </div>
-
-                <div>
-                  <Form.Item
-                    name="orderTime"
-                    label="下单时间"
-
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="contractPrice "
-                    label="合同金额"
+                    name="commercialStage"
+                    label="商机阶段"
                     rules={[
                       {
                         required: true,
-                        message: '合同金额不能为空'
+                        message: '商机阶段不能为空'
                       }
                     ]}
                   >
-                    <Input type='number' />
+                    {/* <Input /> */}
+                    <Select style={{ width: 184 }} showArrow={true}>
+                      <Option value='赢单'>赢单</Option>
+                      <Option value='输单'>输单</Option>
+                      <Option value='无效'>无效</Option>
+                    </Select>
                   </Form.Item>
+                  <Form.Item
+                    name="commercialStatusGroup"
+                    label="商机状态组"
 
+                  >
+                    <Select showArrow={true} style={{ width: 184 }} >
+                      <Option value='服务产品线'>服务产品线</Option>
+                      <Option value='数据监测'>数据监测</Option>
+                      <Option value='服务产品线'>服务产品线</Option>
+                    </Select>
+                  </Form.Item>
                 </div>
-
 
                 <div>
                   <Form.Item
-                    name="beginTime"
-                    label="合同开始时间"
-
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    name="endTime"
-                    label="合同到期时间"
-                  >
-                    <Input />
-                  </Form.Item>
-
-
-                </div>
-                <div>
-                  <Form.Item
-                    name="employeeSignId"
-                    label="签字人"
-
-                  >
-                    {/* 签字人对应子组件对应的负责人方法 */}
-                    <GetEmployee contentResponsible={(val) => { this.getEmployeeSignId(val) }}  ></GetEmployee>
-
-                  </Form.Item>
-                  <Form.Item
-                    name="employeeCheckId"
-                    label="审核人"
+                    name="name"
+                    label="商机名称"
                     rules={[
                       {
-                        required: true,
-                        message: '审核人不能为空'
+                        require: true,
+                        message: '商机名称不能为空'
                       }
                     ]}
                   >
-                    {/* 审核人 对应的子组件接受的创建人*/}
-                    <GetEmployee contentCreate={(val) => { this.getEemployeeCheckId(val) }} ></GetEmployee>
+                    <Input />
                   </Form.Item>
-
-                </div>
-                <div>
                   <Form.Item
                     name="content"
                     label="备注"
+
+                  >
+                    <Input />
+                  </Form.Item>
+
+
+                </div>
+
+                <div>
+                  <Form.Item
+                    name="submissionTime"
+                    label="预计成交时间"
+
+                  >
+                    <DatePicker onChange={this.onChangeDate} />
+                  </Form.Item>
+                  <Form.Item
+                    name="phone"
+                    label="手机号"
+
+                  >
+                    <Input />
+                  </Form.Item>
+
+                </div>
+                <div>
+                  <Form.Item
+                    name="totalPrice"
+                    label="预计总金额"
                   >
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="currency"
-                    label="货币"
+                    name="discount"
+                    label="折扣"
                   >
                     <Input />
                   </Form.Item>
                 </div>
                 <div>
-                  {/* <Form.Item
-                    name="produceIds"
-                    label="产品id"
-                  >
-                    <Input />
-                  </Form.Item> */}
-                  <AddedProduct methods={(val) => {
-                    this.getProductId(val)
-                  }} ></AddedProduct>
+                  <AddedProduct methods={(val) => { this.getProductId(val) }} ></AddedProduct>
                 </div>
+
 
               </Form>
             </Modal>
           </div>
         </div >
-
+        <div ref={this.saveContainer}  ></div>
         <div>
           <div style={{ height: 20 }}
             onClick={() => {
@@ -663,10 +628,7 @@ class Contract extends Component {
 
                     <Modal
                       visible={this.state.transferVisible}
-                      title="转移合同"
-                      // okText="保存"
-                      // cancelText="取消"
-                      // onOk={this.transferSubmit}
+                      title="转移商机"
                       footer={[
                         <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
                         <Button onClick={this.setTransferVisible} type='default'>取消</Button>
@@ -704,7 +666,7 @@ class Contract extends Component {
                         this.setVisible()
                         this.setState({
                           isCreate: false,
-                          formTitle: '新建合同'
+                          formTitle: '新建商机'
 
                         })
                       }}
@@ -718,7 +680,7 @@ class Contract extends Component {
                         Modal.confirm({
                           title: '确认删除',
                           icon: <ExclamationCircleOutlined />,
-                          content: '确认删除此合同么？',
+                          content: '确认删除此商机么？',
                           okText: '是',
                           okType: '',
                           cancelText: '否',
@@ -744,11 +706,11 @@ class Contract extends Component {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>合同金额</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>商机金额</span>
                       <span style={{ fontSize: 14 }}>{this.state.record.totalPrice}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>合同状态</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>商机状态</span>
                       <span style={{ fontSize: 14 }}>{this.state.record.commercialStage}</span>
                     </div>
 
@@ -777,7 +739,7 @@ class Contract extends Component {
                           <div className='pro-info'>
                             <div>
                               <div>
-                                <div>合同名称</div>
+                                <div>商机名称</div>
                                 <div>{this.state.record.clientName}</div>
                               </div>
                               <div>
@@ -785,7 +747,7 @@ class Contract extends Component {
                                 <div>{this.state.record.phone}</div>
                               </div>
                               <div>
-                                <div>合同来源</div>
+                                <div>商机来源</div>
                                 <div>{this.state.record.clueFrom}</div>
                               </div>
                               <div>
@@ -809,11 +771,11 @@ class Contract extends Component {
 
                             <div>
                               <div>
-                                <div>合同类型</div>
+                                <div>商机类型</div>
                                 <div>{this.state.record.clientType}</div>
                               </div>
                               <div>
-                                <div>合同等级</div>
+                                <div>商机等级</div>
                                 <div>{this.state.record.clientLevel}</div>
                               </div>
                               <div>
@@ -893,21 +855,11 @@ class Contract extends Component {
                           </Tabs>
                         </div>
                       </TabPane>
-
-
-                      <TabPane tab="联系人" key="3">
-                      </TabPane>
-                      <TabPane tab="合同" key="4">
-                      </TabPane>
                       <TabPane tab="产品" key="5">
-                        <GetProduct value={this.state.record.id} ></GetProduct>
+                        <GetProduct value={this.state.record.commercialOpportunityId}></GetProduct>
                       </TabPane>
-                      <TabPane tab="相关团队" key="6">
-                      </TabPane>
-                      <TabPane tab="附件" key="7">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="8">
-                      </TabPane>
+
+
 
                     </Tabs>
                   </div>
@@ -928,7 +880,7 @@ class Contract extends Component {
   }
 }
 
-export default Contract;
+export default BizOpp;
 
 
 

@@ -23,12 +23,12 @@ function App() {
             <HashRouter>
                 <Switch>
 
-                    {/*<Top></Top>*/}
+                    {/* <Top></Top> */}
                     {/* <PersonalInfo></PersonalInfo> */}
-                    {/*    <CustomerMgt/>*/}
-                    {/* <BackstageMgt></BackstageMgt>*/}
+                       <CustomerMgt/>
+                    {/* <BackstageMgt></BackstageMgt> */}
                     {/*<Login></Login>*/}
-                    <Route path={'/office'} component={MenuLeft}></Route>
+                    {/* <Route path={'/office'} component={MenuLeft}></Route> */}
                 </Switch>
             </HashRouter>
         </div>

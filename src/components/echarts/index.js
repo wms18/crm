@@ -10,9 +10,11 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
 
 
-function EchartsTest() {
+function EchartsTest(props) {
 
     useEffect(() => {
+
+        console.log(props.data);
 
 
         const echarts = require('echarts/lib/echarts');
@@ -68,7 +70,11 @@ function EchartsTest() {
                     offsetCenter: [0, '70%']
                 },
                 data: [{
-                    value: 70
+                    value: parseInt(props.data.rG / props.data.cG ?
+                        props.data.rG / props.data.cG
+                        :
+                        0
+                    ) * 100
                 }]
             }]
         };
@@ -78,16 +84,24 @@ function EchartsTest() {
 
 
 
-    }, [])
+    }, [props.data])
 
 
     return (
-        <div id="echarts-main" style={{
-            width: 400, height: 300,
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            margin: 'auto'
-        }}></div>
+        <div >
+            <div id="echarts-main" style={{
+                width: 400, height: 300,
+                position: 'absolute',
+                top: 0, left: 0, right: 0, bottom: 0,
+                margin: 'auto',
+                // border: '1px solid red'
+            }}></div>
+
+            <div style={{ position: 'absolute', left: '50%', bottom: "0", width: '290px', transform: 'translate(-50%, -50%)', flexDirection: 'row' }} >
+                <div style={{ display: 'inline-block', padding: "0 10px" }}  >回款金额：{props.data.rG}</div>
+                <div style={{ display: 'inline-block', padding: "0 10px" }} >合同金额：{props.data.cG}</div>
+            </div>
+        </div>
     );
 }
 
