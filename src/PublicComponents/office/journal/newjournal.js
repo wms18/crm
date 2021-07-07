@@ -46,6 +46,7 @@ function Newjournal(props) {
                     setNext('')
                     setProblem('')
                     setDate('')
+                    props.onOk()
                 }
             }).catch((error) => {
                 alert(error)
@@ -78,7 +79,7 @@ function Newjournal(props) {
     const treeData = [];
     for (let j = 0; j < allStaff.length; j++) {
         treeData.push({
-            title: allStaff[j].username,
+            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
             value: allStaff[j].id,
         })
     }
@@ -251,7 +252,7 @@ function Newjournal(props) {
                             journalCancel()
                         }}>取消</Button>
                         <Button type={"primary"} onClick={()=>{
-                            props.onOk()
+
                             journalOk()
                         }}>提交</Button>
                     </div>

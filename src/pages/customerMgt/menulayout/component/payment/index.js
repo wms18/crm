@@ -140,7 +140,7 @@ class Payment extends Component {
     this.setState({
       submissionTime: dateString
     },()=>{
-      
+
     })
   }
 
@@ -169,10 +169,12 @@ class Payment extends Component {
         if (res.data.code === "ERROR") {
 
         } else {
+          if (res.data.data !== null){
           this.setState({
             tableArr: res.data.data.data,
             pagination: res.data.data.pagination
           })
+          }
         }
       })
   }
@@ -199,7 +201,7 @@ class Payment extends Component {
         params: {
           token: this.state.token,
           clientId: this.state.customerID,
-          content: data.content,
+          // content: data.content,
           contractCoding : this.state.contractCoding ,
           employeeCheckId: this.state.employeeCheckedId,
           content: data.content,
@@ -211,7 +213,7 @@ class Payment extends Component {
         },
         // .replace(/\s+/g,'')
         // data: qs.stringify({
-        
+
         // })
       }).then((res) => {
         console.log(res);

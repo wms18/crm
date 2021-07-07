@@ -19,12 +19,14 @@ import {
     TeamOutlined,
     ScheduleOutlined
 } from '@ant-design/icons';
-import ReceptionTop from "../../top";
+import ReceptionTop from "../../../components/receptionTop";
+import React from "react";
 const {Content, Sider} = Layout;
 
 function MenuLeft() {
     return (
         <div>
+            <ReceptionTop/>
             <Layout style={{minHeight: '100vh',overflow: 'auto',}}>
                 <HashRouter>
                     <Sider style={{height:'100vh',marginTop:'60px',position:'fixed'}}>
@@ -36,27 +38,21 @@ function MenuLeft() {
                             </Menu.Item>
                             <Menu.Item key="2" icon={<ScheduleOutlined/>}>
                                 <Link to={'/office/schedule'}>日程</Link>
-
                             </Menu.Item>
                             <Menu.Item key="3" icon={<CarryOutOutlined/>}>
                                 <Link to={'/office/task'}>任务</Link>
-
                             </Menu.Item>
                             <Menu.Item key="4" icon={<MailOutlined/>}>
                                 <Link to={'/office/notice'}>公告</Link>
-
                             </Menu.Item>
                             <Menu.Item key="5" icon={<ProfileOutlined/>}>
                                 <Link to={'/office/journal'}>日志</Link>
-
                             </Menu.Item>
                             <Menu.Item key="6" icon={<ClearOutlined/>}>
                                 <Link to={'/office/approval'}>审批</Link>
-
                             </Menu.Item>
                             <Menu.Item key="7" icon={<TeamOutlined/>}>
                                 <Link to={'/office/mail'}>通讯录</Link>
-
                             </Menu.Item>
                         </Menu>
                     </Sider>
@@ -70,7 +66,6 @@ function MenuLeft() {
                         <Route path={'/office/mail'} component={Mail}></Route>
                     </div>
                 </HashRouter>
-
             </Layout>
         </div>
     )

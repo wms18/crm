@@ -19,13 +19,14 @@ function App() {
 
     return (
         <div>
-            <ReceptionTop/>
+
             <HashRouter>
                 <Switch>
-
                     {/*<Top></Top>*/}
                     {/* <PersonalInfo></PersonalInfo> */}
+                    <Route path={'/customerMgt/'} component={CustomerMgt}></Route>
                     {/*    <CustomerMgt/>*/}
+                    <Route  path={'/back'} component={BackstageMgt}></Route>
                     {/* <BackstageMgt></BackstageMgt>*/}
                     {/*<Login></Login>*/}
                     <Route path={'/office'} component={MenuLeft}></Route>

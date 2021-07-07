@@ -15,10 +15,10 @@ import qs from 'qs'
 moment.locale('zh-cn');
 
 function Task() {
-    let clients ; // 空Map
-    let mans ;
-    let businesss ;
-    let contracts ;
+    let clients; // 空Map
+    let mans;
+    let businesss;
+    let contracts;
     let n = 1
     let initIdsObj = {
         clients,
@@ -45,7 +45,7 @@ function Task() {
     let [timeOver, setTimeOver] = useState('')   //截止日期
     let [taskPrior, setTaskPrior] = useState('') //优先级
     let [taskContent, setTaskContent] = useState('') //描述
-    let [client, setClient] = useState([] )   //关联客户
+    let [client, setClient] = useState([])   //关联客户
     let [personInformation, setPersonInformation] = useState('') //个人信息
     let [beginTime, setBeginTime] = useState('') //评论时间
     const {Search} = Input;
@@ -66,7 +66,6 @@ function Task() {
         data = value
         setData(data)
         console.log("子传给父的值", value)
-        setIsModalVisible(false)
         axios({
             method: 'post',
             url: base.url + '/task/add',
@@ -94,6 +93,7 @@ function Task() {
             } else {
                 alert('新建任务成功')
                 myTask()
+                setIsModalVisible(false)
             }
         }).catch((error) => {
             alert(error)
@@ -123,7 +123,6 @@ function Task() {
     }
     //添加标签
     let handleChangeLabel = (value, key) => {
-
         axios({
             method: 'post',
             url: base.url + '/task/add-label',
@@ -144,7 +143,7 @@ function Task() {
         })
     }
 
-//新增标签
+//新增标签库
     let addLabels = () => {
         console.log(addStore)
         axios({
@@ -163,34 +162,86 @@ function Task() {
             alert(error)
         })
     }
+    //新增标签库
+    const addContent = (
+        <div style={{width: '300px', height: '200px'}}>
+            <Input placeholder="新增标签"
+                   value={addStore}
+                   onChange={(e) => {
+                       setAddStore(e.target.value)
+                   }}
+                   style={{cursor: 'pointer'}}/>
+            <Button
+                onClick={addLabels}
+                style={{
+                    margin: '20px 0 0 0px',
+                    color: '#3e84e9',
+                    cursor: 'pointer'
+                }}>保存</Button>
+        </div>
+    );
+    //删除标签库
+    let deleteLabels = (id) => {
+        if (window.confirm('确定删除吗')) {
+            axios({
+                method: 'post',
+                url: base.url + '/task/deleteLabelStore?token=' + token,
+                params: {
+                    id: id
+                }
+            }).then((response) => {
+                console.log(response)
+                if (response.data.code === 'ERROR') {
+                    alert(response.data.message)
+                } else {
+                    alert('删除成功')
+                    allLabel()
+                }
+            }).catch((error) => {
+                alert(error)
+            })
+        }
+    }
+    //删除标签库
+    const deleteContents = (
+        <div style={{width: '300px', height: '200px', overflow: 'hidden'}}>
+            <div className={'deleteLabels1'}>
+                {taskAllLabel.map((item, index) => {
+                    return (
+                        <div key={index} className={'deleteLabels'}>
+                            <span>{item.labelName}</span>
+                            <span style={{color:'#1890FF'}}>
+                                <i className="fa fa-trash-o" aria-hidden="true" onClick={() => {
+                                deleteLabels(item.id)
+                            }}></i>
+                            </span>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    );
     const contentLabel = (
         <div style={{width: '300px', height: '200px'}}>
             <Select
                 mode="multiple"
                 allowClear
-                style={{width: '100%'}}
+                style={{width: '90%'}}
                 placeholder="请选择标签"
                 onSelect={handleChangeLabel}
                 autoClearSearchValue={false}
             >
                 {children}
             </Select>
-
-            <Input placeholder="新增标签"
-                   value={addStore}
-                   onChange={(e) => {
-                       setAddStore(e.target.value)
-                   }}
-                   style={{position: 'absolute', bottom: '60px', left: '0', color: '#3e84e9', cursor: 'pointer'}}/>
-            <Button
-                onClick={addLabels}
-                style={{
-                    position: 'absolute',
-                    bottom: '15px',
-                    left: '10px',
-                    color: '#3e84e9',
-                    cursor: 'pointer'
-                }}>保存</Button>
+            <Popover content={addContent} color={'#ffffff'} zIndex={10000}
+                     title="新增标签" trigger="click">
+                <Button style={{position: 'absolute', left: '10px', bottom: '10px'}}>新增标签</Button>
+            </Popover>
+            <Popover content={deleteContents} color={'#ffffff'} zIndex={10000}
+                     title="删除标签" trigger="click">
+                <Button type={"primary"} danger
+                        style={{position: 'absolute', right: '10px', bottom: '10px'}}>删除标签</Button>
+            </Popover>
         </div>
 
     );
@@ -227,8 +278,6 @@ function Task() {
     //截止日期
     let onPanelChange = (value) => {
         console.log(value._d);
-        let d = value._d
-        setTimeOver(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate())
     }
     const contentDate = (
         <div>
@@ -248,13 +297,13 @@ function Task() {
         setIsBusinessModalVisible(true);
     };
     //客户接口
-    let taskclient = (  ) => {
+    let taskclient = () => {
         console.log(idsObj)
         console.log(idsObj.clients)
         axios({
             method: 'post',
             url: base.url + '/task/linkBusiness?token=' + token,
-            data:{
+            data: {
                 linkBusinessMap: {
                     1: idsObj.clients,
                     2: idsObj.mans,
@@ -265,7 +314,7 @@ function Task() {
             }
         }).then((response) => {
             console.log(response)
-            if (response.data.code === 'SUCCESS'){
+            if (response.data.code === 'SUCCESS') {
                 showDrawer(taskId)
             }
             if (response.data.code === 'ERROR') {
@@ -318,7 +367,6 @@ function Task() {
                 <Button onClick={hide}>确定</Button>
                 <Button onClick={hide} style={{marginLeft: '30px'}}>取消</Button>
             </div>
-
         </div>
     );
     //抽屉描述
@@ -447,22 +495,25 @@ function Task() {
         setVisible(false);
     };
     //删除关联业务
-    let deleteClient =(id)=>{
-        console.log(id)
-        axios({
-            method:'post',
-            url:base.url+'/task/deleteLinkBusiness?token='+token,
-            data:qs.stringify({
-                id:id
+    let deleteClient = (id) => {
+        if (window.confirm('确定删除吗')) {
+            axios({
+                method: 'post',
+                url: base.url + '/task/deleteLinkBusiness?token=' + token,
+                data: qs.stringify({
+                    id: id
+                })
+            }).then((response) => {
+                console.log(response)
+                if (response.data.code === 'SUCCESS') {
+                    showDrawer(taskId)
+                }
+            }).catch((error) => {
+                alert(error)
             })
-        }).then((response)=>{
-            console.log(response)
-            if (response.data.code === 'SUCCESS'){
-                showDrawer(taskId)
-            }
-        }).catch((error)=>{
-            alert(error)
-        })
+        } else {
+            alert('取消删除')
+        }
     }
     //多选框
     let onChangeCheckbox = (e) => {
@@ -547,16 +598,12 @@ function Task() {
     }
     //新建任务
     const [isModalVisible, setIsModalVisible] = useState(false);
-
     const showModal = () => {
         setIsModalVisible(true);
     };
-
     const handleOk = () => {
         setIsModalVisible(false);
-
     };
-
     const handleCancel = () => {
         setIsModalVisible(false);
     };
@@ -592,8 +639,6 @@ function Task() {
             alert(error)
         })
     }
-
-
     //删除任务
     let confirm = (e) => {
         console.log(e);
@@ -651,11 +696,14 @@ function Task() {
                                visible={isModalVisible}
                                cancelText={'取消'}
                                okText={'确定'}
+                               maskStyle={{backgroundColor: '#fff'}}
                                onOk={handleOk}
                                footer={null}
                                width={700}
                                onCancel={handleCancel}>
-                            <NewTask handleMessage={handleMessage}></NewTask>
+                            <NewTask handleMessage={handleMessage} onCancel={() => {
+                                setIsModalVisible(false);
+                            }}></NewTask>
                         </Modal>
                     </span>
                 </div>
@@ -729,7 +777,6 @@ function Task() {
                                 >
                                     <Button danger type={"primary"} style={{margin: '0 20px'}}>删除</Button>
                                 </Popconfirm>
-
                             </div>}
                             keyboard={false}
                             placement="right"
@@ -738,14 +785,14 @@ function Task() {
                             visible={visible}
                             width={930}
                             headerStyle={{cursor: 'pointer'}}
-
                         >
                             <div style={{padding: '20px'}}>
                                 <div className={'taskMan'}>
                                     <div>
                                         {taskList.map((item, index) => {
                                             return (
-                                                <Checkbox key={index} disabled={true} className={item.id === taskId ? '' : 'hidden'}
+                                                <Checkbox key={index} disabled={true}
+                                                          className={item.id === taskId ? '' : 'hidden'}
                                                           onChange={onChangeCheckbox}>{item.taskName}</Checkbox>
                                             )
                                         })}
@@ -810,17 +857,16 @@ function Task() {
                                 </div>
                                 <div style={{marginBottom: '30px'}}>
                                     关联业务
-                                    {client === null?'':client.map((item,index)=>{
-                                        return(
-                                            <div key={index} className={'taskClient'} >
+                                    {client === null ? '' : client.map((item, index) => {
+                                        return (
+                                            <div key={index} className={'taskClient'}>
                                                 <span>{item.name}-{item.clientName}</span>
-                                                <span onClick={()=>{
+                                                <span onClick={() => {
                                                     deleteClient(item.id)
                                                 }}>删除</span>
                                             </div>
                                         )
                                     })}
-
                                     <div className={'linkBusiness'} type="primary" onClick={showBusinessModal}
                                          style={{cursor: 'pointer'}}>
                                         关联业务
@@ -829,6 +875,7 @@ function Task() {
                                            width={800}
                                            bordered={true}
                                            bodyStyle={{padding: 0}}
+                                           maskStyle={{backgroundColor: '#fff'}}
                                            visible={isBusinessModalVisible}
                                            footer={null}
                                            onOk={() => {
@@ -901,5 +948,4 @@ function Task() {
         </div>
     )
 }
-
 export default Task

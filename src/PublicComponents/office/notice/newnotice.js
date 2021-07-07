@@ -94,7 +94,6 @@ function Newnotice(props) {
                         </Form.Item>
                     </Form>
                 </div>
-
             </div>
             {/*时间*/}
             <div style={{margin: '20px 0 5px 0'}}>
@@ -131,8 +130,8 @@ function Newnotice(props) {
                 }}> 取消</Button>
                 <Button type={"primary"} onClick={() => {
                     if (newContent === '' || notice ===''){
-                        alert('正文、标题不能为空')
-                        return
+                        alert('内容不能为空')
+                        return                   
                     }else {
                         let messages={
                             newContent:newContent,

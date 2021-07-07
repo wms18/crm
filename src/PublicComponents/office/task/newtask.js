@@ -5,10 +5,11 @@ import './newtask.css'
 import LinkBusiness from "./link";
 import axios from "axios";
 import base from "../../../axios/axios";
-let clients ; // 空Map
-let mans ;
-let businesss ;
-let contracts ;
+
+let clients; // 空Map
+let mans;
+let businesss;
+let contracts;
 let initIdsObj = {
     clients,
     mans,
@@ -60,7 +61,8 @@ function NewTask(props) {
     const treeData = [];
     for (let i = 0; i < allStaff.length; i++) {
         treeData.push({
-            title: allStaff[i].username,
+            title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                              alt=""/>{allStaff[i].username}</span>,
             value: allStaff[i].id,
         })
     }
@@ -201,7 +203,7 @@ function NewTask(props) {
                     {arrPrior.map((item, index) => {
                         return (
                             <span key={index}
-                                  className={prior === item ? 'class activeColor':''}
+                                  className={prior === item ? 'class activeColor' : ''}
                                   onClick={() => {
                                       handlePrior(item)
                                   }}>{item}</span>
@@ -222,8 +224,12 @@ function NewTask(props) {
                            width={800}
                            bordered={true}
                            bodyStyle={{padding: 0}}
+                           maskClosable={false}
+                           maskStyle={{backgroundColor: '#fff'}}
+                           keyboard={false}
                            visible={isBusinessModalVisible}
                            footer={null}
+                           closable={false}
                            onCancel={() => {
                                setIsBusinessModalVisible(false);
                            }}>
@@ -236,7 +242,7 @@ function NewTask(props) {
                 </div>
             </div>
             <div className={"ok-button"}>
-                <Button style={{marginRight:'20px'}} onClick={()=>{
+                <Button style={{marginRight: '20px'}} onClick={() => {
                     props.onCancel()
                     setPrior("")
                     setTaskItem("")
@@ -267,7 +273,6 @@ function NewTask(props) {
                 }}>确定</Button>
             </div>
         </>
-
     )
 }
 

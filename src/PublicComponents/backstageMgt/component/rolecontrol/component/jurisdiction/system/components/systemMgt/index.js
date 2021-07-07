@@ -156,7 +156,7 @@ function SystemMgt() {
     const treeData = [];
     for (let i = 0; i < getStaff.length; i++) {
         treeData.push({
-            title: getStaff[i].username,
+            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={getStaff[i].avatar} alt=""/>{getStaff[i].username}</span>  ,
             value: getStaff[i].id,
         })
     }
@@ -285,6 +285,7 @@ function SystemMgt() {
                                 okText={'确定'}
                                 title="新建角色"
                                 visible={visible}
+                                maskStyle={{backgroundColor: '#fff'}}
                                 onOk={handleOk}
                                 confirmLoading={confirmLoading}
                                 onCancel={handleCancel}
@@ -342,7 +343,9 @@ function SystemMgt() {
                                 </Button>
                             </div>
                             <Modal title=" 关联员工" cancelText={'取消'}
-                                   okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
+                                   okText={'确定'} visible={isModalVisible}
+                                   maskStyle={{backgroundColor: '#fff'}}
+                                   onOk={handleOk1} onCancel={handleCancel1}>
                                 <p>选择员工</p>
                                 <div>
                                     <TreeSelect {...tProps}  />

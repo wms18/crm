@@ -88,8 +88,6 @@ function Customer() {
             }}>删除</p>
         </div>
     );
-
-
     //删除角色
     let deleteRole = (id) => {
         if (window.confirm('确定删除吗？')) {
@@ -136,6 +134,7 @@ function Customer() {
         })
     }
     useEffect(() => {
+        all()
         get()
     }, [text])
     //获取表格信息
@@ -161,7 +160,7 @@ function Customer() {
     const treeData = [];
     for (let i = 0; i < getStaff.length; i++) {
         treeData.push({
-            title: getStaff[i].username,
+            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={getStaff[i].avatar} alt=""/>{getStaff[i].username}</span>  ,
             value: getStaff[i].id,
         })
     }
@@ -184,22 +183,27 @@ function Customer() {
 
     const showModal1 = () => {
         setIsModalVisible(true);
+
+    };
+    //关联员工
+    let all = () =>{
         axios({
             method: 'get',
             url: base.url + '/employee/getEmployeeName?token=' + token,
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
-                setGetStaff(response.data.data)
+                getStaff=response.data.data
+                setGetStaff(getStaff)
                 setValue([])
+                console.log(getStaff)
             }
         }).catch((error) => {
             alert(error)
         })
-    };
-
+    }
     const handleOk1 = () => {
         setIsModalVisible(false);
         //获取选中的员工和id
@@ -350,9 +354,10 @@ function Customer() {
                                 关联员工
                             </Button>
                         </div>
-
                         <Modal title=" 关联员工" cancelText={'取消'}
-                               okText={'确定'} visible={isModalVisible} onOk={handleOk1} onCancel={handleCancel1}>
+                               maskStyle={{backgroundColor: '#fff'}}
+                               okText={'确定'} visible={isModalVisible}
+                               onOk={handleOk1} onCancel={handleCancel1}>
                             <p>选择员工</p>
                             <div>
                                 <TreeSelect {...tProps} />

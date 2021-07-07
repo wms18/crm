@@ -10,6 +10,9 @@ import LinkBusiness from "../task/link";
 import axios from "axios";
 import base from "../../../axios/axios";
 
+import Icon from '@ant-design/icons';
+
+import { UserOutlined } from '@ant-design/icons';
 moment.locale('zh-cn');
 
 function SchedulePage() {
@@ -42,24 +45,24 @@ function SchedulePage() {
     }, [])
     //所有员工
     let all = () => {
-        axios({
+         axios({
             method: 'get',
             url: base.url + '/employee/getEmployeeName?token=' + token
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             setAllStaff(response.data.data)
         }).catch((error) => {
             alert(error)
         })
     }
-    //备注
+      //备注
     const {TextArea} = Input;
     //参与人
     const {SHOW_PARENT} = TreeSelect;
     const treeData = [];
     for (let j = 0; j < allStaff.length; j++) {
         treeData.push({
-            title: allStaff[j].username,
+            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
             value: allStaff[j].id,
         })
     }
@@ -69,6 +72,7 @@ function SchedulePage() {
         setSelectStaff(selectStaff)
     };
     const tProps = {
+        showArrow:true,
         allowClear: true,
         treeData,
         value: selectStaff,
@@ -89,46 +93,55 @@ function SchedulePage() {
     };
 
     const handleOk = () => {
-        axios({
-            method:'post',
-            url:base.url+'/schedule/add',
-            params:{
-                token:token
-            },
-            data:{
-                beginTime:time[0],
-                endTime:time[1],
-                content:content,
-                employeeIds:selectStaff,
-                title:title,
-                business:{
-                    1: data.clients,
-                    2: data.mans,
-                    3: data.businesss,
-                    4: data.contracts,
+        if (time[0] !== '' && time[1]!== '' && content!=='' && selectStaff !== ''&& title!== ''){
+            axios({
+                method:'post',
+                url:base.url+'/schedule/add',
+                params:{
+                    token:token
+                },
+                data:{
+                    beginTime:time[0],
+                    endTime:time[1],
+                    content:content,
+                    employeeIds:selectStaff,
+                    title:title,
+                    business:{
+                        1: data.clients,
+                        2: data.mans,
+                        3: data.businesss,
+                        4: data.contracts,
+                    }
                 }
-            }
-        }).then((response)=>{
-            console.log(response)
-            if (response.data.code==='ERROR'){
-                console.log(response.data.message)
-            }else {
-                alert('新建日程成功')
-                setIsModalVisible(false);
-                setTimeValue([null,null])
-                setSelectStaff([])
-                setContent('')
-                form.setFieldsValue({"title": ""}) // 清空标题
-                setData(ids)
-            }
-        }).catch((error)=>{
-            alert(error)
-        })
-
+            }).then((response)=>{
+                console.log(response)
+                if (response.data.code==='ERROR'){
+                    console.log(response.data.message)
+                }else {
+                    alert('新建日程成功')
+                    setIsModalVisible(false);
+                    setTimeValue([null,null])
+                    setSelectStaff([])
+                    setContent('')
+                    form.setFieldsValue({"title": ""}) // 清空标题
+                    setData(ids)
+                }
+            }).catch((error)=>{
+                alert(error)
+            })
+        }else {
+            alert("请重新输入")
+        }
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
+        setIsModalVisible(false);
+        setTimeValue([null,null])
+        setSelectStaff([])
+        setContent('')
+        form.setFieldsValue({"title": ""}) // 清空标题
+        setData(ids)
     };
     //开始时间，结束时间
     const {RangePicker} = DatePicker;
@@ -185,8 +198,11 @@ function SchedulePage() {
                 </Button>
             </div>
             <Modal title="创建日程"
+                   maskStyle={{backgroundColor: '#fff'}}
                    width={550}
-                   visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                   visible={isModalVisible}
+                   onOk={handleOk}
+                   onCancel={handleCancel}>
                 {/*输入内容*/}
                 <Form
                     {...layout}
@@ -236,7 +252,7 @@ function SchedulePage() {
                 <div style={{marginBottom: '10px'}}>
                     <span>参与人</span>
                 </div>
-                <TreeSelect {...tProps} />
+                <TreeSelect {...tProps}  />
                 <div style={{margin: '20px 0'}}>
                     <span>备注</span>
                 </div>
@@ -252,6 +268,7 @@ function SchedulePage() {
                            bordered={true}
                            bodyStyle={{padding: 0}}
                            visible={isBusinessModalVisible}
+                           maskStyle={{backgroundColor: '#fff'}}
                            footer={null}
                            onOk={() => {
                                setIsBusinessModalVisible(false);
@@ -267,6 +284,11 @@ function SchedulePage() {
                         }}/>
                     </Modal>
                 </div>
+                {/*<div>*/}
+                {/*    <div className={data.clients !== null?'':'hidden'}>*/}
+                {/*        {data.clients}*/}
+                {/*    </div>*/}
+                {/*</div>*/}
             </Modal>
             <ConfigProvider locale={zhCN} fullscreen={false}>
                 <Calendar onPanelChange={onPanelChange}/>
