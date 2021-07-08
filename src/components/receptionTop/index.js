@@ -1,10 +1,11 @@
-import react, { useState } from "react";
-import { useHistory } from "react-router";
+import react, {useState} from "react";
+import {useHistory} from "react-router";
 import './style.css'
-import { Popover, Button } from 'antd';
+import {Popover, Button} from 'antd';
 import icon from './imgs/alibabaicon.jpeg'
 import {Link} from "react-router-dom";
 
+import {UserOutlined} from '@ant-design/icons';
 const text = <span>Title</span>;
 
 function ReceptionTop() {
@@ -15,12 +16,21 @@ function ReceptionTop() {
     const history = useHistory()
     const content = (
         <div>
+            <div>
+                <Link to={'/person'}>
+                    <div style={{margin:'15px 0'}}>
+                        <UserOutlined />
+                        <span> 个人中心</span>
+                    </div>
+
+                </Link>
+            </div>
             <Link to={'/back'}>
-            <Button
-                // onClick={() => {
-                //     history.push('/back')
-                // }}
-            >进入后台管理页面</Button>
+                <Button type={"primary"}
+                    // onClick={() => {
+                    //     history.push('/back')
+                    // }}
+                >进入后台管理页面</Button>
             </Link>
         </div>
 
@@ -29,11 +39,11 @@ function ReceptionTop() {
     return (
         <div className='ReceptionTop'>
             <div>
-                <img src={icon} alt="" style={{ height: '40px' }} />
+                <img src={icon} alt="" style={{height: '40px'}}/>
             </div>
 
             <div className='topicon'>
-                <div  >
+                <div>
                     <span className='iconfont icon-diannao'></span>
                     <Link to={'/office'}>
                         <span>办公</span>
@@ -58,8 +68,9 @@ function ReceptionTop() {
             </div>
             <div>
                 <span className='personalName'>{username}</span>
-                <Popover placement="bottomRight" title={text} content={content} trigger="hover" >
-                    <span className='iconfont icon-xiala' style={{ fontSize: '15px', color: '#aaa', marginLeft: '10px' }}></span>
+                <Popover placement="bottomRight" content={content} trigger="hover">
+                    <span className='iconfont icon-xiala'
+                          style={{fontSize: '15px', color: '#aaa', marginLeft: '10px'}}></span>
                 </Popover>
             </div>
         </div>

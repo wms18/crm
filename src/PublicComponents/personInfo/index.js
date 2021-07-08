@@ -4,7 +4,7 @@ import { Button, Avatar, Card } from 'antd'
 import InfoEdit from './components/infoEdit'
 import ChangePwd from './components/changePwd'
 
-function PersonalInfo() {
+function PersonalInfo(props) {
 
     let [userinfo, setusername] = useState({
         name: 'dd',
@@ -25,7 +25,9 @@ function PersonalInfo() {
                     {/* <Button type='primary'  >修改密码</Button> */}
                     {/* <Button type='primary'>编辑</Button> */}
                     <InfoEdit></InfoEdit>
-                    <Button type='primary' style={{ backgroundColor: '#fff', border: '1px solid #ddd', color: '#333' }}>返回</Button>
+                    <Button type='primary' style={{ backgroundColor: '#fff', border: '1px solid #ddd', color: '#333' }} onClick={()=>{
+                        props.history.push('/customerMgt/')
+                    }}>返回</Button>
                 </div>
             </div>
 

@@ -27,6 +27,7 @@ function Login(props) {
             } else {
                 alert('登录成功')
                 window.localStorage.setItem('token',response.data.data.token)
+                props.history.push('/office')
             }
         }).catch((error) => {
             alert(error)
