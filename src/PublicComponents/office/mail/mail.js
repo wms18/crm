@@ -1,76 +1,78 @@
 import { Input, Space } from 'antd';
-import React, {useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import './mail.css'
 import axios from "axios";
 import base from "../../../axios/axios";
 function Mail() {
     let token = window.localStorage.getItem('token')
-    let [allStaff,setAllStaff] = useState([])   //所有员工
-    let [searchStaff,setSearchStaff] = useState('')   //搜索员工
-    useEffect(()=>{
+    let [allStaff, setAllStaff] = useState([])   //所有员工
+    let [searchStaff, setSearchStaff] = useState('')   //搜索员工
+    useEffect(() => {
         staff()
-    },[searchStaff])
+    }, [searchStaff])
     const { Search } = Input;
 
-    let staff= ()=>{
+    let staff = () => {
         console.log(searchStaff)
         axios({
-            method:'get',
-            url:base.url+'/employee/getEmployee?token='+token,
-            params:{
-                keyword:searchStaff
+            method: 'get',
+            url: base.url + '/employee/getEmployee?token=' + token,
+            params: {
+                keyword: searchStaff
             }
-        }).then((response)=>{
+        }).then((response) => {
             console.log(response)
-            if (response.data.code === 'ERROR'){
+            if (response.data.code === 'ERROR') {
                 alert(response.data.message)
-            }else {
+            } else {
                 setAllStaff(response.data.data.data)
             }
-        }).catch((error)=>{
+        }).catch((error) => {
             alert(error)
         })
     }
     //搜索
     const onSearch = (value) => {
-        searchStaff=value
+        searchStaff = value
         setSearchStaff(searchStaff)
-        console.log(value)};
-        // staff()
+        console.log(value)
+    };
+    // staff()
     let arr = ['员工']
-    let [mailIndex,setMailIndex] = useState(0)
-    return(
-        <div className={'mail'} style={{width:'930px',marginTop:'60px'}}>
+    let [mailIndex, setMailIndex] = useState(0)
+    return (
+        <div className={'mail'} style={{ width: '930px', marginTop: '60px' }}>
             <div className={'mailTop'}>
-                {arr.map((item,index)=>{
-                    return(
-                        <span className={index === mailIndex?'mailActive mailSp':'mailSp'}
-                              onClick={()=>{
-                                  setMailIndex(index)
-                              }}
-                              key={index}>{item}</span>
+                {arr.map((item, index) => {
+                    return (
+                        <span className={index === mailIndex ? 'mailActive mailSp' : 'mailSp'}
+                            onClick={() => {
+                                setMailIndex(index)
+                            }}
+                            key={index}>{item}</span>
                     )
                 })}
             </div>
-            <div style={{margin:'20px 20px'}}>
+            <div style={{ margin: '20px 20px' }}>
                 <Search placeholder="搜索员工"
-                        size="large"
-                        allowClear
-                        onSearch={onSearch} style={{ width: 200 }} />
+                    size="large"
+                    allowClear
+                    onSearch={onSearch} style={{ width: 200 }} />
             </div>
             <div className={'mailList'}>
-                {allStaff.map((item,index)=>{
-                    return(
+                {allStaff.map((item, index) => {
+                    return (
                         <div key={index} className={'mailInformation'}>
                             <div>名字：{item.username}</div>
-                            <div>
-                                <span style={{marginRight:'20px'}}>职位：{item.position}</span>
-                                <span>手机号：{item.phone}</span>
+                            <div style={{width:'60%'}}>
+                                <div style={{display:'flex',justifyContent:'space-between'}}>
+                                    <span style={{ marginRight: '20px' }}>职位：{item.position}</span>
+                                    <span>手机号：{item.phone}</span>
+                                </div>
                             </div>
                         </div>
                     )
                 })}
-
             </div>
         </div>
     )

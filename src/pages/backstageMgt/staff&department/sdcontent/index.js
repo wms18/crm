@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Tree, Switch } from 'antd';
 import { CarryOutOutlined, FormOutlined } from '@ant-design/icons';
+import axios from "axios";
+import base from "../../../../axios/axios";
+
 const treeData = [
   {
     title: 'parent 1',
@@ -96,7 +99,20 @@ const SdContent = () => {
   const [showLine, setShowLine] = useState(true);
   const [showIcon, setShowIcon] = useState(false);
   const [showLeafIcon, setShowLeafIcon] = useState(true);
-
+  let token=window.localStorage.getItem('token')
+  useEffect(()=>{
+    all()
+  },[])
+  let all = () =>{
+    axios({
+      method:'get',
+      url:base.url+'/employee/getAllDepartment?token='+token
+    }).then((response)=>{
+      console.log(response)
+    }).catch((error)=>{
+      alert(error)
+    })
+  }
   const onSelect = (selectedKeys, info) => {
     console.log('selected', selectedKeys, info);
   };
@@ -125,7 +141,7 @@ const SdContent = () => {
           marginBottom: 16,
         }}
       >
-     
+
       </div>
       <Tree
         showLine={true}

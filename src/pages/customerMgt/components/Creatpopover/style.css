@@ -10,7 +10,7 @@
   margin-bottom: 10px;
 }
 
-.poppvercontent div span {
+.poppvercontent>div>span {
   display: inline-block;
   width: 85px;
   height: 30px;
@@ -19,7 +19,7 @@
   background-color: #f3f3f3;
 }
 
-.poppvercontent div span:hover {
+.poppvercontent >div >span:hover {
   background-color: #3e84e9;
   color: white;
 }

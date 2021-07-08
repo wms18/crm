@@ -57,7 +57,6 @@ function Menulayout() {
     <HashRouter>
       <Layout>
         <Sider
-
           style={{
             overflow: 'auto',
             height: 'calc(100vh - 60px)',

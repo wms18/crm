@@ -47,4 +47,11 @@ body{
     color: white;
     font-size: 12px;
 }
-
+.personCenter{
+    margin:15px 0;
+    color:#aaa;
+    font-size: 15px;
+}
+.personCenter:hover{
+    color: #2486e4;
+}

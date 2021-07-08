@@ -76,7 +76,10 @@
     display: block;
 }
 .activeIndex{
-    background-color: #99b0d8;
+    background-color: #cedbf3;
+}
+.system_item1:hover{
+    background-color: #cedbf3;
 }
 .ant-modal-body input{
     width: 100%;

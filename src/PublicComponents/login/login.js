@@ -82,7 +82,7 @@ function Login(props) {
                                 },
                             ]}
                         >
-                            <Input
+                            <Input.Password 
                                 style={{height: '40px'}}
                                 prefix={<LockOutlined className="site-form-item-icon"/>}
                                 type="password"

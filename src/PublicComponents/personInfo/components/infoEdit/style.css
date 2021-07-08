@@ -26,4 +26,8 @@
 .ant-modal-body>div:nth-child(2)>input {
     width: 200px;
 } */
-
+.userName{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

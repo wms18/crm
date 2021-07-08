@@ -168,7 +168,7 @@ function Middle() {
                                             </div>
                                             <div className={'one'}>
                                                 <div>
-                                                    <span>{item.employees.username}</span>
+                                                    <span>{item.employees[0].username}</span>
                                                     <span className={'one_person'}>新建了任务</span>
                                                 </div>
                                                 <span className={'one_time'}>{item.createTime}</span>
@@ -196,7 +196,7 @@ function Middle() {
                                             </div>
                                             <div className={'one'}>
                                                 <div>
-                                                    <span>{item.employees.username}</span>
+                                                    <span>{item.name}</span>
                                                     <span className={'one_person'}>新建了日程</span>
                                                 </div>
                                                 <span className={'one_time'}>{item.createTime}</span>

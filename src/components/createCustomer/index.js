@@ -90,7 +90,7 @@ class CreateCustomer extends Component() {
                 employeeCreateId: this.state.record.employeeCreateId,
                 employeeResponsibleId: this.state.record.employeeResponsibleId,
                 nextTalkTime: this.state.record.nextTalkTime,
-                nextTalkTime: this.state.record.nextTalkTime,
+                // nextTalkTime: this.state.record.nextTalkTime,
                 phone: this.state.record.phone,
                 // record: this.state.record.record,
             })

@@ -1,20 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import './style.css'
 import { Button, Avatar, Card } from 'antd'
 import InfoEdit from './components/infoEdit'
 import ChangePwd from './components/changePwd'
-
+import axios from 'axios'
+import base from '../../axios/axios'
 function PersonalInfo(props) {
-
-    let [userinfo, setusername] = useState({
-        name: 'dd',
-        mobile: '1800000000',
-        dep: '业务人员',
-        superior: '销售经理',
-        sex: '男',
-        email: '898572515@qq.com',
-        post: '业务'
-    })
+    let token=window.localStorage.getItem('token')
+    
+    let [user,setUser] = useState('')
+    useEffect(()=>{
+        axios({
+            method:'get',
+            url:base.url+'/employee/whoami?token='+token
+        }).then((response)=>{
+            console.log(response);
+            if(response.data.code==='SUCCESS'){
+                setUser(response.data.data)
+            }
+        }).catch((error)=>{
+            alert(error)
+        })
+    },[])
     return (
         <div className='personalinfoMain'>
 
@@ -34,14 +41,14 @@ function PersonalInfo(props) {
             {/* 头像部分 */}
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: "0 80px 30px" }}>
                 <div style={{ marginRight: '25px' }}>
-                    <Avatar style={{ color: 'white', backgroundColor: '#2486e4', width: '100px', height: '100px', fontSize: '35px', textAlign: 'center', lineHeight: '100px' }}>{userinfo.name}</Avatar>
+                    <img src={user.avatar} style={{ width: '100px', height: '100px', fontSize: '35px', textAlign: 'center', lineHeight: '100px' }}/> 
                 </div>
                 <div>
                     <div>
-                        <span style={{ fontSize: '25px' }}>{userinfo.name}</span>
+                        <span style={{ fontSize: '25px' }}>{user.username}</span>
                     </div>
                     <div>
-                        <span>部门：<span>{userinfo.dep}</span></span>&nbsp;&nbsp;<span>职务：<span></span></span>
+                        <span>部门：<span>{user.department}</span></span>&nbsp;&nbsp;<span>职务：<span>{user.position}</span></span>
                     </div>
                 </div>
             </div>
@@ -52,11 +59,11 @@ function PersonalInfo(props) {
                     <div>
                         <div>
                             <span>姓名</span>
-                            <span>{userinfo.name}</span>
+                            <span>{user.username}</span>
                         </div>
                         <div>
                             <span>性别</span>
-                            <span>{userinfo.sex}</span>
+                            <span>{user.sex}</span>
                         </div>
 
                     </div>
@@ -64,11 +71,11 @@ function PersonalInfo(props) {
                     <div>
                         <div>
                             <span>手机号(登录名)</span>
-                            <span>{userinfo.mobile}</span>
+                            <span>{user.phone}</span>
                         </div>
                         <div>
                             <span>邮箱</span>
-                            <span>{userinfo.email}</span>
+                            <span>{user.email}</span>
                         </div>
 
                     </div>
@@ -76,20 +83,20 @@ function PersonalInfo(props) {
                     <div>
                         <div>
                             <span>部门</span>
-                            <span>{userinfo.dep}</span>
+                            <span>{user.department}</span>
                         </div>
                         <div>
                             <span>岗位</span>
-                            <span>{userinfo.post}</span>
+                            <span>{user.position}</span>
                         </div>
 
 
                     </div>
                     <div>
-                        <div>
+                        {/* <div>
                             <span>直属上级</span>
                             <span>{userinfo.superior}</span>
-                        </div>
+                        </div> */}
 
 
                     </div>

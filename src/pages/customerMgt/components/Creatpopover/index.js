@@ -3,7 +3,7 @@ import { Popover, Button } from 'antd';
 import './style.css';
 
 
-const content = (
+const  content = (
   <div className='popovercontent'>
     <div>
       <span>线索</span>
@@ -24,12 +24,8 @@ const content = (
       <span>产品</span>
     &nbsp;&nbsp;
     </div>
-
-
   </div>
 )
-
-
 function Creatpopover() {
   return (
     <div className='creatpopover'  >
