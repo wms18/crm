@@ -23,7 +23,7 @@ const Data = {
       },
     },
     {
-      width: 200,
+      width: 150,
       title: '手机号',
       dataIndex: 'phone',
       key: '2',
@@ -33,7 +33,7 @@ const Data = {
       },
     },
     {
-      width: 200,
+      width: 150,
       title: '电话号',
       dataIndex: 'mobile',
       key: '3',
@@ -94,7 +94,7 @@ const Data = {
       },
     },
     {
-      width: 200,
+      width: 100,
       title: '创建时间',
       dataIndex: 'createTime',
       key: '9',
@@ -104,7 +104,7 @@ const Data = {
       },
     },
     {
-      width: 300,
+      width: 250,
       title: '详细地址',
       dataIndex: 'detailAddress',
       key: '10',
@@ -164,16 +164,7 @@ const Data = {
         multiple: 3,
       },
     },
-    // {
-    //   width: 100,
-    //   title: '更新时间',
-    //   dataIndex: 'updateTime',
-    //   key: '10',
-    //   sorter: {
-    //     compare: (a, b) => a.updateTime - b.updateTime,
-    //     multiple: 3,
-    //   },
-    // },
+    
   ],
   columnsBizOpp: [
     {

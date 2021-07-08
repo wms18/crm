@@ -298,14 +298,14 @@ class Clue extends Component {
     })
       .then((res) => {
         console.log(res);
-        if (!res.data.code === "SUCCESS") {
-
-        } else {
+        if (res.data.code === "SUCCESS") {
           this.setState({
             tableArr: res.data.data.data,
             pagination: res.data.data.pagination
           })
         }
+
+
       })
   }
 

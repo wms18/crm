@@ -6,8 +6,7 @@ const Data = {
       title: '合同编号',
       dataIndex: 'contractCoding',
       key: 'contractCoding',
-      fixed: 'left',
-      sorter: {
+        sorter: {
         compare: (a, b) => a.contractCoding - b.contractCoding,
         multiple: 3,
         key: ''
@@ -34,7 +33,7 @@ const Data = {
       },
     },
     {
-      width: 200,
+      width: 100,
       title: '下单时间',
       dataIndex: 'orderTime',
       key: '3',
@@ -126,7 +125,7 @@ const Data = {
       key: 'employeeCreatName',
     },
     {
-      width: 200,
+      width: 100,
       title: '更新时间',
       dataIndex: 'updateTime',
       key: '8',
@@ -136,7 +135,7 @@ const Data = {
       },
     },
     {
-      width: 200,
+      width: 100,
       title: '创建时间',
       dataIndex: 'createTime',
       key: '9',

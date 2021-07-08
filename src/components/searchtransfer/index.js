@@ -23,7 +23,7 @@ const Searchtransfer = (props) => {
     console.log(props);
     props.dep ? getDep() : getEmployee()
     props.dep ? setDep(true) : setDep(false)
-  }, [props])
+  }, [])
 
   const onChange = (nextTargetKeys, direction, moveKeys) => {
 

@@ -4,6 +4,7 @@ const Data = {
       width: 100,
       title: '客户名称',
       dataIndex: 'clientName',
+      fixed:'left',
       key: 'clientName',
       sorter: {
         compare: (a, b) => a.clientName - b.clientName,
@@ -165,7 +166,7 @@ const Data = {
       title: '客户姓名',
       dataIndex: 'clientName',
       key: 'clientName',
-      // fixed: 'left',
+      fixed: 'left',
       sorter: {
         compare: (a, b) => a.clientName - b.clientName,
         multiple: 3,
@@ -322,6 +323,7 @@ const Data = {
       title: '合同编号',
       dataIndex: 'contractCoding',
       key: 'contractCoding',
+      fixed:'left',
       sorter: {
         compare: (a, b) => a.contractCoding - b.contractCoding,
         multiple: 3,

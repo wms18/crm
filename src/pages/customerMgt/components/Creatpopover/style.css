@@ -6,11 +6,11 @@
   margin-bottom: 25px;
 }
 
-.poppvercontent div {
+.popovercontent div {
   margin-bottom: 10px;
 }
 
-.poppvercontent div span {
+.popovercontent div span {
   display: inline-block;
   width: 85px;
   height: 30px;
@@ -19,8 +19,9 @@
   background-color: #f3f3f3;
 }
 
-.poppvercontent div span:hover {
+.popovercontent>div>span:hover {
   background-color: #3e84e9;
   color: white;
 }
+
 /*# sourceMappingURL=style.css.map */

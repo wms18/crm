@@ -1,16 +1,19 @@
-const Data = {
+
+
+let Data = {
+ 
   columns: [
     {
-      width: 100,
       title: '回款编号',
       dataIndex: 'returnNumber',
       key: 'produceName',
-      fixed:'left',
-      sorter: {
-        compare: (a, b) => a.returnNumber - b.returnNumber,
-        multiple: 3,
-        key: ''
-      },
+      fixed: 'left',
+      // sorter: {
+      //   compare: (a, b) => a.returnNumber - b.returnNumber,
+      //   multiple: 3,
+      //   key: ''
+      // },
+      width: 100,
     },
     {
       title: '客户名称',
@@ -133,7 +136,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 50,
       title: '合同金额',
       dataIndex: 'contractTotal',
       key: 'contractTotal',
