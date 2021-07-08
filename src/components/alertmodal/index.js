@@ -9,18 +9,63 @@ const { TabPane } = Tabs;
 function Alertmodal(props) {
 
     let [visible, setVisible] = useState(false);
-
+    let [empDepId, setEmpDepId] = useState()
 
 
     useEffect(() => {
-        
+        console.log(props.methods);
     }, [])
-
 
 
     function callback() {
 
     }
+
+
+
+    function sendId() {
+        visible = false
+        setVisible(false)
+        props.methods(empDepId)
+        
+    }
+
+    function sendEmpId(val) {
+        console.log(val);
+
+        let newArr = []
+        val.arr.forEach(item => newArr.push(parseInt(item)))
+
+        let str = `&ids=${newArr[0]}&`
+        for (let i = 1; i <= newArr.length - 1; i++) {
+            str = str + `ids=${newArr[i]}&`
+        }
+        let obj = { type: val.type, data: str }
+        console.log(obj);
+        empDepId = obj.data
+        setEmpDepId(empDepId)
+        console.log(empDepId);
+        // empDepId = obj
+        // setEmpDepId(obj)
+
+
+    }
+    function sendDepId(val) {
+
+        let newArr = []
+        val.arr.forEach(item => newArr.push(parseInt(item)))
+
+        let str = `&ids=${newArr[0]}&`
+        for (let i = 1; i <= newArr.length - 1; i++) {
+            str = str + `ids=${newArr[i]}&`
+        }
+        let obj = { type: val.type, data: str }
+        empDepId = obj.data
+        setEmpDepId(empDepId)
+        console.log(empDepId);
+    }
+
+
 
     function getEmpId(val) {
         console.log(val);
@@ -40,7 +85,7 @@ function Alertmodal(props) {
                 cancelText={'取消'}
                 okText={'确定'}
                 visible={visible}
-                onClick={() => setVisible(false)}
+                onOk={()=>{sendId()}}
                 onCancel={() => setVisible(false)}
                 style={{ padding: '', height: '300px', top: 60, left: -100 }}
             // width={500}
@@ -50,13 +95,13 @@ function Alertmodal(props) {
                     <Tabs defaultActiveKey="1" onChange={callback}>
                         <TabPane tab="员工" key="1">
                             <div>
-                                <Searchtransfer getEmpId={(val) => { props.method(val) }} emp={'emp'} ></Searchtransfer>
+                                <Searchtransfer getEmpId={(val) => { sendEmpId(val) }} emp={'emp'} ></Searchtransfer>
                             </div>
 
                         </TabPane>
                         <TabPane tab="部门" key="2">
                             <div>
-                                <Searchtransfer getDepId={(val) => { props.method(val) }} dep={'dep'} ></Searchtransfer>
+                                <Searchtransfer getDepId={(val) => { sendDepId(val) }} dep={'dep'} ></Searchtransfer>
                             </div>
 
                         </TabPane>

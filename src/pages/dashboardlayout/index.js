@@ -5,9 +5,14 @@ import './style.css';
 import Alertmodal from '../../components/alertmodal'
 import EchartsTest from '../../components/echarts';
 import SalesTrend from '../../components/salesTrend';
-import Topleft from './component/topleft'
-import Toprightt from './component/topright'
+import Topright from './component/topright'
 import Footleft from './component/footleft'
+import Customer from './customer'
+import Contacts from './contacts'
+import BizOpp from './bizOpp';
+import Contract from './contract'
+import FollowUp from './followup'
+import Payment from './payment'
 import Footright from './component/footright'
 import base from '../../axios/axios'
 import { AlignCenterOutlined, HomeOutlined } from '@ant-design/icons';
@@ -27,15 +32,36 @@ function Dashboaedlayout() {
     let [endTime, setEndTime] = useState('2021-12-31')
     let [contractGoal, setContractGoal] = useState('')
     let [returnMoneyGoal, setReturnMoneyGoal] = useState('')
+    let [salesKit, setSalesKit] = useState([])
 
+    //新增的销售简报
+    let [contactsQty, setContactsQty] = useState('')
+    let [contractQty, setContractQty] = useState('')
+    let [followRecordQty, setFollowRecordQty] = useState('')
+    let [paymentQty, setPaymentQty] = useState('')
+    let [customerQty, setCustomerQty] = useState('')
+    let [bizOppQty, setBizOppQty] = useState('')
+
+    let [customerData, setCustomerData] = useState([])
+    let [contactsData, setContactsData] = useState([])
+    let [bizOppData, setBizOppData] = useState([])
+    let [followUpRecordData, setFollowUpRecordData] = useState([])
+    let [contractData, setContractData] = useState([])
+    let [paymentData, setPaymentData] = useState([])
+
+    let [record, setRecord] = useState([])
+    let [showInfo, setShowInfo] = useState(false)
     useEffect(() => {
         getPpt()
         getEmployee()
         getPerformance(0)
         getPerformance(1)
-        getPptDetail()
+        getPptDetail(1)
+        getPptDetail(2)
+        getPptDetail(3)
+        getPptDetail(4)
+        getPptDetail(5)
         getDep()
-        // getEmpDepId(val)
 
 
     }, [empDepId])
@@ -78,7 +104,7 @@ function Dashboaedlayout() {
                 token: token,
                 endTime: endTime,
                 startTime: startTime,
-                status: status
+                status: status,
             }
         })
             .then((res) => {
@@ -98,17 +124,22 @@ function Dashboaedlayout() {
     //从孙组件获取到的员工/部门Id
     function getEmpDepId(val) {
 
-        let newArr = []
-        val.arr.forEach(item => newArr.push(parseInt(item)))
+        // let newArr = []
+        // val.arr.forEach(item => newArr.push(parseInt(item)))
 
-        let str = `&ids=${newArr[0]}&`
-        for (let i = 1; i <= newArr.length - 1; i++) {
-            str = str + `ids=${newArr[i]}&`
-        }
-        let obj = { type: val.type, data: str }
-        console.log(obj);
-        empDepId = obj
-        setEmpDepId(obj)
+        // let str = `&ids=${newArr[0]}&`
+        // for (let i = 1; i <= newArr.length - 1; i++) {
+        //     str = str + `ids=${newArr[i]}&`
+        // }
+        // let obj = { type: val.type, data: str }
+        // console.log(obj);
+        // empDepId = obj
+        // setEmpDepId(obj)
+        console.log(val);
+        empDepId = { data: val }
+
+        setEmpDepId(empDepId)
+
 
     }
 
@@ -127,6 +158,43 @@ function Dashboaedlayout() {
         })
             .then((res) => {
                 console.log(res);
+                if (res.data.data) {
+                    salesKit = res.data.data
+                    setSalesKit(salesKit)
+                    console.log(salesKit);
+                    let arr = []
+                    for (let name in salesKit) {//遍历对象属性名
+                        arr.push({ type: name, qty: salesKit[name] })
+                    }
+                    console.log(arr);
+                    arr.map((item) => {
+                        if (item.type == '联系人') {
+                            contactsQty = item.qty
+                            setContactsQty(contactsQty)
+                            console.log(contactsQty);
+                        } else if (item.type == '合同') {
+                            contractQty = item.qty
+                            setContractQty(contractQty)
+                            console.log(contractQty);
+                        } else if (item.type == '跟进记录') {
+                            followRecordQty = item.qty
+                            setFollowRecordQty(followRecordQty)
+                            console.log(followRecordQty);
+                        } else if (item.type == '回款') {
+                            paymentQty = item.qty
+                            setPaymentQty(paymentQty)
+                            console.log(paymentQty);
+                        } else if (item.type == '客户') {
+                            customerQty = item.qty
+                            setCustomerQty(customerQty)
+                            console.log(customerQty);
+                        } else if (item.type == '商机') {
+                            bizOppQty = item.qty
+                            setBizOppQty(bizOppQty)
+                            console.log(bizOppQty);
+                        }
+                    })
+                }
             })
             .catch((res) => {
                 console.log(res);
@@ -135,23 +203,55 @@ function Dashboaedlayout() {
 
 
     //获取新增的客户/商机表格具体信息
-    function getPptDetail() {
+    function getPptDetail(type) {
 
         axios({
             method: 'get',
             url: `${base.url}/dashboard/powerPoint/detail?${empDepId.data}`,
             params: {
                 token: token,
-                limit: 10,
+                limit: 100,
                 currentPage: 1,
                 endTime: endTime,
                 startTime: startTime,
-                choice: 1,
+                choice: type,
                 keyword: ''
             },
         })
             .then((res) => {
                 console.log(res);
+                if (res.data.code == 'SUCCESS') {
+                    switch (type) {
+                        case 1:
+                            customerData = res.data.data
+                            setCustomerData(customerData)
+                            break;
+                        case 2:
+                            contactsData = res.data.data
+                            setContactsData(contactsData)
+                            break;
+                        case 3:
+                            bizOppData = res.data.data
+                            setBizOppData(bizOppData)
+                            break;
+                        case 4:
+                            console.log('跟进');
+                            followUpRecordData = res.data.data
+                            setFollowUpRecordData(res.data.data)
+                            console.log('跟进记录', res.data.data);
+                            break;
+                        case 5:
+                            contractData = res.data.data
+                            setContractData(contractData)
+                            break;
+                        case 6:
+                            paymentData = res.data.data
+                            setPaymentData(paymentData)
+                            break;
+                    }
+                }
+
+
             })
             .catch((res) => {
                 console.log(res);
@@ -182,7 +282,7 @@ function Dashboaedlayout() {
                 <div style={{ display: 'flex', alignItems: 'center', width: '540px', minWidth: '540px', justifyContent: 'space-between' }}>
                     <span >本人及下属</span>
                     <span  >|</span>
-                    <Alertmodal method={(val) => { getEmpDepId(val) }} name='切换' ></Alertmodal>
+                    <Alertmodal methods={(val) => { getEmpDepId(val) }} name='切换' ></Alertmodal>
 
 
                     <ConfigProvider locale={zhCN}>
@@ -205,8 +305,28 @@ function Dashboaedlayout() {
             <div className="site-layout-background2" style={{ padding: 24 }}>
                 <div>
 
-                    <div>
-                        <Topleft></Topleft>
+                    <div style={{ padding: '20px' }}  >
+                        <div style={{ display: "flex", alignItems: 'center' }} >
+                            <i className='iconfont icon-jianbao' style={{ color: '#FF6767', fontSize: 15 }} ></i>
+                            <span style={{ fontSize: 14 }} >&nbsp;销售简报</span>
+                        </div>
+                        <div className='dash-board-button'>
+
+                            <div>
+                                <Customer data={{ qty: customerQty, data: customerData }}   ></Customer>
+                                <Contacts data={{ qty: contactsQty, data: contactsData }} ></Contacts>
+                            </div>
+                            <div>
+                                <BizOpp data={{ qty: bizOppQty, data: bizOppData }} ></BizOpp>
+                                <Contract data={{ qty: contractQty, data: contractData }} ></Contract>
+                            </div>
+                            <div>
+                                <FollowUp data={{ qty: followRecordQty, data: followUpRecordData }} ></FollowUp>
+                                <Payment data={{ qty: paymentQty, data: paymentData }} ></Payment>
+                            </div>
+
+
+                        </div>
                     </div>
 
                     <div style={{ position: 'relative' }}>

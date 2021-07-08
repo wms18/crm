@@ -303,8 +303,9 @@ class Clue extends Component {
             tableArr: res.data.data.data,
             pagination: res.data.data.pagination
           })
-        } 
-        
+        }
+
+
       })
   }
 

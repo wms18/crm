@@ -70,11 +70,8 @@ function EchartsTest(props) {
                     offsetCenter: [0, '70%']
                 },
                 data: [{
-                    value: parseInt(props.data.rG / props.data.cG ?
-                        props.data.rG / props.data.cG
-                        :
-                        0
-                    ) * 100
+                    value:
+                        100
                 }]
             }]
         };

@@ -5,6 +5,7 @@ const  Data={
           title: '产品名称',
           dataIndex: 'produceName',
           key:'produceName',
+          fixed:'left',
           sorter: {
             compare: (a, b) => a.produceName - b.produceName,
             multiple: 3,
