@@ -150,3 +150,21 @@
     align-items: center;
     cursor: pointer;
 }
+.deleteLabels{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 35px;
+    cursor: pointer;
+    padding: 0 15px;
+    border-radius: 6px;
+}
+.deleteLabels:hover{
+    background-color: #e6e6e6;
+}
+.deleteLabels1{
+    width: calc(100% + 13px);
+    height: 190px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}

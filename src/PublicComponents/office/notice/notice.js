@@ -131,7 +131,6 @@ function Notice() {
     const handleOkTheme = () => {
         setIsModalVisibleTheme(false);
         setIsModalVisibleEdit(true);
-
     };
     const handleOkEdit = (id) => {
         if (noticeTheme === '' || content === ''||noticeTime===''){
@@ -267,6 +266,7 @@ function Notice() {
                         新建公告
                     </Button>
                     <Modal title="新建公告"
+                           maskStyle={{backgroundColor: '#fff'}}
                            visible={isModalVisible}
                            cancelText={'取消'}
                            okText={'确定'}

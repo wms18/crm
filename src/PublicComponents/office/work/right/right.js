@@ -92,7 +92,7 @@ function MenuRight(props) {
 
     for (let j = 0; j < allStaff.length; j++) {
         treeData.push({
-            title: allStaff[j].username,
+            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
             value: allStaff[j].id,
         })
     }
@@ -100,7 +100,6 @@ function MenuRight(props) {
         console.log('onChange ', value);
         selectStaff = value
         setSelectStaff(selectStaff)
-
     };
     const tProps = {
         allowClear: true,
@@ -184,7 +183,6 @@ function MenuRight(props) {
         timeValue = value
         setTimeValue(timeValue)
     }
-
     let onOk = (value) => {
         console.log('onOk: ', value);
     }
@@ -257,7 +255,7 @@ function MenuRight(props) {
                                 return (
                                     <p key={index} className={'scheduleList'}>
                                         <span>{item.content}</span>
-                                        <span>
+                                        <span style={{color:'#1890FF'}}>
                                             <i className="fa fa-trash-o" aria-hidden="true" onClick={()=>{
                                                 deleteSchedule(item.id)
                                         }}></i>
@@ -312,6 +310,7 @@ function MenuRight(props) {
                                             <span style={{color: '#3E84E9'}}>+创建</span>
                                         </div>
                                         <Modal title="创建日程"
+                                               maskStyle={{backgroundColor: '#fff'}}
                                                width={550}
                                                visible={isModalVisible}
                                                onOk={handleOk}

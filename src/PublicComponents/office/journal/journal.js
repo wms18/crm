@@ -6,7 +6,6 @@ import base from "../../../axios/axios";
 import axios from "axios";
 import qs from 'qs'
 function Journal(props) {
-
     let token = window.localStorage.getItem('token')
     let dateArr = ['日报', '周报', '月报']
     let [dateActive, setDateActive] = useState(0)    //日报
@@ -33,7 +32,7 @@ function Journal(props) {
     const treeData = [];
     for (let j = 0; j < allStaff.length; j++) {
         treeData.push({
-            title: allStaff[j].username,
+            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
             value: allStaff[j].id,
         })
     }

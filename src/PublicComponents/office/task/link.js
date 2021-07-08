@@ -423,9 +423,11 @@ function LinkBusiness(props) {
                 if (response.data.code === 'ERROR') {
                     alert(response.data.message)
                 } else {
-                    taskContract = response.data.data.data
-                    setTaskContract(taskContract)
-                    setPaginationContract(response.data.data.pagination)
+                    if (response.data.data !== null) {
+                        taskContract = response.data.data.data
+                        setTaskContract(taskContract)
+                        setPaginationContract(response.data.data.pagination)
+                    }
                 }
             }).catch((error) => {
                 alert(error)
@@ -530,7 +532,6 @@ function LinkBusiness(props) {
                     }}>确定</Button>
                 </div>
             </div>
-
         </div>
     )
 }

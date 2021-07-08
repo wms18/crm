@@ -240,7 +240,7 @@ class StaffDep extends Component {
                     </div>
                   </Form>
                 </Modal>
-
+              </div>
 
 
 
@@ -248,7 +248,7 @@ class StaffDep extends Component {
               <div style={{ backgroundColor: '#fff', width: '63vw', border: '1px  green' }} >
                 <SdTable ></SdTable>
               </div>
-            </div>
+
           </div>
 
 

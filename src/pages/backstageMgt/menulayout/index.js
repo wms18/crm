@@ -65,22 +65,22 @@ class Menulayout extends React.Component {
               <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} style={{ marginTop: 38 }}>
 
                 <Menu.Item key="1" icon={<UserOutlined />}>
-                  <Link link to='/'>企业首页</Link>
+                  <Link  to='/back'>企业首页</Link>
                 </Menu.Item>
 
                 <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-                  <Link link to='/StaffDep'>员工与部门管理</Link>
+                  <Link  to='/back/StaffDep'>员工与部门管理</Link>
                 </Menu.Item>
 
                 <SubMenu key="sub1" icon={<MailOutlined />} title="角色权限控制">
 
-                  <Menu.Item key="3"><Link link to='/system'>系统管理角色</Link></Menu.Item>
+                  <Menu.Item key="3"><Link  to='/back/system'>系统管理角色</Link></Menu.Item>
 
-                  <Menu.Item key="4"><Link to='/office'>办公管理角色</Link> </Menu.Item>
+                  <Menu.Item key="4"><Link to='/back/backoffice'>办公管理角色</Link> </Menu.Item>
 
-                  <Menu.Item key="5"><Link to='/customer'>客户管理角色</Link> </Menu.Item>
+                  <Menu.Item key="5"><Link to='/back/customer'>客户管理角色</Link> </Menu.Item>
 
-                  <Menu.Item key="6"><Link to='/project'>项目管理角色</Link> </Menu.Item>
+                  <Menu.Item key="6"><Link to='/back/project'>项目管理角色</Link> </Menu.Item>
 
                 </SubMenu>
               </Menu>
@@ -88,12 +88,12 @@ class Menulayout extends React.Component {
             <Layout className="site-layout"  >
 
               {/* <Content> */}
-                <Route path='/' exact component={HomePage}></Route>
-                <Route path='/StaffDep' component={StaffDep}></Route>
-                <Route path='/system' component={SystemMgt}></Route>
-                <Route path='/office' component={Office}></Route>
-                <Route path='/project' component={Project}></Route>
-                <Route path='/customer' component={Customer}></Route>
+                <Route path='/back' exact  component={HomePage}></Route>
+                <Route path='/back/StaffDep'  component={StaffDep}></Route>
+                <Route path='/back/system' component={SystemMgt}></Route>
+                <Route path='/back/backoffice' component={Office}></Route>
+                <Route path='/back/project' component={Project}></Route>
+                <Route path='/back/customer' component={Customer}></Route>
 
               {/* </Content> */}
 

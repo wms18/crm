@@ -142,7 +142,7 @@ class Payment extends Component {
     console.log(dateString);
     this.setState({
       submissionTime: dateString
-    }, () => {
+    },()=>{
 
     })
   }
@@ -172,10 +172,12 @@ class Payment extends Component {
         if (res.data.code === "ERROR") {
 
         } else {
+          if (res.data.data !== null){
           this.setState({
             tableArr: res.data.data?res.data.data.data:'',
             pagination: res.data.data?res.data.data.pagination:''
           })
+          }
         }
       })
   }

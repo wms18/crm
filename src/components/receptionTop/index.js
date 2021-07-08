@@ -3,6 +3,7 @@ import { useHistory } from "react-router";
 import './style.css'
 import { Popover, Button } from 'antd';
 import icon from './imgs/alibabaicon.jpeg'
+import {Link} from "react-router-dom";
 
 const text = <span>Title</span>;
 
@@ -14,12 +15,15 @@ function ReceptionTop() {
     const history = useHistory()
     const content = (
         <div>
+            <Link to={'/back'}>
             <Button
-                onClick={() => {
-                    history.push('/')
-                }}
+                // onClick={() => {
+                //     history.push('/back')
+                // }}
             >进入后台管理页面</Button>
+            </Link>
         </div>
+
     );
 
     return (
@@ -31,18 +35,22 @@ function ReceptionTop() {
             <div className='topicon'>
                 <div  >
                     <span className='iconfont icon-diannao'></span>
-                    <span >办公</span>
+                    <Link to={'/office'}>
+                        <span>办公</span>
+                    </Link>
                 </div>
 
                 <div>
                     <span className='iconfont icon-kehu'></span>
-                    <span >客户管理</span>
+                    <Link to={'/customerMgt/'}>
+                        <span>客户管理</span>
+                    </Link>
                 </div>
 
-                <div>
-                    <span className='iconfont icon-xiangmu'></span>
-                    <span>项目管理</span>
-                </div>
+                {/*<div>*/}
+                {/*    <span className='iconfont icon-xiangmu'></span>*/}
+                {/*    <span>项目管理</span>*/}
+                {/*</div>*/}
 
             </div>
             <div>
