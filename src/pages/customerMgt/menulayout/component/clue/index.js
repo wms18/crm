@@ -326,6 +326,8 @@ class Clue extends Component {
         params: {
           token: this.state.token,
         },
+      //sssss
+        // sssss
         // .replace(/\s+/g,'')
         data: qs.stringify({
           address: data.address,
