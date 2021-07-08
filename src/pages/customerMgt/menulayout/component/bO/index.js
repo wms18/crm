@@ -448,8 +448,7 @@ class BizOpp extends Component {
                 ref={this.formRef}
               >
                 <div>
-                  <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
-                  {/* <Form.Item
+                  <Form.Item
                     name="clientId"
                     label="客户名称"   //客户名称
                     rules={[
@@ -459,8 +458,8 @@ class BizOpp extends Component {
                       },
                     ]}
                   >
-                    <GetCustomer></GetCustomer>
-                  </Form.Item> */}
+                  <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
+                  </Form.Item>
                   <Form.Item
                     name="commercialPrice"
                     label="商机金额"

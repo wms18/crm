@@ -27,7 +27,6 @@ class Opensea extends Component {
 
   componentDidMount() {
     this.getCustomer()
-    this.getEmployeeName()
   }
 
   constructor(props) {
@@ -57,6 +56,8 @@ class Opensea extends Component {
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
+
+      isDistribution: '',  //是否是分配
       editAddr: '',
       CsrAddr: '',
       pagination: '',
@@ -70,7 +71,7 @@ class Opensea extends Component {
       record: "",
 
       // 搜素公海名称
-      keyword :'',
+      keyword: '',
 
 
 
@@ -87,7 +88,6 @@ class Opensea extends Component {
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
-    this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
     this.onChangeRecordType = this.onChangeRecordType.bind(this)
     this.onChangeRemind = this.onChangeRemind.bind(this)
@@ -111,10 +111,13 @@ class Opensea extends Component {
     this.changeEmpRespon = this.changeEmpRespon.bind(this)
     this.alterEmpRespon = this.alterEmpRespon.bind(this)
     this.transferSubmit = this.transferSubmit.bind(this)
+    this.distributionCsr = this.distributionCsr.bind(this)
+    this.receiveCsr = this.receiveCsr.bind(this)
+
 
   }
 
-  //更改负责人的id
+  //分配公海员工的id
   changeEmpRespon(val) {
     this.setState({
       empResponseID: val
@@ -435,75 +438,26 @@ class Opensea extends Component {
         <Menu.Item
 
           onClick={() => {
-            Modal.confirm({
-              title: '提示',
-              icon: <ExclamationCircleOutlined />,
-              content: '确认放入公海么?',
-              okText: '确定',
-              okType: '',
-              cancelText: '取消',
-              onOk: () => {
-                this.putIntoSea()
-              }
-              ,
-              onCancel() {
-                message.warning('已取消放入公海')
-              },
-            });
-          }}>
-          放入公海
+            this.setState({
+              isDistribution: true
+            }, () => {
+              this.setTransferVisible()
+            })
+          }}
+        >
+          分配
         </Menu.Item>
 
         <Menu.Item
           onClick={() => {
             this.setState({
-              changeDealStatus: true
+              isDistribution: false
+            }, () => {
+              this.setTransferVisible()
             })
           }}
         >
-          更改成交状态
-        </Menu.Item>
-        <Menu.Item
-          onClick={() => {
-            Modal.confirm({
-              title: '提示',
-              icon: <ExclamationCircleOutlined />,
-              content: '确定要锁定这个公海么？锁定后将不会掉入公海',
-              okText: '确认',
-              okType: '',
-              cancelText: '取消',
-              onOk: () => {
-                this.lockCsr()
-              }
-              ,
-              onCancel() {
-                message.warning('已取消锁定')
-              },
-            });
-          }}
-        >
-          锁定
-        </Menu.Item>
-        <Menu.Item
-          onClick={() => {
-            Modal.confirm({
-              title: '提示',
-              icon: <ExclamationCircleOutlined />,
-              content: '确定要解鎖这个公海么？',
-              okText: '确认',
-              okType: '',
-              cancelText: '取消',
-              onOk: () => {
-                this.unLockCsr()
-              }
-              ,
-              onCancel() {
-                message.warning('已取消解锁')
-              },
-            });
-          }}
-        >
-          解锁
+          领取
         </Menu.Item>
 
         <Menu.Item
@@ -537,12 +491,16 @@ class Opensea extends Component {
 
 
   getEmployeeName() {
-    axios.get(`${base.url}/employee/getEmployeeName`, {
+    axios.get(`${base.url}/employee/getEmployee`, {
       params: {
-        token: this.state.token
+        token: this.state.token,
+        keyword: this.state.keyword,
+        currentPage: this.state.currentPage,
+        limit: this.state.limit
       }
     })
       .then((res) => {
+        console.log(res);
         if (res.data.code == 'ERROR') {
 
         } else {
@@ -565,10 +523,34 @@ class Opensea extends Component {
   }
 
 
-  //转移负责人弹窗保存
+  receiveCsr() {
+    axios({
+      method: 'post',
+      url: `${base.url}/opensea/toClient`,
+      params: {
+        employeeId: this.state.empResponseID,
+        token: this.state.token,
+        openseaId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success(this.state.isDistribution ? '分配成功' : "领取成功")
+          this.setTransferVisible()
+          this.getCustomer()
+        }
+      })
+  }
+
+  distributionCsr() {
+
+  }
+  //领取或分配客户
   transferSubmit() {
-    // setTransferVisible
-    this.alterEmpRespon()
+    this.receiveCsr()
+
   }
 
   getCustomer() {
@@ -740,7 +722,7 @@ class Opensea extends Component {
 
 
   //表格分页
-  onChange(page, pageSize) {    
+  onChange(page, pageSize) {
     console.log(page, pageSize);
     this.setState({
       currentPage: page,
@@ -832,8 +814,8 @@ class Opensea extends Component {
             allowClear
           ></Search>
           <div>
-           
-           
+
+
           </div>
         </div>
 
@@ -896,24 +878,24 @@ class Opensea extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                   
 
-                   
-                   
+
+
+
 
 
                     <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
                       <Button type='default' size={'small'} style={{ marginLeft: '20px' }}>更多</Button>
                     </Dropdown>
 
-                  
+
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px' }}>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>公海级别</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.clientLevel}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.clientLevel ? this.state.record.clientLevel : '暂无'}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -923,7 +905,9 @@ class Opensea extends Component {
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsibleName}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsibleName ?
+                        this.state.record.employeeResponsibleName : this.state.record.employeeCreateName
+                      }</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -936,6 +920,28 @@ class Opensea extends Component {
                   <div>
                     <Tabs defaultActiveKey="1" >
                       <TabPane tab="基本信息" key="1">
+                        <Modal
+                          visible={this.state.transferVisible}
+                          title={this.state.isDistribution ? "分配客户" : '领取客户'}
+                          mask={false}
+                          // okText="保存"
+                          // cancelText="取消"
+                          // onOk={this.transferSubmit}
+                          footer={[
+                            <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
+                            <Button onClick={this.setTransferVisible} type='default'>取消</Button>
+                          ]}
+                        >
+                          <div>
+
+                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", width: '263px', margin: '0 auto', alignItems: 'center' }}>
+                              <span>{this.state.isDistribution ? "分配" : '领取'}</span>
+                              <GetEmployee contentResponsible={(val) => { this.changeEmpRespon(val) }}  ></GetEmployee>
+
+                            </div>
+                          </div>
+
+                        </Modal>
                         <div>
                           <div style={{ marginBottom: '10px' }}>
                             <span></span>
@@ -945,7 +951,7 @@ class Opensea extends Component {
                           <div className='pro-info'>
                             <div>
                               <div>
-                                <div>公海名称</div>
+                                <div>客户名称</div>
                                 <div>{this.state.record.clientName}</div>
                               </div>
                               <div>
@@ -977,11 +983,11 @@ class Opensea extends Component {
 
                             <div>
                               <div>
-                                <div>公海类型</div>
-                                <div>{this.state.record.clientType}</div>
+                                <div>客戶类型</div>
+                                <div>{this.state.record.clientType ? this.state.record.clientType : '暂无'}</div>
                               </div>
                               <div>
-                                <div>公海等级</div>
+                                <div>客户等级</div>
                                 <div>{this.state.record.clientLevel}</div>
                               </div>
                               <div>
@@ -998,7 +1004,9 @@ class Opensea extends Component {
                               </div>
                               <div>
                                 <div>负责人</div>
-                                <div>{this.state.record.employeeResponsibleName}</div>
+                                <div>{this.state.record.employeeResponsibleName ?
+                                  this.state.record.employeeResponsibleName : this.state.record.employeeCreateName
+                                }</div>
                               </div>
                             </div>
                           </div>
@@ -1124,18 +1132,7 @@ class Opensea extends Component {
                               }
 
                             </TabPane>
-                            <TabPane tab="日志" key="2">
-                              2
-                            </TabPane>
-                            <TabPane tab="审批" key="3">
-                              3
-                            </TabPane>
-                            <TabPane tab="任务" key="4">
-                              4
-                            </TabPane>
-                            <TabPane tab="日程" key="5">
-                              5
-                            </TabPane>
+
                           </Tabs>
                         </div>
                       </TabPane>

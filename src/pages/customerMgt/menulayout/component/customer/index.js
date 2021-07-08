@@ -1010,9 +1010,6 @@ class Customer extends Component {
                   </Form.Item>
 
                 </div>
-
-
-
               </Form>
             </Modal>
           </div>

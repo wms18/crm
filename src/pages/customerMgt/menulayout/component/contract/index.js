@@ -69,7 +69,7 @@ class Contract extends Component {
       record: "",
 
       // 搜素合同名称
-      keyword:'',
+      keyword: '',
 
 
       // 新增产品信息
@@ -104,18 +104,18 @@ class Contract extends Component {
 
   }
 
-  
+
   getEemployeeCheckId(val) {   //审核人
     console.log(val);
     this.setState({
-      employeeCheckId:val
+      employeeCheckId: val
     })
   }
 
   getEmployeeSignId(val) {    //签字人
     console.log(val);
     this.setState({
-      employeeSignId:val
+      employeeSignId: val
     })
   }
 
@@ -221,7 +221,7 @@ class Contract extends Component {
       url: `${base.url}/contract/getContract`,
       params: {
         token: this.state.token,
-        keyword:this.state.keyword,
+        keyword: this.state.keyword,
         currentPage: this.state.currentPage,
         limit: this.state.limit
       },
@@ -279,7 +279,8 @@ class Contract extends Component {
           endTime: data.endTime,
           orderTime: data.orderTime,
           produceIds: this.state.produceIds,
-          totalPrice: data.totalPrice,
+          // totalPrice: data.totalPrice,
+          contractPrice: data.contractPrice,
         })
       }).then((res) => {
         console.log(res);
@@ -383,6 +384,7 @@ class Contract extends Component {
           produceIds: this.state.record.produceIds,
           submissionTime: this.state.record.submissionTime,
           totalPrice: this.state.record.totalPrice,
+          totalPrice: this.state.record.contractPrice,
           // record: this.state.record.record,
         })
       }
@@ -488,11 +490,15 @@ class Contract extends Component {
 
 
                 <div>
-                  <GetCustomer methods={(val) => {
-                    this.getCustomerID(val)
+                  <Form.Item
+                    name="cilentId"
+                    label="客户名称"
+                  >
+                    <GetCustomer methods={(val) => {
+                      this.getCustomerID(val)
 
-                  }}  ></GetCustomer>
-
+                    }}  ></GetCustomer>
+                  </Form.Item>
                   <GetBizOppTable
                     id={this.state.getLinkBizOppCustomerId}
                     linkBizOpp={this.state.linkBizOpp} methods={(val) => { this.getBizOppID(val) }}  ></GetBizOppTable>
@@ -507,7 +513,7 @@ class Contract extends Component {
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="totalPrice"
+                    name="contractPrice "
                     label="合同金额"
                     rules={[
                       {
@@ -543,7 +549,7 @@ class Contract extends Component {
                   <Form.Item
                     name="employeeSignId"
                     label="签字人"
-                
+
                   >
                     {/* 签字人对应子组件对应的负责人方法 */}
                     <GetEmployee contentResponsible={(val) => { this.getEmployeeSignId(val) }}  ></GetEmployee>
@@ -560,7 +566,7 @@ class Contract extends Component {
                     ]}
                   >
                     {/* 审核人 对应的子组件接受的创建人*/}
-                    <GetEmployee contentCreate={(val) => { this.getEemployeeCheckId(val) }} ></GetEmployee>  
+                    <GetEmployee contentCreate={(val) => { this.getEemployeeCheckId(val) }} ></GetEmployee>
                   </Form.Item>
 
                 </div>

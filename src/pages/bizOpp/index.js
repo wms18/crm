@@ -1,33 +1,54 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import base from '../../../../../axios/axios';
+import base from '../../axios/axios'
 import qs from 'qs'
 import './style.css'
-import GetCustomer from "../../../../../components/getCustomer";
-import GetEmployee from "../../../../../components/getEmployee";
-import GetContractTable from '../../../../../components/getContractTable'
-import GetProductTable from "../../../../../components/getProductTable";
+import GetProduct from "./getProduct";
+import GetProductTable from "../../components/getProductTable";
+import GetCustomer from "../../components/getCustomer";
+import AddedProduct from "../../components/addedProduct";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
 } from 'antd';
-import zhCN from 'antd/es/locale/zh_CN';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
 
 const { Step } = Steps;
 const { TabPane } = Tabs
-const { Option } = Select
-const { Search, TextArea } = Input
+const { Option, TextArea } = Select
+const { Search } = Input
 const { Content, Footer, Header } = Layout
 
 
 
 
-class Payment extends Component {
+class BizOpp extends Component {
 
   componentDidMount() {
-    this.getPayment()
+
+    axios.get('http://47.117.138.37:8088/dashboard/powerPoint', {
+      params: {
+        token: this.state.token,
+      }
+      ,
+      data: qs.stringify({
+        startTime: '2000-01-01',
+        endTime: '2021-06-01',
+        ids: [{
+          ids: 1
+        },
+        { ids: 2 }],
+
+      })
+    })
+      .then((res) => {
+        console.log(res);
+      })
+
+    this.getBizOpp()
+    this.getEmployeeName()
   }
 
   constructor(props) {
@@ -37,22 +58,20 @@ class Payment extends Component {
       drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
+      modalProVisible: false,
 
-
-
-      customerID: '',
-
+      productArr: '',   //新建时添加的产品信息,是数组
+      customerId: '',  //新建时添加的客户id
       isCreate: true,
-      formTitle: '新建回款',
+      formTitle: '新建商机',
 
       transferVisible: false,
 
       visible: false,
       selectedRowKeys: [], // Check here to configure the default column
+      addedProduct: '',   //已添加的产品信息
       loading: false,
 
-
-      returnNumber:'',   //查询回款用的编号
       pagination: '',
       currentPage: 1,
       limit: 10,
@@ -63,7 +82,7 @@ class Payment extends Component {
       // 表格行点击时产品信息
       record: "",
 
-      // 搜素回款名称
+      // 搜素商机名称
       keyword: '',
 
 
@@ -84,41 +103,56 @@ class Payment extends Component {
     this.onCancel = this.onCancel.bind(this)
     this.onCreate = this.onCreate.bind(this)
     this.submit = this.submit.bind(this)
-    this.getPayment = this.getPayment.bind(this)
-    this.createPayment = this.createPayment.bind(this)
+    this.getBizOpp = this.getBizOpp.bind(this)
+    this.createBizOpp = this.createBizOpp.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
+    this.getEmployeeName = this.getEmployeeName.bind(this)
     this.onChangeDate = this.onChangeDate.bind(this)
-    this.getCustomerID = this.getCustomerID.bind(this)
-    this.deletePayment = this.deletePayment.bind(this)
-
+    this.setModalProVisible = this.setModalProVisible.bind(this)
+    this.getCustomerId = this.getCustomerId.bind(this)
   }
 
-
-  getEmployee(val) {   //获取审核人员工ID
-    console.log(val);
+  getCustomerId(val) {
+    // console.log(val[0].id);
+    // this.setState({
+    //     customerId:val[0].id
+    // })
     this.setState({
-      employeeCheckedId: val ? val : ''
-    })
-  }
-
-  getContractID(val) {
-    console.log(val);
-    this.setState({
-      contractCoding: val ? val[0].contractCoding : '',
-      // contractID:val?val[0].
+      customerId: val ? val[0].id : ''
     }, () => {
-      console.log(this.state.contractCoding);
+    })
+
+  }
+
+  getProductId(val) {   //从孙组件拿到productId-arr
+
+    let arr = []
+    // console.log(val);
+    val.map((item) => {
+      arr.push(item.id)
+      return arr
+    })
+    this.setState({
+      productArr: arr
+    }, () => {
     })
   }
 
-  getCustomerID(val) {
-    console.log(val);
+
+  setModalProVisible() {
     this.setState({
-      customerID: val ? val[0].id : ''
+      modalProVisible: !this.state.modalProVisible
     })
   }
+
+  getContainer = () => {
+    return this.container;
+  };
+  saveContainer = container => {
+    this.container = container;
+  };
 
   createFollowupRecord() {
     axios.post(`${base.url}/follow/add`, {
@@ -139,16 +173,32 @@ class Payment extends Component {
   }
 
   onChangeDate(date, dateString) {
-    console.log(dateString);
     this.setState({
       submissionTime: dateString
-    },()=>{
-
     })
   }
 
 
 
+  getEmployeeName() {
+    axios.get(`${base.url}/employee/getEmployeeName`, {
+      params: {
+        token: this.state.token
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+
+        } else {
+          this.setState({
+            employeeArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
 
   setTransferVisible() {
     this.setState({
@@ -160,11 +210,12 @@ class Payment extends Component {
     // setTransferVisible
   }
 
-  getPayment() {
-    //获取回款
-    axios.get(`${base.url}/return-money/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+  getBizOpp() {
+    //获取商机
+    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
+        keyword: this.state.keyword,
       },
     })
       .then((res) => {
@@ -172,41 +223,16 @@ class Payment extends Component {
         if (res.data.code === "ERROR") {
 
         } else {
-          if (res.data.data !== null){
           this.setState({
-            tableArr: res.data.data?res.data.data.data:'',
-            pagination: res.data.data?res.data.data.pagination:''
+            tableArr: res.data.data.data,
+            pagination: res.data.data.pagination
           })
-          }
         }
       })
   }
 
 
-  deletePayment() {
-    axios({
-      method: "post",
-      url: `${base.url}/return-money/delete?ids=` + this.state.record.id,
-      params: {
-        token: this.state.token,
-      },
-    }).then((res) => {
-      console.log(res);
-      if (res.data.code == "ERROR") {
-        message.warning('请重试');
-        // this.onCancel()
-      } else {
-        message.success(res.data.message);
-        // this.onCancel()
-
-        this.getPaymentt()
-      }
-    }).catch((error) => {
-      console.log(error);
-    })
-  }
-
-  createPayment() {
+  createBizOpp() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data);
     console.log(this.state.submissionTime);
@@ -223,34 +249,34 @@ class Payment extends Component {
     } else {
       axios({
         method: "post",
-        url: `${base.url}/return-money/add`,
+        url: `${base.url}/commercialOpportunity/create`,
         params: {
           token: this.state.token,
-          clientId: this.state.customerID,
-          content: data.content,
-          contractCoding: this.state.contractCoding,
-          employeeCheckId: this.state.employeeCheckedId,
-          content: data.content,
-          periods: data.periods,
-          receiveTime: this.state.submissionTime,
-          receiveWay: data.receiveWay,
-          returnNumber: data.returnNumber,
-          reviceMoney: data.reviceMoney,
         },
         // .replace(/\s+/g,'')
-        // data: qs.stringify({
-
-        // })
+        data: qs.stringify({
+          clientId: this.state.customerId,
+          commercialPrice: data.commercialPrice,
+          commercialStage: data.commercialStage,
+          commercialStatusGroup: data.commercialStatusGroup,
+          content: data.content,
+          // id: data.id,
+          discount: data.discount,
+          name: data.name,
+          produceIds: this.state.productArr,
+          submissionTime: this.state.submissionTime,
+          totalPrice: data.totalPrice,
+        })
       }).then((res) => {
         console.log(res);
         if (res.data.code === "ERROR") {
-          message.error(res.data.message);
+          message.error('请重试');
           // this.onCancel()
         } else {
           message.success(res.data.message);
           // this.onCancel()
 
-          this.getPaymentt()
+          this.getBizOppt()
         }
       }).catch((error) => {
         console.log(error);
@@ -266,7 +292,7 @@ class Payment extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createPayment()
+    this.createBizOpp()
 
   }
 
@@ -274,24 +300,24 @@ class Payment extends Component {
   onSearch(val) {
     console.log(val);
     console.log(typeof (val));
-    //获取回款
-    axios.get(`${base.url}/return-money/search?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+    //获取商机
+    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
-        returnNumber: val,   //回款编号
+        keyword: val
       },
       // data: qs.stringify({
       // })
     })
       .then((res) => {
         console.log(res);
-        if (res.data.code == "ERROR") {
+        if (res.data.code === "ERROR") {
 
         }
         else {
           this.setState({
-            tableArr: res.data.data?res.data.data.data:'',
-            pagination: res.data.data?res.data.data.pagination:''
+            tableArr: res.data.data.data,
+            pagination: res.data.data.pagination
           })
         }
       })
@@ -315,8 +341,10 @@ class Payment extends Component {
       currentPage: page,
       limit: pageSize
     }, () => {      //setstate异步回调箭头函数
-      this.getPayment()
+      this.getBizOpp()
     })
+
+
 
   }
 
@@ -327,23 +355,21 @@ class Payment extends Component {
     setTimeout(() => {
       console.log('record', this.state.record);
       if (this.state.isCreate) {
-        // this.formRef.current.resetFields();
+        this.formRef.current.resetFields();
       } else {
 
         this.formRef.current.setFieldsValue({
+          clientId: this.state.record.clientId,
+          commercialPrice: this.state.record.commercialPrice,
+          commercialStage: this.state.record.commercialStage,
+          commercialStatusGroup: this.state.record.commercialStatusGroup,
           content: this.state.record.content,
-          contractTotal: this.state.record.contractTotal,
-          createTime: this.state.record.createTime,
-          clientLevel: this.state.record.clientLevel,
-          periods: this.state.record.periods,
-          receiveMoney: this.state.record.receiveMoney,
-          // nextTalkTime: this.state.record.nextTalkTime, 
-          receiveTime: this.state.record.receiveTime,
-          receiveWay: this.state.record.receiveWay,
-          result: this.state.record.result,
-          returnNumber: this.state.record.returnNumber,
-          status: this.state.record.status,
-          updateTime: this.state.record.updateTime,
+          discount: this.state.record.discount,
+          name: this.state.record.name,
+          produceIds: this.state.record.produceIds,
+          submissionTime: this.state.record.submissionTime,
+          totalPrice: this.state.record.totalPrice,
+          // record: this.state.record.record,
         })
       }
     }, 100);
@@ -354,9 +380,9 @@ class Payment extends Component {
       visible: false,
       isCreate: true
     })
-    // setTimeout(() => {
-    //   this.formRef.current.resetFields();
-    // }, 100);
+    setTimeout(() => {
+      this.formRef.current.resetFields();
+    }, 100);
   }
 
   onCreate(values) {
@@ -392,19 +418,21 @@ class Payment extends Component {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
-          <span style={{ fontSize: '18px' }}>回款管理</span>
-          <Search placeholder='请输入回款名称'   style={{ width: '200px' }} onSearch={this.onSearch}
+          <span style={{ fontSize: '18px' }}>商机管理</span>
+          <Search placeholder='请输入商机名称' style={{ width: '200px' }} onSearch={this.onSearch}
             allowClear
           ></Search>
           <div>
             <Button type='primary'
               onClick={this.setVisible}
-            >新建回款</Button>
+            >新建商机</Button>
             <Modal
+              style={{ position: "relative" }}
+
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
-              title={this.state.isCreate ? '新建回款' : '编辑回款'}
-              okText="提交审核"
+              title={this.state.isCreate ? '新建商机' : '编辑商机'}
+              okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
@@ -421,131 +449,123 @@ class Payment extends Component {
               >
                 <div>
                   <Form.Item
-                    name="returnNumber"
-                    label="回款编号"
+                    name="clientId"
+                    label="客户名称"   //客户名称
                     rules={[
                       {
-                        required: 'true',
-                        message: '回款编号不能为空'
-                      }
+                        required: true,
+                        message: '客户姓名不能为空',
+                      },
                     ]}
+                  >
+                    <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
+
+                  </Form.Item>
+                  <Form.Item
+                    name="commercialPrice"
+                    label="商机金额"
                   >
                     <Input></Input>
-
-
-                    {/* 客户名称 */}
                   </Form.Item>
-                  <Form.Item
-                    name="clientId"
-                    label="客户名称"
-                    rules={[
-                      {
-                        required: 'true',
-                        message: '客户名称不能为空'
-                      }
-                    ]}
-                  >
-                    <GetCustomer methods={(val) => { this.getCustomerID(val) }}   ></GetCustomer>
-                  </Form.Item>
-
                 </div>
 
 
                 <div>
-
-                  {/* 合同编号 */}
-                  <GetContractTable id={this.state.customerID} methods={(val) => { this.getContractID(val) }}  ></GetContractTable>
-
                   <Form.Item
-                    name="receiveTime"
-                    label="回款日期"
+                    name="commercialStage"
+                    label="商机阶段"
                     rules={[
                       {
                         required: true,
-                        message: '回款日期不能为空'
+                        message: '商机阶段不能为空'
                       }
                     ]}
                   >
-                    <ConfigProvider locale={zhCN}>
-                      <DatePicker style={{ width: 184 }} onChange={this.onChangeDate} />
-                    </ConfigProvider>
+                    {/* <Input /> */}
+                    <Select style={{ width: 184 }} showArrow={true}>
+                      <Option value='赢单'>赢单</Option>
+                      <Option value='输单'>输单</Option>
+                      <Option value='无效'>无效</Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name="commercialStatusGroup"
+                    label="商机状态组"
 
+                  >
+                    <Select showArrow={true} style={{ width: 184 }} >
+                      <Option value='服务产品线'>服务产品线</Option>
+                      <Option value='数据监测'>数据监测</Option>
+                      <Option value='服务产品线'>服务产品线</Option>
+                    </Select>
                   </Form.Item>
                 </div>
 
                 <div>
                   <Form.Item
-                    name="receiveWay"
-                    label="回款方式"
+                    name="name"
+                    label="商机名称"
                     rules={[
                       {
-                        required: 'true',
-                        message: '回款方式不能为空'
+                        require: true,
+                        message: '商机名称不能为空'
                       }
                     ]}
-
-                  >
-                    <Input />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="reviceMoney"
-                    label="回款金额"
-
-                    rules={[
-                      {
-                        required: true,
-                        message: "回款金额不能为空"
-                      }
-                    ]}
-                  >
-                    <Input type='number' />
-                  </Form.Item>
-
-                </div>
-
-
-                <div>
-                  <Form.Item
-                    name="periods"
-                    label="期数"
-
                   >
                     <Input />
                   </Form.Item>
                   <Form.Item
                     name="content"
                     label="备注"
+
                   >
-                    <TextArea style={{ width: 184, height: 60 }} ></TextArea>
+                    <Input />
                   </Form.Item>
 
 
                 </div>
 
                 <div>
-
                   <Form.Item
-                    name="employeeCheckId"
-                    label="审核人"
-                    rules={[
-                      {
-                        required: true,
-                        message: '审核人不能为空'
-                      }
-                    ]}
+                    name="submissionTime"
+                    label="预计成交时间"
+
                   >
-                    <GetEmployee contentResponsible={(val) => { this.getEmployee(val) }}   ></GetEmployee>
+                    <DatePicker onChange={this.onChangeDate} />
+                  </Form.Item>
+                  <Form.Item
+                    name="phone"
+                    label="手机号"
+
+                  >
+                    <Input />
+                  </Form.Item>
+
+                </div>
+                <div>
+                  <Form.Item
+                    name="totalPrice"
+                    label="预计总金额"
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="discount"
+                    label="折扣"
+                  >
+                    <Input />
                   </Form.Item>
                 </div>
-
+                <div>
+                  <AddedProduct methods={(val) => { this.getProductId(val) }} ></AddedProduct>
+                </div>
 
 
               </Form>
             </Modal>
           </div>
         </div >
-
+        <div ref={this.saveContainer}  ></div>
         <div>
           <div style={{ height: 20 }}
             onClick={() => {
@@ -562,12 +582,7 @@ class Payment extends Component {
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
                 scroll={{ x: 1500, y: '26vw' }}
-                pagination={{
-                  pageSize: this.state.pagination.limit ?
-                    this.state.pagination.limit
-                    :
-                    10
-                }}
+                pagination={{ pageSize: this.state.pagination.limit }}
                 defaultCurrent={1}
                 onRow={(record) => ({
                   onClick: () => {
@@ -575,7 +590,7 @@ class Payment extends Component {
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      returnNumber: record.returnNumber
+                      name: record.name
 
                     })
                   },
@@ -591,7 +606,7 @@ class Payment extends Component {
               </div>
               <Drawer
                 mask={false}
-                title={this.state.returnNumber ? this.state.returnNumber : '暂无'}
+                title={this.state.name}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}
@@ -603,14 +618,55 @@ class Payment extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
+                    <Button
+                      type='primary'
+                      size={'small'}
+                      onClick={() => {
+                        this.setTransferVisible()
+                      }}
+                    >转移</Button>
 
+                    <Modal
+                      visible={this.state.transferVisible}
+                      title="转移商机"
+                      footer={[
+                        <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
+                        <Button onClick={this.setTransferVisible} type='default'>取消</Button>
+                      ]}
+                    >
+                      <div>
+                        变更负责人
+                        <div>
+                          <span>+点击选择</span>
+                          <Select
+                            showSearch
+                            style={{ width: 200 }}
+                            mode='multiple'
+                            optionLabelProp="label"
+                          >
+                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
+                              return (<Option value={index} >
+                                <Checkbox>
+                                  <div>
+                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
+                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
+                                  </div>
+
+                                </Checkbox>
+                              </Option>)
+                            }) : ''}
+                          </Select>
+                        </div>
+                      </div>
+
+                    </Modal>
                     <Button type='primary' size={'small'}
                       style={{ marginLeft: '10px' }}
                       onClick={() => {
                         this.setVisible()
                         this.setState({
                           isCreate: false,
-                          formTitle: '新建回款'
+                          formTitle: '新建商机'
 
                         })
                       }}
@@ -618,19 +674,19 @@ class Payment extends Component {
                     >编辑</Button>
 
 
-                    <Button type='default' size={'small'} style={{ marginLeft: '10px' }}
+                    {/* <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}> */}
+                    <Button type='primary' size={'small'} style={{ marginLeft: '10px' }}
                       onClick={() => {
                         Modal.confirm({
                           title: '确认删除',
                           icon: <ExclamationCircleOutlined />,
-                          content: '确认删除此回款么？',
+                          content: '确认删除此商机么？',
                           okText: '是',
                           okType: '',
                           cancelText: '否',
                           onOk: () => {
                             // this.handleOk(id)//确认按钮的回调方法，在下面
                             message.success('已成功刪除')
-                            this.deletePayment()
                           }
                           ,
                           onCancel() {
@@ -638,7 +694,8 @@ class Payment extends Component {
                           },
                         });
                       }}
-                    >删除</Button>
+                    >刪除</Button>
+                    {/* </Dropdown> */}
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
@@ -649,17 +706,17 @@ class Payment extends Component {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>回款金额</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.receiveMoney}</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>商机金额</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.totalPrice}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>回款状态</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.status}</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>商机状态</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.commercialStage}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
                       <span style={{ fontSize: 12, color: '#777' }}>负责人</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsibleName}</span>
+                      <span style={{ fontSize: 14 }}>{this.state.record.employeeResponsible}</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -682,25 +739,29 @@ class Payment extends Component {
                           <div className='pro-info'>
                             <div>
                               <div>
-                                <div>回款编号</div>
-                                <div>{this.state.record.returnNumber}</div>
+                                <div>商机名称</div>
+                                <div>{this.state.record.clientName}</div>
                               </div>
                               <div>
-                                <div>合同编号</div>
-                                <div>{this.state.record.contractCoding}</div>
+                                <div>电话</div>
+                                <div>{this.state.record.phone}</div>
                               </div>
                               <div>
-                                <div>回款方式</div>
-                                <div>{this.state.record.receiveWay}</div>
+                                <div>商机来源</div>
+                                <div>{this.state.record.clueFrom}</div>
                               </div>
                               <div>
-                                <div>期数</div>
-                                <div>{this.state.record.periods}</div>
+                                <div>备注</div>
+                                <div>{this.state.record.content}</div>
+                              </div>
+                              <div>
+                                <div>下次联系时间</div>
+                                <div>{this.state.record.nextTalkTime}</div>
+
                               </div>
                               <div>
                                 <div>创建人</div>
-                                <div>{this.state.record.employeeCreateName}</div>
-
+                                <div>{this.state.record.employeeCreateId}</div>
                               </div>
                               <div>
                                 <div>创建时间</div>
@@ -710,16 +771,20 @@ class Payment extends Component {
 
                             <div>
                               <div>
-                                <div>客户名称</div>
-                                <div>{this.state.record.clientName}</div>
+                                <div>商机类型</div>
+                                <div>{this.state.record.clientType}</div>
                               </div>
                               <div>
-                                <div>回款金额</div>
-                                <div>{this.state.record.receiveMoney}</div>
+                                <div>商机等级</div>
+                                <div>{this.state.record.clientLevel}</div>
                               </div>
                               <div>
-                                <div>备注</div>
-                                <div>{this.state.record.content}</div>
+                                <div>部门ID</div>
+                                <div>{this.state.record.departmentId}</div>
+                              </div>
+                              <div>
+                                <div>公司</div>
+                                <div>{this.state.record.company}</div>
                               </div>
                               <div>
                                 <div>更新时间</div>
@@ -727,11 +792,7 @@ class Payment extends Component {
                               </div>
                               <div>
                                 <div>负责人</div>
-                                <div>{this.state.record.employeeResponsibleName}</div>
-                              </div>
-                              <div>
-                                <div>状态</div>
-                                <div>{this.state.record.result}</div>
+                                <div>{this.state.record.employeeResponsible}</div>
                               </div>
                             </div>
                           </div>
@@ -741,6 +802,63 @@ class Payment extends Component {
                           </div>
                         </div>
                       </TabPane>
+                      <TabPane tab="跟进记录" key="2">
+
+                        <div style={{ padding: '0 0 20px 0' }}>
+                          <Input style={{ height: 100 }}></Input>
+                        </div>
+                        <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            记录类型
+                            &nbsp;
+                            &nbsp;
+                            <Select style={{ width: 200 }}>
+                              <Option value='上门拜访'>上门拜访</Option>
+                              <Option value='电话邀约'>电话邀约</Option>
+                              <Option value='线下单杀'>线下单杀</Option>
+                            </Select>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            下次联系时间
+                            &nbsp;
+                            &nbsp;
+                            <ConfigProvider locale={zhCN}>
+                              <Space direction="vertical" style={{ marginRight: "20px" }}>
+                                <DatePicker onChange={this.onChangeDate} />
+                              </Space>,
+                            </ConfigProvider>
+                            <Checkbox style={{ fontSize: 12 }}>
+                              添加到日常提醒
+                            </Checkbox>
+                          </div>
+                          <div>
+                            <Button size={'small'}>发布</Button>
+                          </div>
+                        </div>
+                        <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
+                          <Tabs defaultActiveKey="1" >
+                            <TabPane tab="跟进记录" key="1">
+                              1
+                            </TabPane>
+                            <TabPane tab="日志" key="2">
+                              2
+                            </TabPane>
+                            <TabPane tab="审批" key="3">
+                              3
+                            </TabPane>
+                            <TabPane tab="任务" key="4">
+                              4
+                            </TabPane>
+                            <TabPane tab="日程" key="5">
+                              5
+                            </TabPane>
+                          </Tabs>
+                        </div>
+                      </TabPane>
+                      <TabPane tab="产品" key="5">
+                        <GetProduct value={this.state.record.commercialOpportunityId}></GetProduct>
+                      </TabPane>
+
 
 
                     </Tabs>
@@ -762,7 +880,7 @@ class Payment extends Component {
   }
 }
 
-export default Payment;
+export default BizOpp;
 
 
 

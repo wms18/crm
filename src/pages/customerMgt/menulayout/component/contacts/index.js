@@ -53,7 +53,7 @@ class Contacts extends Component {
       detailAddr: '', //新建时传入的详细地址
       pagination: '',
       currentPage: 1,
-      limit: 10,
+      limit: 5,
       tableArr: '',
 
       employeeArr: '',

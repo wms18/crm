@@ -1,0 +1,7 @@
+@import url('~antd/dist/antd.css');
+.ant-modal-body>form>div{
+    display: flex !important;
+    justify-content: space-between !important;
+    width: 420px;
+    margin: 0 auto;
+}
