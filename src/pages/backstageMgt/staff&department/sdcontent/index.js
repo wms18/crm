@@ -99,6 +99,7 @@ const SdContent = () => {
   const [showLine, setShowLine] = useState(true);
   const [showIcon, setShowIcon] = useState(false);
   const [showLeafIcon, setShowLeafIcon] = useState(true);
+  let [name,setName] = useState('')
   let token=window.localStorage.getItem('token')
   useEffect(()=>{
     all()
@@ -109,6 +110,11 @@ const SdContent = () => {
       url:base.url+'/employee/getAllDepartment?token='+token
     }).then((response)=>{
       console.log(response)
+      if (response.data.code=== 'ERROR'){
+        console.log(response.data.message)
+      }else {
+
+      }
     }).catch((error)=>{
       alert(error)
     })

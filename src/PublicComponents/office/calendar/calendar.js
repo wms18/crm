@@ -15,7 +15,7 @@ import Icon from '@ant-design/icons';
 import { UserOutlined } from '@ant-design/icons';
 moment.locale('zh-cn');
 
-function SchedulePage() {
+function SchedulePage(props) {
     const [form] = Form.useForm();
     let clients; // 空Map
     let mans ;
@@ -41,6 +41,10 @@ function SchedulePage() {
         setIsBusinessModalVisible(true);
     };
     useEffect(() => {
+        if (!window.localStorage.getItem('token')){
+            props.history.push('/')
+            return
+        }
         all()
     }, [])
     //所有员工

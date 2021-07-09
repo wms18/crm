@@ -10,6 +10,7 @@ import Mail from "../mail/mail";
 import Approval from "../approval/approval";
 import Journal from "../journal/journal";
 import {Link, Route, HashRouter} from "react-router-dom";
+
 import {
     DesktopOutlined,
     CarryOutOutlined,
@@ -20,10 +21,25 @@ import {
     ScheduleOutlined
 } from '@ant-design/icons';
 import ReceptionTop from "../../../components/receptionTop";
-import React from "react";
+import React, {useEffect} from "react";
 const {Content, Sider} = Layout;
 
-function MenuLeft() {
+function  MenuLeft(props) {
+
+        let number=''
+        let  pathname = props.location.pathname
+        console.log('pathname',pathname)
+        let arr = ['/office','/office/schedule','/office/task','/office/notice','/office/journal','/office/approval','/office/mail']
+            arr.forEach((value,index)=>{
+            if (pathname === value){
+                number=index+1
+                number=number.toString()
+                console.log(number)
+            }
+
+        })
+
+
     return (
         <div>
             <ReceptionTop/>
@@ -32,7 +48,7 @@ function MenuLeft() {
                     <Sider style={{height:'100vh',marginTop:'60px',position:'fixed'}}>
                         <div className="logo"/>
                         <Right/>
-                        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
+                        <Menu theme="dark" defaultSelectedKeys={[number]} mode="inline">
                             <Menu.Item key="1" icon={<DesktopOutlined/>}>
                                 <Link to={'/office'}>工作台</Link>
                             </Menu.Item>

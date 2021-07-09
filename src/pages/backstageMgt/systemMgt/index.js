@@ -15,7 +15,7 @@ function SystemMgt() {
     let [getStaff, setGetStaff] = useState([])//关联员工获取员工数
     let [selectedRoleId, setSelectedRoleId] = useState('1') // 选中的角色id
     let [editRoles, setEditRoles] = useState('')    //选中的角色
-    let [roleId,setRoleId] = useState('')
+    let [roleId,setRoleId] = useState('1')
     let [activeInxex, setActiveIndex] = useState(0)
     const [visible, setVisible] = React.useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -118,9 +118,9 @@ function SystemMgt() {
                 classifyRoleId: 1
             }
         }).then((response) => {
-            // console.log(response)
+            console.log(response)
             if (response.data.code === 'ERROR') {
-                alert(response.data.message)
+                console.log(response.data.message)
             } else {
                 setArr(response.data.data)
                 setRoleId(response.data.data[0].id)
@@ -139,6 +139,7 @@ function SystemMgt() {
         treeData.push({
             title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={getStaff[i].avatar} alt=""/>{getStaff[i].username}</span>  ,
             value: getStaff[i].id,
+            key:getStaff[i].username
         })
     }
 

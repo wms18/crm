@@ -9,7 +9,7 @@ import axios from "axios";
 import base from "../../../axios/axios";
 import moment from 'moment';
 
-function Notice() {
+function Notice(props) {
     let newContent=''
     let time=[]
     let notice=''
@@ -28,6 +28,10 @@ function Notice() {
     let [content, setContent] = useState('')  //公告内容
     let [theme, setTheme] = useState('') //公告详情
     useEffect(() => {
+        if (!window.localStorage.getItem('token')){
+            props.history.push('/')
+            return
+        }
         all()
     }, [])
     let all = () => {

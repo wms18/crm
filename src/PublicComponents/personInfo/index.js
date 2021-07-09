@@ -7,9 +7,13 @@ import axios from 'axios'
 import base from '../../axios/axios'
 function PersonalInfo(props) {
     let token=window.localStorage.getItem('token')
-    
+
     let [user,setUser] = useState('')
     useEffect(()=>{
+        if (!window.localStorage.getItem('token')){
+            props.history.push('/')
+            return
+        }
         axios({
             method:'get',
             url:base.url+'/employee/whoami?token='+token
@@ -41,7 +45,7 @@ function PersonalInfo(props) {
             {/* 头像部分 */}
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: "0 80px 30px" }}>
                 <div style={{ marginRight: '25px' }}>
-                    <img src={user.avatar} style={{ width: '100px', height: '100px', fontSize: '35px', textAlign: 'center', lineHeight: '100px' }}/> 
+                    <img src={user.avatar} style={{ width: '100px', height: '100px', fontSize: '35px', textAlign: 'center', lineHeight: '100px' }}/>
                 </div>
                 <div>
                     <div>

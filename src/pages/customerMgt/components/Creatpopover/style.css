@@ -25,3 +25,30 @@
 }
 
 /*# sourceMappingURL=style.css.map */
+.creatpopover button {
+  width: 170px;
+  display: block;
+  margin: 0 auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.popovercontent div {
+  margin-bottom: 10px;
+}
+
+.popovercontent div span {
+  display: inline-block;
+  width: 85px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background-color: #f3f3f3;
+}
+
+.popovercontent>div>span:hover {
+  background-color: #3e84e9;
+  color: white;
+}
+
+/*# sourceMappingURL=style.css.map */

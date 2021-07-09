@@ -11,7 +11,7 @@ import CreatePayment from '../../../../components/createPayment';
 
 function Creatpopover() {
 
-  let [showcreateContract, setShowcreateContract] = useState(false) 
+  let [showcreateContract, setShowcreateContract] = useState(false)
   let [showcreateClue, setshowcreateClue] = useState(false)
   let [showcreateCustomer, setShowcreateCustomer] = useState(false)
   let [showcreateContacts, setShowcreateContacts] = useState(false)
@@ -38,22 +38,22 @@ function Creatpopover() {
         >线索</span>
         &nbsp;&nbsp;
         <span
-        onClick={()=>{
-          setShowcreateCustomer(true)
-        }}
+          onClick={() => {
+            setShowcreateCustomer(true)
+          }}
         >客户</span>
       </div>
       <div>
         <span
-        onClick={()=>{
-          setShowcreateContacts(true)
-        }}
+          onClick={() => {
+            setShowcreateContacts(true)
+          }}
         >联系人</span>
         &nbsp;&nbsp;
         <span
-        onClick={()=>{
-          setShowcreateBizOpp(true)
-        }}
+          onClick={() => {
+            setShowcreateBizOpp(true)
+          }}
         >商机</span>
       </div>
       <div>
@@ -64,9 +64,9 @@ function Creatpopover() {
         >合同</span>
         &nbsp;&nbsp;
         <span
-        onClick={()=>{
-          setShowcreatePayment(true)
-        }}
+          onClick={() => {
+            setShowcreatePayment(true)
+          }}
         >回款</span>
       </div>
       <div>
@@ -90,7 +90,7 @@ function Creatpopover() {
       <CreateContacts show={showcreateContacts} method={hidden}  ></CreateContacts>
       <CreateBizOpp show={showcreateBizOpp} method={hidden}  ></CreateBizOpp>
       <CreatePayment show={showcreatePayment} method={hidden}  ></CreatePayment>
-      
+
 
     </div>
 

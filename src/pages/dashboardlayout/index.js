@@ -52,6 +52,7 @@ function Dashboaedlayout() {
     let [record, setRecord] = useState([])
     let [showInfo, setShowInfo] = useState(false)
     useEffect(() => {
+
         getPpt()
         getEmployee()
         getPerformance(0)

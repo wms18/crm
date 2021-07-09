@@ -10,7 +10,7 @@ import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
 
 function Tablelist(props) {
-    console.log(props.roleId)
+    // console.log(props.roleId)
     let [message, setMessage] = useState([])     //表格信息
     let token = window.localStorage.getItem('token')
 

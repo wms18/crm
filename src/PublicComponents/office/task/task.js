@@ -14,7 +14,7 @@ import qs from 'qs'
 
 moment.locale('zh-cn');
 
-function Task() {
+function Task(props) {
     let clients; // 空Map
     let mans;
     let businesss;
@@ -54,8 +54,12 @@ function Task() {
     let [addStore, setAddStore] = useState('')   //添加标签库
     let [taskText, setTaskText] = useState('')   //评论
     let [textContent, setTextContent] = useState([]) //评论内容
-
+    let [visible, setVisible] = useState(false);
     useEffect(() => {
+        if (!window.localStorage.getItem('token')){
+            props.history.push('/')
+            return
+        }
         myTask()
         getInformation()
         allLabels()
@@ -93,7 +97,7 @@ function Task() {
             } else {
                 alert('新建任务成功')
                 myTask()
-                setIsModalVisible(false)
+                setIsModalVisible(false);
             }
         }).catch((error) => {
             alert(error)
@@ -296,7 +300,7 @@ function Task() {
     const showBusinessModal = () => {
         setIsBusinessModalVisible(true);
     };
-    //客户接口
+    //关联业务
     let taskclient = () => {
         console.log(idsObj)
         console.log(idsObj.clients)
@@ -462,7 +466,6 @@ function Task() {
         })
     }
     //抽屉
-    const [visible, setVisible] = useState(false);
     //获取信息
     const showDrawer = (id) => {
         setTaskId(id)
@@ -507,6 +510,7 @@ function Task() {
                 console.log(response)
                 if (response.data.code === 'SUCCESS') {
                     showDrawer(taskId)
+                    alert('删除成功')
                 }
             }).catch((error) => {
                 alert(error)
@@ -657,7 +661,10 @@ function Task() {
             } else {
                 myTask()
                 message.success('删除成功');
+                onClose()
             }
+        }).catch((error)=>{
+            alert(error)
         })
     }
 
@@ -701,7 +708,9 @@ function Task() {
                                footer={null}
                                width={700}
                                onCancel={handleCancel}>
-                            <NewTask handleMessage={handleMessage} onCancel={() => {
+                            <NewTask handleMessage={(value)=>{
+                                handleMessage(value)
+                            }} onCancel={() => {
                                 setIsModalVisible(false);
                             }}></NewTask>
                         </Modal>

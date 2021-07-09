@@ -1,5 +1,18 @@
 import './approval.css'
-import {Button, Select, DatePicker, Space, ConfigProvider, Popover, Drawer, Modal, Form, Input, TreeSelect} from 'antd';
+import {
+    Button,
+    Select,
+    DatePicker,
+    Space,
+    ConfigProvider,
+    Popover,
+    Drawer,
+    Modal,
+    Form,
+    Input,
+    TreeSelect,
+    Tree
+} from 'antd';
 import React, {useState, useEffect} from "react";
 import zhCN from "antd/lib/locale/zh_CN";
 import axios from "axios";
@@ -7,7 +20,7 @@ import base from "../../../axios/axios";
 import LinkBusiness from "../task/link";
 import Edit from "./edit";
 
-function Approval() {
+function Approval(props) {
     let clients; // 空Map
     let mans;
     let businesss;
@@ -37,9 +50,18 @@ function Approval() {
     let [valueTime, setValueTime] = useState([]) //时间
     let [drawerId, setDrawerId] = useState('')   //抽屉id
     let [editId, setEditId] = useState('')
+    const {Search} = Input;
+    let [man, setMan] = useState([])//负责人
+    let [searchMan, setSearchMan] = useState('')
+    let [manValue,setManValue] = useState([])
+    const [checkedKeys, setCheckedKeys] = useState([]);
     const {SHOW_PARENT} = TreeSelect;
 
     useEffect(() => {
+        if (!window.localStorage.getItem('token')){
+            props.history.push('/')
+            return
+        }
         list()
         all()
     }, [])
@@ -72,6 +94,8 @@ function Approval() {
         form.setFieldsValue({'content': ''})
         setValueTime([])
         setSelectStaff([])
+        setManValue([])
+        setCheckedKeys([])
     };
     const {Option} = Select;
     const layout = {
@@ -236,6 +260,56 @@ function Approval() {
             width: '100%',
         },
     };
+    const treeData1 = []
+    for (let i = 0; i < allStaff.length; i++) {
+        if (searchMan !== ''){
+            if (searchMan === allStaff[i].username){
+                treeData1.push({
+                    title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                                      alt=""/>{allStaff[i].username}</span>,
+                    key: allStaff[i].id,
+                    value: allStaff[i].username
+                })
+            }
+        }else {
+            treeData1.push({
+                title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                                  alt=""/>{allStaff[i].username}</span>,
+                key: allStaff[i].id,
+                value: allStaff[i].username
+            })
+        }
+
+    }
+
+    const onSearch = value => {
+        console.log(value);
+        searchMan = value
+        setSearchMan(searchMan)
+    }
+    const onCheck = (checkedKeysValue,value ) => {
+        manValue =  value.checkedNodes.map((ele, index) => {
+            return ele.value
+        })
+        setManValue(manValue)
+        setCheckedKeys(checkedKeysValue);
+        setMan(checkedKeysValue)
+    };
+    const contentLabel = (
+        <div className={'contentLabel'}>
+            <div style={{width: '220px', height: '300px', border: '1px solid #ddd', padding: '10px'}}>
+                <Search placeholder="搜索员工" onSearch={onSearch} style={{width: 200, marginBottom: '20px'}}/>
+                <Tree
+                    checkable
+                    onCheck={onCheck}
+                    checkedKeys={checkedKeys}
+                    treeData={treeData1}
+                    height={200}
+                />
+            </div>
+        </div>
+    );
+
     //关联业务模块
     const [isBusinessModalVisible, setIsBusinessModalVisible] = useState(false);
 
@@ -306,7 +380,7 @@ function Approval() {
     };
     //新建审批
     let newApprove = () => {
-        if (selectTime.length !== 0 && approveType !== '' && selectStaff.length !== 0 && content !== '') {
+        if (selectTime.length !== 0 && approveType !== '' && manValue.length !== 0 && content !== '') {
             axios({
                 method: 'post',
                 url: base.url + '/approve/createApprove',
@@ -345,6 +419,8 @@ function Approval() {
             form.setFieldsValue({'content': ''})
             setValueTime([])
             setSelectStaff([])
+            setManValue([])
+            setCheckedKeys([])
         } else {
             alert('请填写完整')
         }
@@ -415,8 +491,7 @@ function Approval() {
     //编辑
     let edit = () => {
         console.log(editObj)
-        if (editObj.approveTypeId !==undefined && editObj.beginTime !== undefined &&
-            editObj.endTime !== undefined &&editObj.employeeCheckId !==undefined && editObj.content !==undefined){
+        if (editObj.employeeCheckId !==undefined){
         axios({
             method: 'post',
             url: base.url + '/approve/editApprove?token=' + token,
@@ -492,6 +567,8 @@ function Approval() {
                     </Button>
                     <Modal title="新建审批"
                            width={800}
+                           cancelText={'取消'}
+                           okText={'确定'}
                            maskStyle={{backgroundColor: '#fff'}}
                            visible={isModalVisible}
                            onOk={handleOk}
@@ -596,7 +673,13 @@ function Approval() {
                             }}>*</span>
                             审核人：
                         </div>
-                        <TreeSelect {...tProps} style={{width: 300}}/>
+                        {/*<TreeSelect {...tProps} style={{width: 300}}/>*/}
+                        <span >
+                            <Popover content={contentLabel} arrowPointAtCenter={true}
+                                     title="选择员工" trigger="click">
+                                <Input style={{width:'253px'}} value={manValue} placeholder="请选择员工" />
+                            </Popover>
+                        </span>
                     </Modal>
                 </div>
             </div>

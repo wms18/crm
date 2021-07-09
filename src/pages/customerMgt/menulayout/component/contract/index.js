@@ -29,6 +29,7 @@ const { Content, Footer, Header } = Layout
 class Contract extends Component {
 
   componentDidMount() {
+
     // console.log(111);
     this.getContract()
     // this.getEmployeeName()
