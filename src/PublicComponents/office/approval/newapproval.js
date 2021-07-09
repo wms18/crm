@@ -233,6 +233,8 @@ function Newapproval(props) {
                 <Modal title="关联业务模块"
                        width={800}
                        bordered={true}
+                       cancelText={'取消'}
+                       okText={'确定'}
                        bodyStyle={{padding: 0}}
                        visible={isBusinessModalVisible}
                        footer={null}

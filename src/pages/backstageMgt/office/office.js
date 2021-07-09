@@ -14,11 +14,12 @@ import qs from 'qs'
 // const { Content } = Layout
 
 function Office() {
+    let length = 0
     let token = window.localStorage.getItem('token')
     let [getStaff, setGetStaff] = useState([])//关联员工获取员工数
     let [selectedRoleId, setSelectedRoleId] = useState('1') // 选中的角色id
     let [editRoles, setEditRoles] = useState('')    //选中的角色
-    let [roleId, setRoleId] = useState('')
+    let [roleId, setRoleId] = useState(length)
     const [visible, setVisible] = React.useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     let [text, setText] = useState('')
@@ -26,6 +27,7 @@ function Office() {
     let [collapsed, setCollapsed] = useState(false)
     const { SHOW_PARENT } = TreeSelect;
     let [value, setValue] = useState([])    //关联员工
+
     let toggle = () => {
         setCollapsed(!collapsed)
     };
@@ -138,9 +140,28 @@ function Office() {
         })
     }
     useEffect(() => {
+        getSystem()
         get()
     }, [text])
-
+    let  getSystem = () =>{
+        axios({
+            method: 'get',
+            url: base.url + '/manager/roles',
+            params: {
+                token: token,
+                classifyRoleId: 1
+            }
+        }).then((response) => {
+            console.log(response.data.data.length)
+            if (response.data.code === 'ERROR') {
+                alert(response.data.message)
+            } else {
+                length = response.data.data.length+1
+            }
+        }).catch((error) => {
+            alert(error)
+        })
+    }
     //添加员工
     const treeData = [];
     for (let i = 0; i < getStaff.length; i++) {

@@ -17,3 +17,8 @@
 .class .activeColor{
     background-color: #12c3ed;
 }
+.contentLabel{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

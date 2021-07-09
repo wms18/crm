@@ -21,6 +21,7 @@ const { Content, Footer, Header } = Layout
 class TodoList extends Component {
 
   componentDidMount() {
+
     this.getTodoList()
     this.getEmployeeName()
 
@@ -204,7 +205,7 @@ class TodoList extends Component {
   }
 
   getTodoList() {
-    //获取待办事项 
+    //获取待办事项
     axios({
       method: 'get',
       url: base.url + this.state.path + `currentPage=` + this.state.currentPage + `&limit=` + this.state.limit,
@@ -336,7 +337,7 @@ class TodoList extends Component {
               <div style={{
                 height: '40px',
                 marginRight: '20px',
-                marginRight: '20px',
+                // marginRight: '20px',
                 padding: ' 15px',
                 marginBottom: '20px',
                 fontSize: '18px'

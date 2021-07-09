@@ -29,6 +29,7 @@ function Dashboaedlayout() {
     let [returnMoneyGoal, setReturnMoneyGoal] = useState('')
 
     useEffect(() => {
+
         getPpt()
         getEmployee()
         getPerformance(0)

@@ -20,6 +20,7 @@ const { Content, Footer, Header } = Layout
 class Clue extends Component {
 
   componentDidMount() {
+
     this.getClue()
     this.getEmployeeName()
   }
@@ -33,7 +34,7 @@ class Clue extends Component {
       token: window.localStorage.getItem('token'),
 
       remind: 0, //跟进记录是否加入日程
-      nextTime: '',  //跟进记录的下次联系时间    
+      nextTime: '',  //跟进记录的下次联系时间
       followRecord: '',  //跟进记录的内容
       recordType: "",  //记录类型
 
@@ -303,8 +304,8 @@ class Clue extends Component {
             tableArr: res.data.data.data,
             pagination: res.data.data.pagination
           })
-        } 
-        
+        }
+
       })
   }
 

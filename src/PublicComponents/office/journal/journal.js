@@ -25,6 +25,10 @@ function Journal(props) {
     let [problem,setProblem] = useState('') //问题
 
     useEffect(() => {
+        if (!window.localStorage.getItem('token')){
+            props.history.push('/')
+            return
+        }
         all()
         allJournal()
     }, [approveIndex])

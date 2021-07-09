@@ -1,6 +1,6 @@
 import { Layout, Menu } from 'antd';
-import React, { useState } from 'react'
-import { HashRouter, Route, Link } from 'react-router-dom'
+import React, { useState,useEffect } from 'react'
+import { HashRouter, Route, Link ,withRouter} from 'react-router-dom'
 import './style.css';
 import Creatpopover from '../components/Creatpopover'
 import sdTable from '../components/sdtable'
@@ -41,8 +41,13 @@ const IconFont = createFromIconfontCN({
 
 
 
-function Menulayout() {
-
+function Menulayout(props) {
+  useEffect(() => {
+      if (!window.localStorage.getItem('token')) {
+          props.history.push('/')
+          return
+      }
+  }, [])
 
   let [collapsed, setcollapsed] = useState(false)
 
@@ -130,4 +135,4 @@ function Menulayout() {
   )
 }
 
-export default Menulayout;
+export default withRouter(Menulayout);

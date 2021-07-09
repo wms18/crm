@@ -29,6 +29,7 @@ const { Content, Footer, Header } = Layout
 class Contract extends Component {
 
   componentDidMount() {
+
     // console.log(111);
     this.getContract()
     // this.getEmployeeName()
@@ -267,7 +268,6 @@ class Contract extends Component {
         // .replace(/\s+/g,'')
         data: qs.stringify({
           beginTime: data.beginTime,
-          clientId: data.clientId,
           commercialOpportunityId: this.state.BizOppID,
           content: data.content,
           contractCoding: data.contractCoding,
@@ -383,7 +383,7 @@ class Contract extends Component {
           name: this.state.record.name,
           produceIds: this.state.record.produceIds,
           submissionTime: this.state.record.submissionTime,
-          totalPrice: this.state.record.totalPrice,
+          // totalPrice: this.state.record.totalPrice,
           totalPrice: this.state.record.contractPrice,
           // record: this.state.record.record,
         })

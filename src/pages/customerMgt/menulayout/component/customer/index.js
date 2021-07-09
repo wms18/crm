@@ -26,6 +26,7 @@ const { Content, Footer, Header } = Layout
 class Customer extends Component {
 
   componentDidMount() {
+
     this.getCustomer()
     this.getEmployeeName()
   }
@@ -39,7 +40,7 @@ class Customer extends Component {
       token: window.localStorage.getItem('token'),
 
       remind: 0, //跟进记录是否加入日程
-      nextTime: '',  //跟进记录的下次联系时间    
+      nextTime: '',  //跟进记录的下次联系时间
       followRecord: '',  //跟进记录的内容
       recordType: "",  //记录类型
 
@@ -740,7 +741,7 @@ class Customer extends Component {
 
 
   //表格分页
-  onChange(page, pageSize) {    
+  onChange(page, pageSize) {
     console.log(page, pageSize);
     this.setState({
       currentPage: page,

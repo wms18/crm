@@ -7,7 +7,7 @@ import MenuRight from "../right/right";
 import base from "../../../../axios/axios";
 import axios from "axios";
 
-function Middle() {
+function Middle(props) {
     let token = window.localStorage.getItem('token')
     let arr = ['全部', '日志', '审批', '任务', '日程', '公告']
     let [active, setActive] = useState(0)
@@ -17,7 +17,12 @@ function Middle() {
     let [listSchedule, setListSchedule] = useState([])   //日程列表
     let [listApprove, setListApprove] = useState([]) //审批列表
     useEffect(() => {
+        if (!window.localStorage.getItem('token')){
+            props.history.push('/')
+            return
+        }
         all()
+
     }, [active])
     //全部
     let all = () => {
@@ -82,7 +87,7 @@ function Middle() {
         })
     }
     return (
-        <div >
+        <div style={{width:'1192px'}}>
             <div className={'middle'}>
                 <div className={'middle_sp'}>
                     {arr.map((item, index) => {

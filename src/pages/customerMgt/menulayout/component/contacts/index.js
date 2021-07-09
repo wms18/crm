@@ -22,6 +22,7 @@ const { Content, Footer, Header } = Layout
 class Contacts extends Component {
 
   componentDidMount() {
+
     this.getContacts()
     this.getEmployeeName()
   }
@@ -84,7 +85,7 @@ class Contacts extends Component {
     this.editContactInfo = this.editContactInfo.bind(this)
   }
 
-  //编辑客户信息 
+  //编辑客户信息
   editContactInfo() {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
@@ -420,7 +421,6 @@ class Contacts extends Component {
           mobile: this.state.record.mobile,
           nextTalkTime: this.state.record.nextTalkTime,
           phone: this.state.record.phone,
-          nextTalkTime: this.state.record.nextTalkTime,
           role: this.state.record.role,
           sex: this.state.record.sex,
           updateTime: this.state.record.updateTime.sex,
