@@ -1,3 +1,73 @@
+import { render } from "@testing-library/react";
+
+const columns = [
+  {
+    title: 'Full Name',
+    width: 100,
+    dataIndex: 'name',
+    key: 'name',
+    fixed: 'left',
+  },
+  {
+    title: 'Age',
+    width: 100,
+    dataIndex: 'age',
+    key: 'age',
+    fixed: 'left',
+  },
+  {
+    title: 'Column 1',
+    dataIndex: 'address',
+    key: '1',
+    width: 150,
+  },
+  {
+    title: 'Column 2',
+    dataIndex: 'address',
+    key: '2',
+    width: 150,
+  },
+  {
+    title: 'Column 3',
+    dataIndex: 'address',
+    key: '3',
+    width: 150,
+  },
+  {
+    title: 'Column 4',
+    dataIndex: 'address',
+    key: '4',
+    width: 150,
+  },
+  {
+    title: 'Column 5',
+    dataIndex: 'address',
+    key: '5',
+    width: 150,
+  },
+  {
+    title: 'Column 6',
+    dataIndex: 'address',
+    key: '6',
+    width: 150,
+  },
+  {
+    title: 'Column 7',
+    dataIndex: 'address',
+    key: '7',
+    width: 150,
+  },
+  { title: 'Column 8', dataIndex: 'address', key: '8' },
+  {
+    title: 'Action',
+    key: 'operation',
+    fixed: 'right',
+    width: 100,
+    render: () => <a>action</a>,
+  },
+];
+
+
 const Data = {
   columns: [
     {
@@ -5,16 +75,17 @@ const Data = {
       title: '客户名称',
       dataIndex: 'clientName',
       key: 'clientName',
-      fixed:'left',
-      sorter: {
-        compare: (a, b) => a.clientName - b.clientName,
-        multiple: 3,
-        key: ''
-      },
+      fixed: 'left',
+      render: () => <a>客户名称</a>
+      // sorter: {
+      //   compare: (a, b) => a.clientName.charCodeAT(0) - b.clientName.charCodeAT(0),
+      //   multiple: 3,
+      //   key: ''
+      // },
     },
     {
       title: '手机号',
-      width: 100,
+      width: 150,
       dataIndex: 'phone',
       key: '1',
       sorter: {
@@ -23,7 +94,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 200,
       title: '客户证件号',
       dataIndex: 'certificateId',
       key: '2',
@@ -33,7 +104,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '客户来源',
       dataIndex: 'clientFrom',
       key: '3',
@@ -43,9 +114,9 @@ const Data = {
       },
     },
     {
-      width: 100,
       title: '客户等级',
       dataIndex: 'clientLevel',
+      width:150,
       key: '4',
       sorter: {
         compare: (a, b) => a.clientLevel - b.clientLevel,
@@ -63,7 +134,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 250,
       title: '详细地址',
       dataIndex: 'detailAddress',
       key: '6',
@@ -73,7 +144,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '钉钉',
       dataIndex: 'dingtalk',
       key: '7',
@@ -93,7 +164,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 200,
       title: '下次联系时间',
       dataIndex: 'nextTalkTime',
       key: '9',
@@ -319,7 +390,7 @@ const Data = {
       },
     },
   ],
-  
+
   columnsGetContract: [
     {
       width: 100,
@@ -368,7 +439,7 @@ const Data = {
       dataIndex: 'contractPrice',
       key: '4',
       sorter: {
-        compare: (a, b) => a.contractPrice - b.contractPrice  ,
+        compare: (a, b) => a.contractPrice - b.contractPrice,
         multiple: 3,
       },
     },
@@ -378,7 +449,7 @@ const Data = {
       dataIndex: 'discount',
       key: 'discount',
       sorter: {
-        compare: (a, b) => a.discount - b.discount  ,
+        compare: (a, b) => a.discount - b.discount,
         multiple: 3,
       },
     },
@@ -388,7 +459,7 @@ const Data = {
       dataIndex: 'contractBeginTime',
       key: 'contractBeginTime',
       sorter: {
-        compare: (a, b) => a.contractBeginTime - b.contractBeginTime  ,
+        compare: (a, b) => a.contractBeginTime - b.contractBeginTime,
         multiple: 3,
       },
     },
@@ -398,7 +469,7 @@ const Data = {
       dataIndex: 'contractEndTime',
       key: 'contractEndTime',
       sorter: {
-        compare: (a, b) => a.contractEndTime - b.contractEndTime  ,
+        compare: (a, b) => a.contractEndTime - b.contractEndTime,
         multiple: 3,
       },
     },
@@ -433,7 +504,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      // width: 100,
       title: '货币',
       dataIndex: 'currency',
       key: '7',
@@ -501,3 +572,4 @@ const Data = {
 }
 
 export default Data
+// export default columns

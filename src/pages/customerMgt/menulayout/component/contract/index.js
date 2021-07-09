@@ -300,6 +300,30 @@ class Contract extends Component {
 
   }
 
+  deleteContract() {
+    axios({
+      method: "post",
+      url: `${base.url}/contract/deleteContract`,
+      params: {
+        token: this.state.token,
+        contractId: this.state.record.id
+      },
+    }).then((res) => {
+      console.log(res);
+      if (res.data.code === "ERROR") {
+        message.error('请重试');
+        // this.onCancel()
+      } else {
+        message.success('删除成功');
+        // this.onCancel()
+
+        this.getContractt()
+      }
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
 
 
   formRef = React.createRef()
@@ -513,7 +537,7 @@ class Contract extends Component {
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="contractPrice "
+                    name="contractPrice"
                     label="合同金额"
                     rules={[
                       {
@@ -641,7 +665,7 @@ class Contract extends Component {
               </div>
               <Drawer
                 mask={false}
-                title={this.state.name}
+                title={this.state.record.contractName}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}
@@ -723,8 +747,7 @@ class Contract extends Component {
                           okType: '',
                           cancelText: '否',
                           onOk: () => {
-                            // this.handleOk(id)//确认按钮的回调方法，在下面
-                            message.success('已成功刪除')
+                            this.deleteContract()
                           }
                           ,
                           onCancel() {

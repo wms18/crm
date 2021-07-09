@@ -5,7 +5,7 @@ const Data = {
       title: '商机名称',
       dataIndex: 'name',
       key: 'name',
-      // fixed: 'left',
+      fixed: 'left',
       sorter: {
         compare: (a, b) => a.name.charCodeAt(1) - b.name.charCodeAt(1),
         multiple: 3,
@@ -26,7 +26,7 @@ const Data = {
     },
     {
       title: '商机状态组',
-      width: 100,
+      width: 150,
       dataIndex: 'commercialStatusGroup',
       key: '1',
       sorter: {
@@ -35,7 +35,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '商机阶段',
       dataIndex: 'commercialStage',
       key: '2',
@@ -55,7 +55,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '预计成交时间',
       dataIndex: 'submissionTime',
       key: '4',
@@ -85,17 +85,7 @@ const Data = {
       },
     },
     {
-      width: 100,
-      title: '更新时间',
-      dataIndex: 'updateTime',
-      key: '7',
-      sorter: {
-        compare: (a, b) => a.updateTime - b.updateTime,
-        multiple: 3,
-      },
-    },
-    {
-      width: 100,
+      width: 150,
       title: '更新时间',
       dataIndex: 'updatetime',
       key: '8',
@@ -105,7 +95,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '创建时间',
       dataIndex: 'createTime',
       key: '9',

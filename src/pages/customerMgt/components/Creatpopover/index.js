@@ -3,6 +3,7 @@ import { Popover, Button } from 'antd';
 import './style.css';
 
 
+<<<<<<< HEAD
 const  content = (
   <div className='popovercontent'>
     <div>
@@ -26,7 +27,39 @@ const  content = (
     </div>
   </div>
 )
+=======
+
+
+
+>>>>>>> 5b95b20ec1966e779339bb0aff41bdb94d0eee53
 function Creatpopover() {
+
+   let content = (
+    <div className='popovercontent' >
+      <div>
+        <span>线索</span>
+        &nbsp;&nbsp;
+        <span>客户</span>
+      </div>
+      <div>
+        <span>联系人</span>
+        &nbsp;&nbsp;
+        <span>商机</span>
+      </div>
+      <div>
+        <span>合同</span>
+        &nbsp;&nbsp;
+        <span>回款</span>
+      </div>
+      <div>
+        <span>产品</span>
+        &nbsp;&nbsp;
+      </div>
+
+
+    </div>
+  )
+
   return (
     <div className='creatpopover'  >
       <Popover placement="rightTop" content={content} trigger="hover">

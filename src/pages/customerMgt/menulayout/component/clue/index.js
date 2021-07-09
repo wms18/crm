@@ -306,6 +306,10 @@ class Clue extends Component {
           })
         }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5b95b20ec1966e779339bb0aff41bdb94d0eee53
       })
   }
 

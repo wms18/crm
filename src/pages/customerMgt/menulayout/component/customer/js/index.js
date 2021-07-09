@@ -5,6 +5,7 @@ const Data = {
       title: '客户名称',
       dataIndex: 'clientName',
       key: 'clientName',
+      fixed:'left',
       sorter: {
         compare: (a, b) => a.clientName - b.clientName,
         multiple: 3,
@@ -13,7 +14,7 @@ const Data = {
     },
     {
       title: '手机号',
-      width: 100,
+      width: 200,
       dataIndex: 'phone',
       key: '1',
       sorter: {
@@ -22,7 +23,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 200,
       title: '客户证件号',
       dataIndex: 'certificateId',
       key: '2',
@@ -32,7 +33,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '客户来源',
       dataIndex: 'clientFrom',
       key: '3',
@@ -62,7 +63,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 250,
       title: '详细地址',
       dataIndex: 'detailAddress',
       key: '6',
@@ -72,7 +73,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 200,
       title: '钉钉',
       dataIndex: 'dingtalk',
       key: '7',
@@ -92,7 +93,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 200,
       title: '下次联系时间',
       dataIndex: 'nextTalkTime',
       key: '9',
