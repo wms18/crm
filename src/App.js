@@ -8,14 +8,24 @@ import './App.css'
 import Top from './PublicComponents/top'
 import PersonalInfo from './PublicComponents/personInfo';
 // import ProductTable from './Protable'
-import {HashRouter, Route, Link, Switch} from 'react-router-dom';
-import {routes} from './router';
+import { HashRouter, Route, Link, Switch, useHistory, Redirect } from 'react-router-dom';
+import { routes } from './router';
 import Paging from './PublicComponents/backstageMgt/component/staff&department/component/Paging';
 import Login from "./PublicComponents/login/login";
 import MenuLeft from "./PublicComponents/office/menu/menu-left";
 import ReceptionTop from "./PublicComponents/top";
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 function App() {
+    // const history = useHistory()
+    useEffect(() => {
+        if (!window.localStorage.getItem('token') || window.localStorage.getItem('token') == undefined || window.localStorage.getItem('token') == null) {
+            // history.push('/')
+            window.location.hash = "/";
+
+        }
+    }, [])
 
     return (
         <div>
@@ -27,11 +37,12 @@ function App() {
                     {/* <PersonalInfo></PersonalInfo> */}
                     <Route path={'/customerMgt/'} component={CustomerMgt}></Route>
                     {/*    <CustomerMgt/>*/}
-                    <Route  path={'/back'} component={BackstageMgt}></Route>
+                    <Route path={'/back'} component={BackstageMgt}></Route>
                     {/* <BackstageMgt></BackstageMgt>*/}
                     <Route exact path={'/'} component={Login}></Route>
                     {/*<Login></Login>*/}
                     <Route path={'/office'} component={MenuLeft}></Route>
+                    {/* <Redirect from="/*" to="/" /> */}
                 </Switch>
             </HashRouter>
         </div>

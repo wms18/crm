@@ -84,11 +84,13 @@ function Dashboaedlayout() {
     }
     function onOk(value, dateString) {
         console.log('onOk: ', value);
-        if (value[0]._d && value[1]._d) {
+        if (value[0] && value[1]) {
             let startTime = value[0]._d.getFullYear() + '-' + Number(value[0]._d.getMonth() + 1) + '-' + value[0]._d.getDate()
             let endTime = value[1]._d.getFullYear() + '-' + Number(value[1]._d.getMonth() + 1) + '-' + value[1]._d.getDate()
             setStartTime(startTime)
             setEndTime(endTime)
+
+            getPpt()
         }
 
 
@@ -219,7 +221,28 @@ function Dashboaedlayout() {
             },
         })
             .then((res) => {
-                console.log(res);
+               
+                switch (type) {
+                    case 1:
+                        console.log('合同',res);
+                        break;
+                    case 2:
+                        console.log('联系人',res);
+                        
+                        break;
+                    case 3:
+                        console.log('商机',res);
+                        break;
+                    case 4:
+                        console.log('跟进记录',res);
+                        break;
+                    case 5:
+                        console.log('合同',res);
+                        break;
+                    case 6:
+                        console.log('回款',res);
+                        break;
+                }
                 if (res.data.code == 'SUCCESS') {
                     switch (type) {
                         case 1:

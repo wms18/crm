@@ -511,7 +511,8 @@ class Clue extends Component {
               onClick={this.setVisible}
             >新建线索</Button>
             <Modal
-              mask={false}
+              // mask={false}
+              maskStyle={{backgroundColor:"#fff"}}
               visible={this.state.visible}
               title="新建线索"
               okText="确认"

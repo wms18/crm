@@ -2,7 +2,7 @@ const Data = {
 
   columns: [
     {
-      width: 100,
+      width: 150,
       title: '合同编号',
       dataIndex: 'contractCoding',
       key: 'contractCoding',
@@ -15,7 +15,7 @@ const Data = {
     },
     {
       title: '合同名称',
-      width: 100,
+      width: 150,
       dataIndex: 'contractName',
       key: '1',
       sorter: {
@@ -64,7 +64,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 200,
       title: '合同开始时间',
       dataIndex: 'contractBeginTime',
       key: 'contractBeginTime',
@@ -74,7 +74,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 200,
       title: '合同结束时间',
       dataIndex: 'contractEndTime',
       key: 'contractEndTime',
@@ -84,7 +84,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '客户签约人',
       dataIndex: 'clientSignName',
       key: '5',
@@ -94,7 +94,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '公司签约人',
       dataIndex: 'employeeSignName',
       key: 'employeeSignName',
@@ -119,12 +119,7 @@ const Data = {
       dataIndex: 'currency',
       key: '7',
     },
-    {
-      width: 100,
-      title: '创建人',
-      dataIndex: 'employeeCreatName',
-      key: 'employeeCreatName',
-    },
+
     {
       width: 200,
       title: '更新时间',
@@ -145,74 +140,122 @@ const Data = {
         multiple: 3,
       },
     },
+
+
+  ],
+
+  columnsGetProduct: [
+    {
+      width: 100,
+      title: '产品名称',
+      dataIndex: 'produceName',
+      key: 'produceName',
+
+    },
+    {
+      title: '产品类别',
+      width: 100,
+      dataIndex: 'produceType',
+      key: '1',
+    },
+    {
+      width: 100,
+      title: '产品规格',
+      dataIndex: 'specification',
+      key: '2',
+    },
+    {
+      width: 100,
+      title: '价格',
+      dataIndex: 'price',
+      key: '3',
+    },
+    {
+      width: 100,
+      title: '数量',
+      dataIndex: 'number',
+      key: '4',
+    },
+  ],
+  columnsGetPayment: [
+    {
+      width: 100,
+      title: '回款编号',
+      dataIndex: 'returnNumber',
+      key: 'produceName',
+      fixed:'left',
+      sorter: {
+        compare: (a, b) => a.returnNumber - b.returnNumber,
+        multiple: 3,
+        key: ''
+      },
+    },
+   
+   
+    {
+      width: 100,
+      title: '合同编号',
+      dataIndex: 'contractCoding',
+      key: '3',
+      sorter: {
+        compare: (a, b) => a.contractCoding - b.contractCoding,
+        multiple: 3,
+      },
+    },
+    {
+      width: 100,
+      title: '回款金额',
+      dataIndex: 'receiveMoney',
+      key: '6',
+      sorter: {
+        compare: (a, b) => a.number - b.number,
+        multiple: 3,
+      },
+    },
+    {
+      width: 100,
+      title: '期数',
+      dataIndex: 'periods',
+      key: '7',
+      sorter: {
+        compare: (a, b) => a.periods - b.periods,
+        multiple: 3,
+      },
+    },
+    {
+      width: 100,
+      title: '回款日期',
+      dataIndex: 'receiveTime',
+      key: '4',
+      sorter: {
+        compare: (a, b) => a.receiveTime - b.receiveTime,
+        multiple: 3,
+      },
+    },
+   
+    {
+      width: 100,
+      title: '创建人',
+      dataIndex: 'employeeCreateName',
+      key: '9',
+      sorter: {
+        compare: (a, b) => a.employeeCreateName - b.employeeCreateName,
+        multiple: 3,
+      },
+    },
+
     {
       width: 100,
       title: '负责人',
       dataIndex: 'employeeResponsibleName',
-      key: 'employeeResponsibleName',
+      key: '11',
       sorter: {
         compare: (a, b) => a.employeeResponsibleName.charCodeAt(0) - b.employeeResponsibleName.charCodeAt(0),
         multiple: 3,
       },
     },
-    {
-      width: 100,
-      title: '已回款',
-      dataIndex: 'receivePrice',
-      key: 'receivePrice',
-      fixed: 'right',
-      sorter: {
-        compare: (a, b) => a.receivePrice - b.receivePrice,
-        multiple: 3,
-      },
-    },
-    {
-      width: 100,
-      title: '未回款',
-      dataIndex: 'unReceivePrice',
-      key: 'unReceivePrice',
-      fixed: 'right',
-      sorter: {
-        compare: (a, b) => a.unReceivePrice - b.unReceivePrice,
-        multiple: 3,
-      },
-    },
+   
   ],
-
-  options: [
-    {
-      value: 'zhejiang',
-      label: 'Zhejiang',
-      children: [
-        {
-          value: 'hangzhou',
-          label: 'Hangzhou',
-          children: [
-            {
-              value: 'xihu',
-              label: 'West Lake',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      value: 'jiangsu',
-      label: 'Jiangsu',
-      children: [
-        {
-          value: 'nanjing',
-          label: 'Nanjing',
-          children: [
-            {
-              value: 'zhonghuamen',
-              label: 'Zhong Hua Men',
-            },
-          ],
-        },
-      ],
-    },
-  ]
 }
 
 export default Data

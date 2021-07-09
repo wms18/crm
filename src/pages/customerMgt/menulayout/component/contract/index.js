@@ -8,7 +8,7 @@ import AddedProduct from "../../../../../components/addedProduct";  //新增的�
 import GetCustomer from "../../../../../components/getCustomer";
 import GetEmployee from '../../../../../components/getEmployee';
 import GetBizOppTable from "../../../../../components/getBizOppTable";
-
+import GetPayment from "./getPayment";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
   , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
@@ -53,6 +53,8 @@ class Contract extends Component {
       selectedRowKeys: [], // Check here to configure the default column
       loading: false,
 
+      contractId: '',   //获取单个合同的信息
+
       getLinkBizOppCustomerId: '',   //获取商机拿到的客户id
       linkBizOpp: '',
       BizOppID: '',    //添加的商机id
@@ -72,15 +74,7 @@ class Contract extends Component {
       keyword: '',
 
 
-      // 新增产品信息
-      number: '',
-      price: '',
-      produceCoding: '',
-      produceIntroduce: '',
-      produceName: '',
-      produceType: '',
-      putaway: "",
-      specification: ''
+
 
 
     }
@@ -266,8 +260,7 @@ class Contract extends Component {
         },
         // .replace(/\s+/g,'')
         data: qs.stringify({
-          beginTime: data.beginTime,
-          clientId: data.clientId,
+          contractBeginTime: data.contractBeginTime,
           commercialOpportunityId: this.state.BizOppID,
           content: data.content,
           contractCoding: data.contractCoding,
@@ -276,7 +269,7 @@ class Contract extends Component {
           currency: data.currency,
           employeeCheckId: this.state.employeeCheckId,
           employeeSignId: this.state.employeeSignId,
-          endTime: data.endTime,
+          contractEndTime: data.contractEndTime,
           orderTime: data.orderTime,
           produceIds: this.state.produceIds,
           // totalPrice: data.totalPrice,
@@ -289,6 +282,61 @@ class Contract extends Component {
           // this.onCancel()
         } else {
           message.success('新增成功');
+          // this.onCancel()
+
+          this.getContractt()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+
+  }
+  editContract() {
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    console.log(data);
+    console.log(this.state.submissionTime);
+    var reg = /\s/;
+    if (
+      0 > 1
+      // data.nextTalkTime == undefined || data.clientLevel == undefined
+      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
+      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
+
+    ) {
+      message.error('请填写必填选项并不要输入空格');
+    } else {
+      axios({
+        method: "post",
+        url: `${base.url}/contract/editContract`,
+        params: {
+          token: this.state.token,
+        },
+        // .replace(/\s+/g,'')
+        data: qs.stringify({
+          contractId: this.state.record.id,
+          contractBeginTime: data.contractBeginTime,
+          commercialOpportunityId: this.state.BizOppID,
+          content: data.content,
+          contractCoding: data.contractCoding,
+          clientId: this.state.getLinkBizOppCustomerId,
+          contractName: data.contractName,
+          currency: data.currency,
+          employeeCheckId: this.state.employeeCheckId,
+          employeeSignId: this.state.employeeSignId,
+          contractEndTime: data.contractEndTime,
+          orderTime: data.orderTime,
+          produceIds: this.state.produceIds,
+          contractPrice: data.contractPrice,
+        })
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
+          message.error('请重试');
+          // this.onCancel()
+        } else {
+          message.success('编辑成功');
           // this.onCancel()
 
           this.getContractt()
@@ -331,35 +379,21 @@ class Contract extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createContract()
+
+    this.state.isCreate ?
+      this.createContract()
+      :
+      this.editContract()
 
   }
 
 
   onSearch(val) {
-    console.log(val);
-    console.log(typeof (val));
-    //获取合同
-    axios.get(`${base.url}/commercialOpportunity/all?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
-      params: {
-        token: this.state.token,
-        keyword: val
-      },
-      // data: qs.stringify({
-      // })
+    this.setState({
+      keyword: val
+    }, () => {
+      this.getContract()
     })
-      .then((res) => {
-        console.log(res);
-        if (res.data.code === "ERROR") {
-
-        }
-        else {
-          this.setState({
-            tableArr: res.data.data.data,
-            pagination: res.data.data.pagination
-          })
-        }
-      })
   }
 
 
@@ -398,18 +432,22 @@ class Contract extends Component {
       } else {
 
         this.formRef.current.setFieldsValue({
-          clientId: this.state.record.clientId,
-          commercialPrice: this.state.record.commercialPrice,
-          commercialStage: this.state.record.commercialStage,
-          commercialStatusGroup: this.state.record.commercialStatusGroup,
+          // clientId: this.state.record.clientId,
           content: this.state.record.content,
+          contractBeginTime: this.state.record.contractBeginTime,
+          contractCoding: this.state.record.contractCoding,
+          contractEndTime: this.state.record.contractEndTime,
+          contractName: this.state.record.contractName,
+          contractPrice: this.state.record.contractPrice,
+          createTime: this.state.record.createTime,
+          currency: this.state.record.currency,
           discount: this.state.record.discount,
-          name: this.state.record.name,
-          produceIds: this.state.record.produceIds,
-          submissionTime: this.state.record.submissionTime,
+          orderTime: this.state.record.orderTime,
+          receivePrice: this.state.record.receivePrice,
           totalPrice: this.state.record.totalPrice,
-          totalPrice: this.state.record.contractPrice,
-          // record: this.state.record.record,
+          unReceivePrice: this.state.record.unReceivePrice,
+          updateTime: this.state.record.updateTime,
+
         })
       }
     }, 100);
@@ -554,14 +592,14 @@ class Contract extends Component {
 
                 <div>
                   <Form.Item
-                    name="beginTime"
+                    name="contractBeginTime"
                     label="合同开始时间"
 
                   >
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    name="endTime"
+                    name="contractEndTime"
                     label="合同到期时间"
                   >
                     <Input />
@@ -649,7 +687,8 @@ class Contract extends Component {
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      name: record.name
+                      name: record.name,
+                      contractId: record.id
 
                     })
                   },
@@ -677,7 +716,7 @@ class Contract extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                    <Button
+                    {/* <Button
                       type='primary'
                       size={'small'}
                       onClick={() => {
@@ -696,32 +735,14 @@ class Contract extends Component {
                         <Button onClick={this.setTransferVisible} type='default'>取消</Button>
                       ]}
                     >
-                      <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
-                        </div>
+                      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", width: '263px', margin: '0 auto', alignItems: 'center' }}>
+                        <span>变更负责人</span>
+                        <GetEmployee empResponseName={this.state.record.employeeResponsibleName} contentResponsible={(val) => { this.changeEmpRespon(val) }}  ></GetEmployee>
+
                       </div>
 
-                    </Modal>
+                    </Modal> */}
                     <Button type='primary' size={'small'}
                       style={{ marginLeft: '10px' }}
                       onClick={() => {
@@ -901,36 +922,20 @@ class Contract extends Component {
                             <TabPane tab="跟进记录" key="1">
                               1
                             </TabPane>
-                            <TabPane tab="日志" key="2">
-                              2
-                            </TabPane>
-                            <TabPane tab="审批" key="3">
-                              3
-                            </TabPane>
-                            <TabPane tab="任务" key="4">
-                              4
-                            </TabPane>
-                            <TabPane tab="日程" key="5">
-                              5
-                            </TabPane>
                           </Tabs>
                         </div>
                       </TabPane>
 
 
-                      <TabPane tab="联系人" key="3">
-                      </TabPane>
-                      <TabPane tab="合同" key="4">
-                      </TabPane>
+
                       <TabPane tab="产品" key="5">
                         <GetProduct value={this.state.record.id} ></GetProduct>
                       </TabPane>
-                      <TabPane tab="相关团队" key="6">
+                      <TabPane tab="回款信息" key="6">
+                        <GetPayment value={this.state.record.id} ></GetPayment>
+                        {/* <GetProduct value={this.state.record.id} ></GetProduct> */}
                       </TabPane>
-                      <TabPane tab="附件" key="7">
-                      </TabPane>
-                      <TabPane tab="操作记录" key="8">
-                      </TabPane>
+
 
                     </Tabs>
                   </div>

@@ -352,8 +352,12 @@ class Contacts extends Component {
   onSearch(val) {
     console.log(val);
     console.log(typeof (val));
+
+    
+
+
     //获取联系人
-    axios.get(`${base.url}/client/getClient?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+    axios.get(`${base.url}/linkman/search?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
       params: {
         token: this.state.token,
         keyword: val

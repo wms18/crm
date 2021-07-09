@@ -10,6 +10,7 @@ import {
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
+import GetEmployee from "../../../../../components/getEmployee";
 
 const { Step } = Steps;
 const { TabPane } = Tabs
@@ -311,7 +312,7 @@ class TodoList extends Component {
         </div >
 
         <div>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
+          <div style={{ display: 'flex', flexDirection: 'row' }} >
             <div>
               <Menu
                 theme={"light"}
@@ -329,7 +330,7 @@ class TodoList extends Component {
                 <Menu.Item key='5'>即将进入公海的客户</Menu.Item>
               </Menu>
             </div>
-            <div style={{ height: 'calc(100vh - 152px)', width: '10px', backgroundColor: '#f5f6f9' }}>
+            <div style={{ height: 'calc(100vh - 152px)', width: '25px', backgroundColor: '#f5f6f9' }}>
 
             </div>
             <div >

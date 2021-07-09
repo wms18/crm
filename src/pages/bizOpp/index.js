@@ -13,6 +13,7 @@ import {
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
+import locale from 'antd/es/date-picker/locale/zh_CN';
 import Data from "./js/index";
 
 const { Step } = Steps;
@@ -55,6 +56,7 @@ class BizOpp extends Component {
     super(props)
     this.state = {
 
+      dataPickerValue: '请选择日期',
       drawerVisible: false,
 
       token: window.localStorage.getItem('token'),
@@ -367,7 +369,7 @@ class BizOpp extends Component {
           discount: this.state.record.discount,
           name: this.state.record.name,
           produceIds: this.state.record.produceIds,
-          submissionTime: this.state.record.submissionTime,
+          // submissionTime: this.state.record.submissionTime,
           totalPrice: this.state.record.totalPrice,
           // record: this.state.record.record,
         })
@@ -526,12 +528,16 @@ class BizOpp extends Component {
                 </div>
 
                 <div>
+
+               
                   <Form.Item
                     name="submissionTime"
                     label="预计成交时间"
-
+                   
                   >
-                    <DatePicker onChange={this.onChangeDate} />
+                    <DatePicker  
+     
+                    placeholder={this.state.dataPickerValue} locale={locale}  onChange={this.onChangeDate} />
                   </Form.Item>
                   <Form.Item
                     name="phone"

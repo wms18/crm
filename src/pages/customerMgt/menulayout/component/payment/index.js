@@ -52,7 +52,7 @@ class Payment extends Component {
       loading: false,
 
 
-      returnNumber:'',   //查询回款用的编号
+      returnNumber: '',   //查询回款用的编号
       pagination: '',
       currentPage: 1,
       limit: 10,
@@ -142,7 +142,7 @@ class Payment extends Component {
     console.log(dateString);
     this.setState({
       submissionTime: dateString
-    },()=>{
+    }, () => {
 
     })
   }
@@ -172,11 +172,11 @@ class Payment extends Component {
         if (res.data.code === "ERROR") {
 
         } else {
-          if (res.data.data !== null){
-          this.setState({
-            tableArr: res.data.data?res.data.data.data:'',
-            pagination: res.data.data?res.data.data.pagination:''
-          })
+          if (res.data.data !== null) {
+            this.setState({
+              tableArr: res.data.data ? res.data.data.data : '',
+              pagination: res.data.data ? res.data.data.pagination : ''
+            })
           }
         }
       })
@@ -235,7 +235,7 @@ class Payment extends Component {
           receiveTime: this.state.submissionTime,
           receiveWay: data.receiveWay,
           returnNumber: data.returnNumber,
-          reviceMoney: data.reviceMoney,
+          receiveMoney: data.receiveMoney,
         },
         // .replace(/\s+/g,'')
         // data: qs.stringify({
@@ -290,8 +290,8 @@ class Payment extends Component {
         }
         else {
           this.setState({
-            tableArr: res.data.data?res.data.data.data:'',
-            pagination: res.data.data?res.data.data.pagination:''
+            tableArr: res.data.data ? res.data.data.data : '',
+            pagination: res.data.data ? res.data.data.pagination : ''
           })
         }
       })
@@ -393,7 +393,7 @@ class Payment extends Component {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
           <span style={{ fontSize: '18px' }}>回款管理</span>
-          <Search placeholder='请输入回款名称'   style={{ width: '200px' }} onSearch={this.onSearch}
+          <Search placeholder='请输入回款名称' style={{ width: '200px' }} onSearch={this.onSearch}
             allowClear
           ></Search>
           <div>
@@ -401,6 +401,7 @@ class Payment extends Component {
               onClick={this.setVisible}
             >新建回款</Button>
             <Modal
+            maskStyle={{backgroundColor:"#fff"}}
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
               title={this.state.isCreate ? '新建回款' : '编辑回款'}
@@ -489,7 +490,7 @@ class Payment extends Component {
                   </Form.Item>
 
                   <Form.Item
-                    name="reviceMoney"
+                    name="receiveMoney"
                     label="回款金额"
 
                     rules={[
