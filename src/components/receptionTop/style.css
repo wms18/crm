@@ -17,6 +17,9 @@ body{
     width: 100vw;
     z-index: 1;
 }
+.link{
+    color: #333;
+}
 
 .topicon>div{
     margin-right: 40px;
@@ -53,5 +56,8 @@ body{
     font-size: 15px;
 }
 .personCenter:hover{
+    color: #2486e4;
+}
+.linkColor{
     color: #2486e4;
 }

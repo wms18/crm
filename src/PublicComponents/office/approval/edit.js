@@ -7,7 +7,7 @@ import base from "../../../axios/axios";
 import moment from 'moment';
 
 function Edit(props) {
-    console.log(props)
+    // console.log(props)
     let clients; // 空Map
     let mans;
     let businesss;
@@ -39,7 +39,7 @@ function Edit(props) {
             method: 'get',
             url: base.url + '/employee/getEmployeeName?token=' + token
         }).then((response) => {
-            console.log(response)
+            // console.log(response)
             setAllStaff(response.data.data)
         }).catch((error) => {
             alert(error)
@@ -107,24 +107,42 @@ function Edit(props) {
     //选择员工
     const treeData = [];
     for (let j = 0; j < allStaff.length; j++) {
-        treeData.push({
-            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
-            value: allStaff[j].id,
-        })
+        if (selectStaff.length===0){
+            treeData.push({
+                title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+                value: allStaff[j].id,
+            })
+        }else {
+            if (selectStaff[0].value===allStaff[j].id){
+                treeData.push({
+                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+                    value: allStaff[j].id,
+                })
+            }else {
+                treeData.push({
+                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+                    value: allStaff[j].id,
+                    disableCheckbox:true
+                })
+            }
+        }
+
     }
 
     let onChangeStaff = value => {
         console.log('onChange ', value);
         selectStaff = value
         setSelectStaff(selectStaff)
+        // console.log(selectStaff)
     };
+
     const tProps = {
-        allowClear: true,
+        treeCheckStrictly:true,
         treeData,
         value: selectStaff,
         onChange: onChangeStaff,
         treeCheckable: true,
-        multiple: true,
+        multiple: false,
         showCheckedStrategy: SHOW_PARENT,
         placeholder: '请选择员工',
         style: {
@@ -281,14 +299,12 @@ function Edit(props) {
                         approveTypeId: approveType,
                         beginTime: selectTime[0],
                         endTime: selectTime[1],
-                        employeeCheckId: selectStaff[0],
+                        employeeCheckId: selectStaff[0].value,
                         content: content === ''?props.edit.content:content,
                         ...idsObj
                     }
                     // edit()
-
                     props.okAprove(editObj)
-
                 }}>提交</Button>
             </div>
         </div>

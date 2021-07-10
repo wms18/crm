@@ -8,12 +8,14 @@ import { Popconfirm, message } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import axios from "axios";
 import base from "../../axios/axios";
-
+import {withRouter} from 'react-router-dom'
 const text = <span>Title</span>;
 
 function ReceptionTop (props) {
+    let pathname=props.location.pathname.slice(0,7)
     let token=window.localStorage.getItem('token')
     let [avatar,setAvatar] = useState('')
+    let [color,setColor] = useState('')
     useEffect(()=>{
         axios({
             method:'get',
@@ -93,16 +95,19 @@ function ReceptionTop (props) {
 
             <div className='topicon'>
                 <div>
-                    <span className='iconfont icon-diannao'></span>
-                    <Link to={'/office'}>
-                        <span>办公</span>
+
+                    <Link to={'/office'}
+                          className={pathname==="/office"?'link linkColor':'link'}>
+                        <span className='iconfont icon-diannao'></span>
+                        <span style={{margin: '0 10px'}}>办公</span>
                     </Link>
                 </div>
 
                 <div>
-                    <span className='iconfont icon-kehu'></span>
-                    <Link to={'/customerMgt/'}>
-                        <span>客户管理</span>
+
+                    <Link to={'/customerMgt/'} className={pathname==="/custom"?'link linkColor':'link'}>
+                        <span className='iconfont icon-kehu'></span>
+                        <span style={{margin: '0 10px'}}>客户管理</span>
                     </Link>
                 </div>
 
@@ -127,4 +132,4 @@ function ReceptionTop (props) {
     )
 }
 
-export default ReceptionTop
+export default withRouter(ReceptionTop)

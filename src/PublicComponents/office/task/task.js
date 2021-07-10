@@ -65,7 +65,7 @@ function Task(props) {
         allLabels()
         allLabel()
     }, [taskId])
-    //任务
+    //新建任务
     let handleMessage = (value) => {
         data = value
         setData(data)
@@ -564,11 +564,11 @@ function Task(props) {
                     endTime: '',
                 }
             }).then((response) => {
-                // console.log(response)
+                console.log(response)
                 if (response.data.code === 'ERROR') {
                     alert(response.data.message)
                 } else {
-                    myTask(response.data.data)
+                    setTaskList(response.data.data)
                 }
             }).catch((error) => {
                 alert(error)
@@ -709,6 +709,7 @@ function Task(props) {
                                width={700}
                                onCancel={handleCancel}>
                             <NewTask handleMessage={(value)=>{
+                                console.log(value)
                                 handleMessage(value)
                             }} onCancel={() => {
                                 setIsModalVisible(false);
@@ -722,15 +723,15 @@ function Task(props) {
                                 style={{width: 400, margin: "20px 0"}}/>
                     </Space>
                     <div className={'taskDropdown'}>
-                        <span>
-                            <span className={'taskAll'}>任务类型</span>
-                        <Select defaultValue="全部" style={{width: 120}} onChange={handleChangeCreat}>
-                            <Option value="全部">全部</Option>
-                            <Option value="我负责的">我负责的</Option>
-                            <Option value="我创建的">我创建的</Option>
-                            <Option value="我参与的">我参与的</Option>
-                        </Select>
-                        </span>
+                        {/*<span>*/}
+                            {/*<span className={'taskAll'}>任务类型</span>*/}
+                        {/*<Select defaultValue="全部" style={{width: 120}} onChange={handleChangeCreat}>*/}
+                        {/*    <Option value="全部">全部</Option>*/}
+                        {/*    <Option value="我负责的">我负责的</Option>*/}
+                        {/*    <Option value="我创建的">我创建的</Option>*/}
+                        {/*    <Option value="我参与的">我参与的</Option>*/}
+                        {/*</Select>*/}
+                        {/*</span>*/}
                         <span>
                             {/*优先级*/}
                             <span className={'taskAll'}>优先级</span>

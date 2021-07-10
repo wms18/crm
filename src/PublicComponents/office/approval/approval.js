@@ -54,7 +54,7 @@ function Approval(props) {
     let [man, setMan] = useState([])//负责人
     let [searchMan, setSearchMan] = useState('')
     let [manValue,setManValue] = useState([])
-    const [checkedKeys, setCheckedKeys] = useState([]);
+    let [checkedKeys, setCheckedKeys] = useState([]);
     const {SHOW_PARENT} = TreeSelect;
 
     useEffect(() => {
@@ -272,28 +272,50 @@ function Approval(props) {
                 })
             }
         }else {
-            treeData1.push({
-                title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
-                                  alt=""/>{allStaff[i].username}</span>,
-                key: allStaff[i].id,
-                value: allStaff[i].username
-            })
+            if (manValue.length === 0){
+                treeData1.push({
+                    title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                                      alt=""/>{allStaff[i].username}</span>,
+                    key: allStaff[i].id,
+                    value: allStaff[i].username,
+                })
+            }else{
+                if (manValue[0] === allStaff[i].username){
+                    treeData1.push({
+                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                                          alt=""/>{allStaff[i].username}</span>,
+                        key: allStaff[i].id,
+                        value: allStaff[i].username
+                    })
+                }else {
+                    treeData1.push({
+                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                                          alt=""/>{allStaff[i].username}</span>,
+                        key: allStaff[i].id,
+                        value: allStaff[i].username,
+                        disableCheckbox: true,
+                    })
+                }
+            }
         }
-
     }
-
     const onSearch = value => {
         console.log(value);
         searchMan = value
         setSearchMan(searchMan)
     }
+
     const onCheck = (checkedKeysValue,value ) => {
         manValue =  value.checkedNodes.map((ele, index) => {
             return ele.value
         })
         setManValue(manValue)
-        setCheckedKeys(checkedKeysValue);
-        setMan(checkedKeysValue)
+        checkedKeys = checkedKeysValue
+        setCheckedKeys(checkedKeys);
+        console.log(checkedKeysValue)
+        man=checkedKeysValue.checked
+        setMan(man)
+        console.log(man)
     };
     const contentLabel = (
         <div className={'contentLabel'}>
@@ -305,6 +327,8 @@ function Approval(props) {
                     checkedKeys={checkedKeys}
                     treeData={treeData1}
                     height={200}
+                    selectable={true}
+                    checkStrictly={true}
                 />
             </div>
         </div>
@@ -391,7 +415,7 @@ function Approval(props) {
                     approveTypeId: approveType,
                     beginTime: selectTime[0],
                     endTime: selectTime[1],
-                    employeeCheckId: selectStaff[0],
+                    employeeCheckId: man[0],
                     content: content,
                     business: {
                         1: idsObj.clients,
@@ -427,22 +451,26 @@ function Approval(props) {
     }
     //删除审批
     let deleteApproval = (id) => {
-        axios({
-            method: 'DELETE',
-            url: base.url + '/approve/deleteApprove?token=' + token,
-            params: {
-                approveId: id
-            }
-        }).then((response) => {
-            console.log(response)
-            if (response.data.code === 'ERROR') {
-                console.log(response.data.message)
-            } else {
-                list()
-            }
-        }).catch((error) => {
-            alert(error)
-        })
+        if (window.confirm('确定删除吗')){
+            axios({
+                method: 'DELETE',
+                url: base.url + '/approve/deleteApprove?token=' + token,
+                params: {
+                    approveId: id
+                }
+            }).then((response) => {
+                console.log(response)
+                if (response.data.code === 'ERROR') {
+                    console.log(response.data.message)
+                } else {
+                    list()
+                    alert('删除成功')
+                }
+            }).catch((error) => {
+                alert(error)
+            })
+        }
+
     }
     //拒绝
     let refuse = (id) => {
@@ -459,8 +487,12 @@ function Approval(props) {
             if (response.data.code === 'ERROR') {
                 console.log(response.data.message)
             } else {
-                alert('已拒绝')
-                myApproval()
+                handleDrawer(drawerId)
+                if (approveIndex === 0) {
+                    list()
+                } else {
+                    myApproval()
+                }
             }
         }).catch((error) => {
             alert(error)
@@ -481,8 +513,12 @@ function Approval(props) {
             if (response.data.code === 'ERROR') {
                 console.log(response.data.message)
             } else {
-                alert('已通过')
-                myApproval()
+                handleDrawer(drawerId)
+                if (approveIndex === 0) {
+                    list()
+                } else {
+                    myApproval()
+                }
             }
         }).catch((error) => {
             alert(error)
@@ -677,7 +713,7 @@ function Approval(props) {
                         <span >
                             <Popover content={contentLabel} arrowPointAtCenter={true}
                                      title="选择员工" trigger="click">
-                                <Input style={{width:'253px'}} value={manValue} placeholder="请选择员工" />
+                                <Input style={{width:'253px'}} value={manValue}  placeholder="请选择员工" />
                             </Popover>
                         </span>
                     </Modal>
@@ -820,17 +856,18 @@ function Approval(props) {
                                         </div>
                                         <div style={{margin: '20px',}} className={approveIndex === 0 ? 'hidden' : ''}>
                                             <div>
-                                                <Button className={drawerInformation.result === 4 ? 'hidden' : ''}
+                                                <Button className={drawerInformation.result === 4 ? 'hidden' : ''||drawerInformation.result === 2 ? 'hidden' : ''}
                                                         onClick={() => {
                                                             withDrawApprove(drawerInformation.id)
                                                         }}>撤回审批</Button>
                                                 <Button style={{margin: '0 20px'}}
-                                                        className={drawerInformation.result === 3 ? 'hidden' : ''}
+                                                        className={drawerInformation.result === 3 ? 'hidden' : ''||drawerInformation.result === 2 ? 'hidden' : ''}
                                                         type="primary" danger
                                                         onClick={() => {
                                                             refuse(drawerInformation.id)
                                                         }}>拒绝</Button>
                                                 <Button type={"primary"}
+                                                        className={drawerInformation.result === 2 ? 'hidden' : ''}
                                                         style={{margin: '0 20px'}}
                                                         onClick={() => {
                                                             pass(drawerInformation.id)
@@ -847,5 +884,4 @@ function Approval(props) {
         </div>
     )
 }
-
 export default Approval

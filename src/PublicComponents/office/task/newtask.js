@@ -172,6 +172,7 @@ const onCheck = (checkedKeysValue,value ) => {
     manValue =  value.checkedNodes.map((ele, index) => {
         return ele.value
     })
+    // console.log(checkedKeysValue)
     setManValue(manValue)
     setCheckedKeys(checkedKeysValue);
     setMan(checkedKeysValue)

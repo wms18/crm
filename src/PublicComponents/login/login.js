@@ -2,7 +2,7 @@ import img from './login.jpg'
 import {Form, Input, Button, Checkbox} from 'antd';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 import 'antd/dist/antd.css';
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
 import axios from "axios";
 import qs from 'qs';
 import base from "../../axios/axios";
@@ -11,6 +11,11 @@ function Login(props) {
 
     let [phone, setPhone] = useState('')
     let [password, setPassword] = useState('')
+    useEffect(()=>{
+        if (window.localStorage.getItem('token')){
+            props.history.push('/office')
+        }
+    },[])
     //登录
     let handle = () => {
         axios({
@@ -82,7 +87,7 @@ function Login(props) {
                                 },
                             ]}
                         >
-                            <Input.Password 
+                            <Input.Password
                                 style={{height: '40px'}}
                                 prefix={<LockOutlined className="site-form-item-icon"/>}
                                 type="password"

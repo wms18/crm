@@ -17,7 +17,6 @@ function Mail(props) {
     const { Search } = Input;
 
     let staff = () => {
-        console.log(searchStaff)
         axios({
             method: 'get',
             url: base.url + '/employee/getEmployee?token=' + token,
@@ -27,9 +26,18 @@ function Mail(props) {
         }).then((response) => {
             console.log(response)
             if (response.data.code === 'ERROR') {
-                alert(response.data.message)
+                console.log(response.data.message)
             } else {
-                setAllStaff(response.data.data.data)
+                if (response.data.data){
+                    allStaff = response.data.data.data
+                    console.log(allStaff)
+                    setAllStaff(allStaff)
+                }else {
+                    allStaff = []
+                    console.log(allStaff)
+                    setAllStaff(allStaff)
+                }
+
             }
         }).catch((error) => {
             alert(error)
@@ -39,9 +47,7 @@ function Mail(props) {
     const onSearch = (value) => {
         searchStaff = value
         setSearchStaff(searchStaff)
-        console.log(value)
     };
-    // staff()
     let arr = ['员工']
     let [mailIndex, setMailIndex] = useState(0)
     return (
@@ -64,7 +70,7 @@ function Mail(props) {
                     onSearch={onSearch} style={{ width: 200 }} />
             </div>
             <div className={'mailList'}>
-                {allStaff.map((item, index) => {
+                {allStaff === null?'':allStaff.map((item, index) => {
                     return (
                         <div key={index} className={'mailInformation'}>
                             <div>名字：{item.username}</div>

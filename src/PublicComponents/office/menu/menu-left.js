@@ -22,30 +22,26 @@ import {
 } from '@ant-design/icons';
 import ReceptionTop from "../../../components/receptionTop";
 import React, {useEffect} from "react";
+
 const {Content, Sider} = Layout;
 
-function  MenuLeft(props) {
-
-        let number=''
-        let  pathname = props.location.pathname
-        console.log('pathname',pathname)
-        let arr = ['/office','/office/schedule','/office/task','/office/notice','/office/journal','/office/approval','/office/mail']
-            arr.forEach((value,index)=>{
-            if (pathname === value){
-                number=index+1
-                number=number.toString()
+function MenuLeft(props) {
+        let number = ''
+        let pathname = props.location.pathname
+        let arr = ['/office', '/office/schedule','/office/task', '/office/notice', '/office/journal', '/office/approval', '/office/mail']
+        arr.forEach((value, index) => {
+            if (pathname === value) {
+                number = index + 1
+                number = number.toString()
                 console.log(number)
             }
-
         })
-
-
     return (
         <div>
             <ReceptionTop/>
-            <Layout style={{minHeight: '100vh',overflow: 'auto',}}>
+            <Layout style={{minHeight: '100vh', overflow: 'auto',}}>
                 <HashRouter>
-                    <Sider style={{height:'100vh',marginTop:'60px',position:'fixed'}}>
+                    <Sider style={{height: '100vh', marginTop: '60px', position: 'fixed'}}>
                         <div className="logo"/>
                         <Right/>
                         <Menu theme="dark" defaultSelectedKeys={[number]} mode="inline">
@@ -72,7 +68,7 @@ function  MenuLeft(props) {
                             </Menu.Item>
                         </Menu>
                     </Sider>
-                    <div style={{margin:'20px 20px 10px 220px'}}>
+                    <div style={{margin: '20px 20px 10px 220px'}}>
                         <Route path={'/office'} exact component={Middle}></Route>
                         <Route path={'/office/schedule'} component={SchedulePage}></Route>
                         <Route path={'/office/task'} component={Task}></Route>

@@ -7,13 +7,15 @@ import axios from 'axios'
 import base from '../../axios/axios'
 function PersonalInfo(props) {
     let token=window.localStorage.getItem('token')
-
     let [user,setUser] = useState('')
     useEffect(()=>{
         if (!window.localStorage.getItem('token')){
             props.history.push('/')
             return
         }
+        all()
+    },[])
+    let all = () =>{
         axios({
             method:'get',
             url:base.url+'/employee/whoami?token='+token
@@ -25,7 +27,7 @@ function PersonalInfo(props) {
         }).catch((error)=>{
             alert(error)
         })
-    },[])
+    }
     return (
         <div className='personalinfoMain'>
 
@@ -35,7 +37,10 @@ function PersonalInfo(props) {
                 <ChangePwd></ChangePwd>
                     {/* <Button type='primary'  >修改密码</Button> */}
                     {/* <Button type='primary'>编辑</Button> */}
-                    <InfoEdit></InfoEdit>
+                    <InfoEdit onOk={(value)=>{
+                        console.log(value)
+                        all()
+                    }}></InfoEdit>
                     <Button type='primary' style={{ backgroundColor: '#fff', border: '1px solid #ddd', color: '#333' }} onClick={()=>{
                         props.history.push('/customerMgt/')
                     }}>返回</Button>

@@ -139,14 +139,16 @@ function LinkBusiness(props) {
         ],
     };
     const data = [];
-    for (let i = 0; i < client.length; i++) {
-        data.push({
-            key: client[i].id,
-            name: client[i].clientName,
-            time: client[i].nextTalkTime,
-            time1: client[i].updateTime,
-            time2: client[i].createTime,
-        });
+    if (client !== null) {
+        for (let i = 0; i < client.length; i++) {
+            data.push({
+                key: client[i].id,
+                name: client[i].clientName,
+                time: client[i].nextTalkTime,
+                time1: client[i].updateTime,
+                time2: client[i].createTime,
+            });
+        }
     }
     let onChangeClient = (page) => {
         current = page

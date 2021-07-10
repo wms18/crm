@@ -9,10 +9,9 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
 function Tablelist(props) {
-    console.log(props.roleId)
+    // console.log(props.roleId)
     let [message,setMessage] = useState([])     //表格信息
     let token = window.localStorage.getItem('token')
-
     let [pagination,setPagination] = useState([])   //页码信息
     let [current,setCurrent] = useState('1')    //当前页
     let [limit,setLimit] = useState('10')    //每页条数
@@ -26,13 +25,13 @@ function Tablelist(props) {
             method:'get',
             url:base.url+'/manager/sys-manager?token='+token,
             params:{
-            
+
                 roleId:props.roleId,
                 currentPage:current,
                 limit:limit
             }
         }).then((response)=>{
-            console.log(response)
+            // console.log(response)
             if (response.data.code === 'ERROR'){
                 alert(response.data.message)
             }else {

@@ -114,7 +114,7 @@ function Journal(props) {
                 url:base.url+'/log/create',
                 data:qs.stringify({
                     token:token,
-                    contentType:dateActive,
+                    contentType:dateActive+1,
                     employeeIds:selectStaff,
                     nextContent:next,
                     problem:problem,
@@ -179,7 +179,9 @@ function Journal(props) {
             url: base.url + '/employee/getEmployeeName?token=' + token
         }).then((response) => {
             console.log(response)
-            setAllStaff(response.data.data)
+            if (response.data.code==='SUCCESS'){
+                setAllStaff(response.data.data)
+            }
         }).catch((error) => {
             alert(error)
         })
@@ -221,6 +223,7 @@ function Journal(props) {
                 console.log(response)
                 if (response.data.code === 'SUCCESS') {
                     allJournal()
+                    alert('删除成功')
                 }
             }).catch((error) => {
                 alert(error)
@@ -241,6 +244,7 @@ function Journal(props) {
                 console.log(response)
                 if (response.data.code === 'SUCCESS') {
                     allJournal()
+                    alert('删除成功')
                 }
             }).catch((error) => {
                 alert(error)
@@ -311,7 +315,7 @@ function Journal(props) {
                                     )
                                 })}
                             </div>
-                            <div className={dateActive === 0 ? 'date' : 'hidden'}>
+                            <div className={dateActive  === 0 ? 'date' : 'hidden'}>
                                 <div className={'date1'}>
                                     <div style={{width: '98%'}}>
                                         <span>今日工作内容：</span>
@@ -431,7 +435,6 @@ function Journal(props) {
                                         value={item.id}>{item.username}</Option>
                             )
                         })}
-
                     </Select>
                 </div>
                 <div>
@@ -472,17 +475,17 @@ function Journal(props) {
                                 }}>删除</span>
                                     </div>
                                 </div>
-                                <div className={item.contentType === 0? '':'hidden'}>
+                                <div className={item.contentType === 1? '':'hidden'}>
                                     <div className={item.thisContent===''?'hidden':'journalText'}>今日工作内容：{item.thisContent}</div>
                                     <div className={item.nextContent===''?'hidden':'journalText'}>明日工作内容：{item.nextContent}</div>
                                     <div className={item.problem===''?'hidden':'journalText'}>遇到的问题：{item.problem}</div>
                                 </div>
-                                <div className={item.contentType === 1? '':'hidden'}>
+                                <div className={item.contentType === 2? '':'hidden'}>
                                     <div className={item.thisContent===''?'hidden':'journalText'}>本周工作内容：{item.thisContent}</div>
                                     <div className={item.nextContent===''?'hidden':'journalText'}>下周工作内容：{item.nextContent}</div>
                                     <div className={item.problem===''?'hidden':'journalText'}>遇到的问题：{item.problem}</div>
                                 </div>
-                                <div className={item.contentType === 2? '':'hidden'}>
+                                <div className={item.contentType === 3? '':'hidden'}>
                                     <div className={item.thisContent===''?'hidden':'journalText'}>本月工作内容：{item.thisContent}</div>
                                     <div className={item.nextContent===''?'hidden':'journalText'}>下月工作内容：{item.nextContent}</div>
                                     <div className={item.problem===''?'hidden':'journalText'}>遇到的问题：{item.problem}</div>

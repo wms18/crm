@@ -7,7 +7,7 @@ import { Form, InputNumber, } from 'antd';
 import qs from 'qs'
 const { Option } = Select
 
-function InfoEdit(params) {
+function InfoEdit(props) {
     let token = window.localStorage.getItem('token')
     const [isModalVisible, setIsModalVisible] = useState(false);
     let [user, setUser] = useState('')   //获取个人信息
@@ -72,6 +72,7 @@ function InfoEdit(params) {
                 alert(response.data.message)
             } else {
                 alert('更新成功')
+                props.onOk(1)
                 all()
             }
         }).catch((error) => {
@@ -88,7 +89,7 @@ function InfoEdit(params) {
         setSex(sex)
         // console.log(1);
     }
-   
+
     return (
         <div style={{ marginLeft: '20px', display: 'inline-block' }}>
             <Button type="primary" onClick={showModal}>
@@ -121,7 +122,7 @@ function InfoEdit(params) {
                                     },
                                 ]}
                             >
-                                <Input style={{ width: 207, height: 30, margin: '20px 0 0px 0' }} 
+                                <Input style={{ width: 207, height: 30, margin: '20px 0 0px 0' }}
                                  value={email} onChange={(e) => {
                                     email = e.target.value
                                     setEmail(email)

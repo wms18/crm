@@ -25,14 +25,28 @@ function Newapproval(props) {
     let [selectStaff, setSelectStaff] = useState([]) //选择员工
     let [allStaff, setAllStaff] = useState([])   //所有员工
     const {SHOW_PARENT} = TreeSelect;
-
     //选择员工
     const treeData = [];
     for (let j = 0; j < allStaff.length; j++) {
-        treeData.push({
-            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
-            value: allStaff[j].id,
-        })
+        if (selectStaff.length===0){
+                treeData.push({
+                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+                    value: allStaff[j].id,
+                })
+        }else {
+            if (selectStaff[0].value===allStaff[j].id){
+                treeData.push({
+                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+                    value: allStaff[j].id,
+                })
+            }else {
+                treeData.push({
+                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+                    value: allStaff[j].id,
+                    disableCheckbox:true
+                })
+            }
+        }
     }
     let onChangeStaff = value => {
         console.log('onChange ', value);
@@ -40,13 +54,12 @@ function Newapproval(props) {
         setSelectStaff(selectStaff)
     };
     const tProps = {
-        allowClear: true,
+        treeCheckStrictly:true,
         treeData,
         value: selectStaff,
         onChange: onChangeStaff,
         treeCheckable: true,
-        multiple: true,
-        disabled:selectStaff.length === 0 ?false:true,
+        multiple: false,
         showCheckedStrategy: SHOW_PARENT,
         placeholder: '请选择员工',
         style: {
@@ -129,7 +142,7 @@ function Newapproval(props) {
                 approveTypeId: approveType,
                 beginTime: selectTime[0],
                 endTime: selectTime[1],
-                employeeCheckId: selectStaff[0],
+                employeeCheckId: selectStaff[0].value,
                 content: content,
                 business: {
                     1: idsObj.clients,
