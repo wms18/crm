@@ -52,7 +52,7 @@ class Payment extends Component {
       loading: false,
 
 
-      returnNumber:'',   //查询回款用的编号
+      returnNumber: '',   //查询回款用的编号
       pagination: '',
       currentPage: 1,
       limit: 10,
@@ -142,7 +142,7 @@ class Payment extends Component {
     console.log(dateString);
     this.setState({
       submissionTime: dateString
-    },()=>{
+    }, () => {
 
     })
   }
@@ -172,11 +172,11 @@ class Payment extends Component {
         if (res.data.code === "ERROR") {
 
         } else {
-          if (res.data.data !== null){
-          this.setState({
-            tableArr: res.data.data?res.data.data.data:'',
-            pagination: res.data.data?res.data.data.pagination:''
-          })
+          if (res.data.data !== null) {
+            this.setState({
+              tableArr: res.data.data ? res.data.data.data : '',
+              pagination: res.data.data ? res.data.data.pagination : ''
+            })
           }
         }
       })
@@ -197,7 +197,6 @@ class Payment extends Component {
         // this.onCancel()
       } else {
         message.success(res.data.message);
-        // this.onCancel()
 
         this.getPaymentt()
       }
@@ -210,16 +209,17 @@ class Payment extends Component {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data);
     console.log(this.state.submissionTime);
-    var reg = /\s/;
     if (
-      0 > 1
-      // data.nextTalkTime == undefined || data.clientLevel == undefined
-      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
-      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
-      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
-
+      !this.state.customerID || !this.state.contractCoding || !this.state.submissionTime ||
+      data.receiveWay == undefined || data.receiveMoney == undefined
+      || data.returnNumber == undefined
     ) {
-      message.error('请填写必填选项并不要输入空格');
+      message.error('请填写必填选项');
+    } else if (data.receiveWay.indexOf(' ') == 0 || data.receiveMoney.toString().indexOf(' ') == 0
+      || data.returnNumber.indexOf(' ') == 0
+    ) {
+      message.error('请不要输入空格');
+
     } else {
       axios({
         method: "post",
@@ -235,7 +235,7 @@ class Payment extends Component {
           receiveTime: this.state.submissionTime,
           receiveWay: data.receiveWay,
           returnNumber: data.returnNumber,
-          reviceMoney: data.reviceMoney,
+          receiveMoney: data.receiveMoney,
         },
         // .replace(/\s+/g,'')
         // data: qs.stringify({
@@ -248,8 +248,57 @@ class Payment extends Component {
           // this.onCancel()
         } else {
           message.success(res.data.message);
-          // this.onCancel()
+          this.onCancel()
+          this.getPaymentt()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
 
+  }
+  editPayment() {
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    console.log(data);
+    console.log(this.state.submissionTime);
+    var reg = /\s/;
+    if (
+      !this.state.customerID || !this.state.contractCoding || !this.state.submissionTime ||
+      data.receiveWay == undefined || data.receiveMoney == undefined
+      || data.returnNumber == undefined
+    ) {
+      message.error('请填写必填选项');
+    } else if (data.receiveWay.indexOf(' ') == 0 || data.receiveMoney.toString().indexOf(' ') == 0
+      || data.returnNumber.indexOf(' ') == 0
+    ) {
+      message.error('请不要输入空格');
+    } else {
+      axios({
+        method: "post",
+        url: `${base.url}/return-money/edit`,
+        params: {
+          token: this.state.token,
+        },
+        data: qs.stringify({
+          clientId: this.state.customerID,
+          content: data.content,
+          contractCoding: this.state.contractCoding,
+          employeeCheckId: this.state.employeeCheckedId,
+          content: data.content,
+          periods: data.periods,
+          receiveTime: this.state.submissionTime,
+          receiveWay: data.receiveWay,
+          returnNumber: data.returnNumber,
+          receiveMoney: data.receiveMoney,
+        })
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
+          message.error(res.data.message);
+          // this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.onCancel()
           this.getPaymentt()
         }
       }).catch((error) => {
@@ -266,7 +315,10 @@ class Payment extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createPayment()
+    this.state.isCreate ?
+      this.createPayment()
+      :
+      this.editPayment()
 
   }
 
@@ -290,8 +342,8 @@ class Payment extends Component {
         }
         else {
           this.setState({
-            tableArr: res.data.data?res.data.data.data:'',
-            pagination: res.data.data?res.data.data.pagination:''
+            tableArr: res.data.data ? res.data.data.data : '',
+            pagination: res.data.data ? res.data.data.pagination : ''
           })
         }
       })
@@ -393,7 +445,7 @@ class Payment extends Component {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', backgroundColor: '#f5f6f9', padding: '24px' }}>
           <span style={{ fontSize: '18px' }}>回款管理</span>
-          <Search placeholder='请输入回款名称'   style={{ width: '200px' }} onSearch={this.onSearch}
+          <Search placeholder='请输入回款名称' style={{ width: '200px' }} onSearch={this.onSearch}
             allowClear
           ></Search>
           <div>
@@ -401,6 +453,7 @@ class Payment extends Component {
               onClick={this.setVisible}
             >新建回款</Button>
             <Modal
+              maskStyle={{ backgroundColor: "#fff" }}
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
               title={this.state.isCreate ? '新建回款' : '编辑回款'}
@@ -452,9 +505,19 @@ class Payment extends Component {
 
 
                 <div>
-
-                  {/* 合同编号 */}
-                  <GetContractTable id={this.state.customerID} methods={(val) => { this.getContractID(val) }}  ></GetContractTable>
+                  <Form.Item
+                    name="contractCoding"
+                    label="合同编号"
+                    rules={[
+                      {
+                        required: true,
+                        message: '合同编号不能为空'
+                      }
+                    ]}
+                  >
+                    {/* 合同编号 */}
+                    <GetContractTable id={this.state.customerID} methods={(val) => { this.getContractID(val) }}  ></GetContractTable>
+                  </Form.Item>
 
                   <Form.Item
                     name="receiveTime"
@@ -489,7 +552,7 @@ class Payment extends Component {
                   </Form.Item>
 
                   <Form.Item
-                    name="reviceMoney"
+                    name="receiveMoney"
                     label="回款金额"
 
                     rules={[
@@ -528,18 +591,10 @@ class Payment extends Component {
                   <Form.Item
                     name="employeeCheckId"
                     label="审核人"
-                    rules={[
-                      {
-                        required: true,
-                        message: '审核人不能为空'
-                      }
-                    ]}
                   >
                     <GetEmployee contentResponsible={(val) => { this.getEmployee(val) }}   ></GetEmployee>
                   </Form.Item>
                 </div>
-
-
 
               </Form>
             </Modal>
@@ -556,35 +611,39 @@ class Payment extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
-              <Table
+            <div >
+              <ConfigProvider locale={zhCN}>
+                <Table
+                  columns={Data.columns}
+                  dataSource={this.state.tableArr}
+                  scroll={{ x: 1500, y: '26vw' }}
+                  pagination={{
+                    pageSize: this.state.pagination.limit ?
+                      this.state.pagination.limit
+                      :
+                      10
+                  }}
+                  defaultCurrent={1}
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        returnNumber: record.returnNumber
 
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                pagination={{
-                  pageSize: this.state.pagination.limit ?
-                    this.state.pagination.limit
-                    :
-                    10
-                }}
-                defaultCurrent={1}
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      returnNumber: record.returnNumber
+                      })
+                    },
+                  })}
 
-                    })
-                  },
-                })}
-
-              ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+                ></Table>
+              </ConfigProvider>
+              <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    showSizeChanger
+                    responsive={true}
+                    size={'small'}
                     defaultPageSize={10}
                     showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
                 </ConfigProvider>
@@ -611,7 +670,6 @@ class Payment extends Component {
                         this.setState({
                           isCreate: false,
                           formTitle: '新建回款'
-
                         })
                       }}
 
@@ -629,7 +687,6 @@ class Payment extends Component {
                           cancelText: '否',
                           onOk: () => {
                             // this.handleOk(id)//确认按钮的回调方法，在下面
-                            message.success('已成功刪除')
                             this.deletePayment()
                           }
                           ,

@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import base from '../../../../../../axios/axios';
 import axios from 'axios';
 import qs from 'qs'
-import { Table, ConfigProvider } from 'antd'
+import { Table,ConfigProvider } from 'antd'
 import zhCN from 'antd/es/locale/zh_CN';
-
 import Data from '../js/index';
-class GetProduct extends Component {
+class GetPayment extends Component {
 
 
     componentDidMount() {
@@ -28,10 +27,10 @@ class GetProduct extends Component {
     getThisCilentPayment() {
         axios({
             method: 'get',
-            url: `${base.url}/contract/getLinkProduce`,
+            url: `${base.url}/contract/getReturnMoney`,
             params: {
                 token: this.state.token,
-                contractId: this.props.value
+                contractId : this.props.value
             }
         })
             .then((res) => {
@@ -52,17 +51,18 @@ class GetProduct extends Component {
         return (
             <div>
                 <ConfigProvider locale={zhCN} >
-                    <Table
-                        columns={Data.columnsGetProduct}
-                        dataSource={this.state.tableArr}
-                        style={{ minHeight: '50vh' }}
+                <Table
+                    columns={Data.columnsGetProduct}
+                    dataSource={this.state.tableArr}
+                    style={{ minHeight: '50vh' }}
+                    // scroll={{ x: 1500 }}
 
-                    />
+                />
                 </ConfigProvider>
-            </div >
+            </div>
         )
     }
 
 }
 
-export default GetProduct
+export default GetPayment

@@ -90,12 +90,12 @@ function MenuRight(props) {
     const {SHOW_PARENT} = TreeSelect;
     const treeData = [];
 
-    for (let j = 0; j < allStaff.length; j++) {
-        treeData.push({
-            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
-            value: allStaff[j].id,
-        })
-    }
+    // for (let j = 0; j < allStaff.length; j++) {
+    //     treeData.push({
+    //         title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+    //         value: allStaff[j].id,
+    //     })
+    // }
     let onChangeStaff = value => {
         console.log('onChange ', value);
         selectStaff = value

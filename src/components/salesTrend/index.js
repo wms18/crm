@@ -1,8 +1,11 @@
 import React from 'react'
 import { useEffect } from 'react'
 
-function SalesTrend() {
+function SalesTrend(props) {
     useEffect(() => {
+
+
+
         const echarts = require('echarts/lib/echarts');
         require('echarts/lib/component/grid');
         require('echarts/lib/chart/bar');
@@ -16,18 +19,21 @@ function SalesTrend() {
         option = {
             xAxis: {
                 type: 'category',
-                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                data: ['回款金额', '合同金额']
+                // data:['']
             },
             yAxis: {
-                type: 'value'
+                type: 'value',
+                // data: [1000, 2000,5000,8000,120000]
             },
+
             series: [{
-                data: [120, {
-                    value: 200,
+                data: [props.data.contract.returnMoneyTotal, {
+                    value: props.data.contract.contractPrice,
                     itemStyle: {
                         color: '#a90000'
                     }
-                }, 150, 80, 70, 110, 130],
+                }, 1000, 3000, 5000, 7000],
                 type: 'bar'
             }]
         };

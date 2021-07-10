@@ -12,6 +12,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
 import GetBizOpp from './GetBizOpp'
+import GetCustomer from "../../../../../components/getCustomer";
 const { TabPane } = Tabs
 const { Option } = Select
 const { Search, TextArea } = Input
@@ -38,6 +39,9 @@ class Clue extends Component {
       followRecord: '',  //跟进记录的内容
       recordType: "",  //记录类型
 
+
+      //新建时传入的客户id
+      customerName: "",
 
       isCreate: true,
       formTitle: '新建线索',
@@ -74,6 +78,7 @@ class Clue extends Component {
 
 
     }
+    this.moveClue = this.moveClue.bind(this)
     this.onChange = this.onChange.bind(this)
     this.setVisible = this.setVisible.bind(this)
     this.onCancel = this.onCancel.bind(this)
@@ -92,7 +97,61 @@ class Clue extends Component {
     this.createFollowUpRecord = this.createFollowUpRecord.bind(this)
     this.getFollowUpRecord = this.getFollowUpRecord.bind(this)
     this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
+    this.getCustomerId = this.getCustomerId.bind(this)
+    this.transferCustomer = this.transferCustomer.bind(this)
 
+  }
+
+
+  //转移为客户
+  transferCustomer() {
+    axios({
+      method: 'post',
+      url: `${base.url}/clue/tranfer-client`,
+      params: {
+        token: this.state.token,
+        clueId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'SUCCESS') {
+          message.success('已成功转移为客户')
+          this.getClue()
+        } else {
+          message.warning('请重试')
+        }
+      })
+  }
+
+  getCustomerId(val) {
+    this.setState({
+      customerName: val ? val[0].clientName : ''
+    }, () => {
+    })
+
+  }
+
+
+
+
+  moveClue() {
+
+    axios({
+      method: "post",
+      url: `${base.url}/clue/delete`,
+      params: {
+        token: this.state.token,
+        clueId: this.state.record.id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'SUCCESS') {
+          message.success('删除成功')
+          this.getClue()
+        } else {
+          message.warning('请重试')
+        }
+      })
   }
 
 
@@ -203,60 +262,6 @@ class Clue extends Component {
       nextTime: dateString
     })
   }
-  dropdownMenu() {
-    const menu = (
-      <Menu>
-        <Menu.Item
-          onClick={() => {
-            Modal.confirm({
-              title: '确认删除',
-              icon: <ExclamationCircleOutlined />,
-              content: '确认删除此产品么？',
-              okText: '是',
-              okType: '',
-              cancelText: '否',
-              onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                console.log('确认');
-              }
-              ,
-              onCancel() {
-                console.log('Cancel');
-              },
-            });
-          }}
-        >
-          删除
-        </Menu.Item>
-
-        <Menu.Item
-
-          onClick={() => {
-            Modal.confirm({
-              title: '确认转移',
-              icon: <ExclamationCircleOutlined />,
-              content: '确认转移为客户么?',
-              okText: '转移',
-              okType: '',
-              cancelText: '取消',
-              onOk: () => {
-                // this.handleOk(id)//确认按钮的回调方法，在下面
-                // <Alert message="已取消转移" type="success" showIcon />
-                message.success('已成功转移')
-              }
-              ,
-              onCancel() {
-                message.warning('已取消')
-                // <Alert message="已取消转移" type="info" showIcon />
-              },
-            });
-          }}>
-          转移为客户
-        </Menu.Item>
-      </Menu>
-    )
-    return menu
-  }
 
 
   getEmployeeName() {
@@ -314,11 +319,13 @@ class Clue extends Component {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     var reg = /\s/;
     if (data.nextTalkTime == undefined || data.clientLevel == undefined
-      || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
-      || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
-      || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
+      || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+      || !this.state.customerName
     ) {
-      message.error('请填写必填选项并不要输入空格');
+      message.warning('请填写必填选项');
+    } else if (data.nextTalkTime.indexOf(' ') == 0 || data.clientLevel.indexOf(' ') == 0
+      || data.clientType.indexOf(' ') == 0 || data.clueFrom.indexOf(' ') == 0 || data.company.indexOf(' ') == 0) {
+      message.warning('请勿输入空格')
     } else {
       axios({
         method: "post",
@@ -326,11 +333,11 @@ class Clue extends Component {
         params: {
           token: this.state.token,
         },
-        // .replace(/\s+/g,'')
+
         data: qs.stringify({
           address: data.address,
           clientLevel: data.clientLevel,
-          clientName: data.clientName,
+          clientName: this.state.customerName,
           clientType: data.clientType,
           clueFrom: data.clueFrom,
           company: data.company,
@@ -347,9 +354,55 @@ class Clue extends Component {
           // this.onCancel()
         } else {
           message.success(res.data.message);
-          // this.onCancel()
+          this.onCancel()
+          this.getClue()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
 
-          this.getCluet()
+  }
+  editClue() {
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    if (data.nextTalkTime == undefined || data.clientLevel == undefined
+      || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+      || !this.state.customerName
+    ) {
+      message.warning('请填写必填选项');
+    } else if (data.nextTalkTime.indexOf(' ') == 0 || data.clientLevel.indexOf(' ') == 0
+      || data.clientType.indexOf(' ') == 0 || data.clueFrom.indexOf(' ') == 0 || data.company.indexOf(' ') == 0) {
+      message.warning('请勿输入空格')
+    } else {
+      axios({
+        method: "post",
+        url: `${base.url}/clue/update`,
+        params: {
+          token: this.state.token,
+        },
+
+        data: qs.stringify({
+          address: data.address,
+          clientLevel: data.clientLevel,
+          clientName: this.state.customerName,
+          clientType: data.clientType,
+          clueFrom: data.clueFrom,
+          company: data.company,
+          content: data.content,
+          currency: data.currency,
+          mobile: data.mobile,
+          nextTalkTime: data.nextTalkTime,
+          phone: data.phone,
+        })
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
+          message.error('请重试');
+          // this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.onCancel()
+          this.getClue()
         }
       }).catch((error) => {
         console.log(error);
@@ -365,7 +418,10 @@ class Clue extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createCluet()
+    this.state.isCreate ?
+      this.createCluet()
+      :
+      this.editClue()
 
   }
 
@@ -436,21 +492,21 @@ class Clue extends Component {
 
         this.formRef.current.setFieldsValue({
           clientLevel: this.state.record.clientLevel,
-          clientName: this.state.record.clientName,
+          // clientName: this.state.record.clientName,
           clientType: this.state.record.clientType,
           clueFrom: this.state.record.clueFrom,
           company: this.state.record.company,
           content: this.state.record.content,
-          createTime: this.state.record.createTime,
+          // createTime: this.state.record.createTime,
           currency: this.state.record.currency,
-          departmentId: this.state.record.departmentId,
-          employeeCreateId: this.state.record.employeeCreateId,
-          employeeResponsibleId: this.state.record.employeeResponsibleId,
+          // departmentId: this.state.record.departmentId,
+          // employeeCreateId: this.state.record.employeeCreateId,
+          // employeeResponsibleId: this.state.record.employeeResponsibleId,
           mobile: this.state.record.mobile,
           nextTalkTime: this.state.record.nextTalkTime,
           phone: this.state.record.phone,
           record: this.state.record.record,
-          updateTime: this.state.record.updateTime,
+          // updateTime: this.state.record.updateTime,
           address: this.state.record.address
         })
       }
@@ -509,9 +565,10 @@ class Clue extends Component {
               onClick={this.setVisible}
             >新建线索</Button>
             <Modal
-              mask={false}
+              // mask={false}
+              maskStyle={{ backgroundColor: "#fff" }}
               visible={this.state.visible}
-              title="新建线索"
+              title={this.state.isCreate ? "新建线索" : '编辑线索'}
               okText="确认"
               cancelText="取消"
               // confirmLoading={true}
@@ -540,7 +597,8 @@ class Clue extends Component {
                       },
                     ]}
                   >
-                    <Input />
+                    {/* <Input /> */}
+                    <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
                   </Form.Item>
                   <Form.Item
                     name="mobile"
@@ -669,7 +727,7 @@ class Clue extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
+            <div>
               <Table
 
                 columns={Data.columns}
@@ -693,9 +751,13 @@ class Clue extends Component {
                 })}
 
               ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+                      <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
+
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    showSizeChanger
+                    responsive={true}
+                    size={'small'}
                     defaultPageSize={10}
                     showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />                </ConfigProvider>
               </div>
@@ -712,52 +774,18 @@ class Clue extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                    <Button
-                      type='primary'
+
+                    <Button type='primary'
+                      style={{ marginLeft: '20px' }}
                       size={'small'}
                       onClick={() => {
-                        this.setTransferVisible()
+                        this.moveClue()
                       }}
-                    >转移</Button>
+                    >删除</Button>
 
-                    <Modal
-                      visible={this.state.transferVisible}
-                      title="转移线索"
-                      // okText="保存"
-                      // cancelText="取消"
-                      // onOk={this.transferSubmit}
-                      footer={[
-                        <Button onClick={this.transferSubmit} type='primary'>保存</Button>,
-                        <Button onClick={this.setTransferVisible} type='default'>取消</Button>
-                      ]}
-                    >
-                      <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
-                        </div>
-                      </div>
-
-                    </Modal>
                     <Button type='primary' size={'small'}
+                      style={{ marginLeft: '20px' }}
                       onClick={() => {
                         this.setVisible()
                         this.setState({
@@ -770,9 +798,12 @@ class Clue extends Component {
                     >编辑</Button>
 
 
-                    <Dropdown overlay={this.dropdownMenu} placement="bottomLeft" trigger={['click']}>
-                      <Button type='default' size={'small'} style={{ marginLeft: '10px', backgroundColror: '#fff !important', color: 'black !important' }}>更多&nbsp;∨</Button>
-                    </Dropdown>
+                    <Button type='default' size={'small'} style={{ marginLeft: '20px', backgroundColror: '#fff !important', color: 'black !important' }}
+
+                      onClick={() => {
+                        this.transferCustomer()
+                      }}
+                    >转移为客户</Button>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px' }}>

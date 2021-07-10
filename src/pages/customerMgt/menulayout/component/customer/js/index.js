@@ -83,12 +83,12 @@ const Data = {
       },
     },
     {
-      width: 100,
-      title: '创建人ID',
-      dataIndex: 'employeeCreateId',
+      width: 150,
+      title: '创建人姓名',
+      dataIndex: 'employeeCreateName',
       key: '8',
       sorter: {
-        compare: (a, b) => a.employeeCreateId - b.employeeCreateId,
+        compare: (a, b) => a.employeeCreateId.charCodeAT(0) - b.employeeCreateId.charCodeAT(0),
         multiple: 3,
       },
     },
@@ -103,10 +103,10 @@ const Data = {
       },
     },
     {
-      width: 100,
-      title: '负责人ID',
-      dataIndex: 'employeeResponsibleId',
-      key: 'employeeResponsibleId',
+      width: 150,
+      title: '负责人姓名',
+      dataIndex: 'employeeResponsibleName',
+      key: 'employeeResponsibleName',
       fixed: 'right',
       sorter: {
         compare: (a, b) => a.employeeResponsibleId - b.employeeResponsibleId,

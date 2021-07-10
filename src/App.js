@@ -14,8 +14,19 @@ import Paging from './PublicComponents/backstageMgt/component/staff&department/c
 import Login from "./PublicComponents/login/login";
 import MenuLeft from "./PublicComponents/office/menu/menu-left";
 import ReceptionTop from "./PublicComponents/top";
-import {useEffect} from 'react'
+import { useEffect } from 'react';
+import { useState } from 'react';
+
 function App() {
+    // const history = useHistory()
+    useEffect(() => {
+        if (!window.localStorage.getItem('token') || window.localStorage.getItem('token') == undefined || window.localStorage.getItem('token') == null) {
+            // history.push('/')
+            window.location.hash = "/";
+
+        }
+    }, [])
+
     return (
         <div>
             <HashRouter>
@@ -30,6 +41,7 @@ function App() {
                     <Route exact path={'/'} component={Login}></Route>
                     {/*<Login></Login>*/}
                     <Route path={'/office'} component={MenuLeft}></Route>
+                    {/* <Redirect from="/*" to="/" /> */}
                 </Switch>
             </HashRouter>
         </div>

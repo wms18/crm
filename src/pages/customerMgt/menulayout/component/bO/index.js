@@ -60,8 +60,8 @@ class BizOpp extends Component {
       token: window.localStorage.getItem('token'),
       modalProVisible: false,
 
-      productArr:'',   //新建时添加的产品信息,是数组
-      customerId:'',  //新建时添加的客户id
+      productArr: '',   //新建时添加的产品信息,是数组
+      customerId: '',  //新建时添加的客户id
       isCreate: true,
       formTitle: '新建商机',
 
@@ -85,16 +85,8 @@ class BizOpp extends Component {
       // 搜素商机名称
       keyword: '',
 
-
-      // 新增产品信息
-      number: '',
-      price: '',
-      produceCoding: '',
-      produceIntroduce: '',
-      produceName: '',
-      produceType: '',
-      putaway: "",
-      specification: ''
+      //转移负责人
+      empResponseID: '',
 
 
     }
@@ -112,7 +104,19 @@ class BizOpp extends Component {
     this.onChangeDate = this.onChangeDate.bind(this)
     this.setModalProVisible = this.setModalProVisible.bind(this)
     this.getCustomerId = this.getCustomerId.bind(this)
+    this.changeEmpRespon = this.changeEmpRespon.bind(this)
+    this.alterEmpRespon = this.alterEmpRespon.bind(this)
   }
+
+  //转移负责人组件获取负责人id
+  changeEmpRespon(val) {
+    this.setState({
+      empResponseID: val
+    })
+
+  }
+
+
 
   getCustomerId(val) {
     // console.log(val[0].id);
@@ -120,8 +124,8 @@ class BizOpp extends Component {
     //     customerId:val[0].id
     // })
     this.setState({
-      customerId:val[0].id
-    },()=>{
+      customerId: val[0].id
+    }, () => {
     })
 
   }
@@ -135,8 +139,8 @@ class BizOpp extends Component {
       return arr
     })
     this.setState({
-      productArr:arr
-    },()=>{
+      productArr: arr
+    }, () => {
     })
   }
 
@@ -206,8 +210,40 @@ class BizOpp extends Component {
     })
   }
 
+
+  //转移负责人请求
+  alterEmpRespon() {
+
+    axios({
+      method: 'post',
+      url: `${base.url}/commercialOpportunity/modifyPrincipal`,
+      params: {
+        token: this.state.token,
+        commercialOpportunityId: this.state.record.id,
+        employeeId: this.state.empResponseID
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已转移负责人')
+          this.getBizOpp()
+          this.setTransferVisible()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+
+  //转移负责人弹窗保存
   transferSubmit() {
     // setTransferVisible
+
+    this.alterEmpRespon()
   }
 
   getBizOpp() {
@@ -458,7 +494,7 @@ class BizOpp extends Component {
                       },
                     ]}
                   >
-                  <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
+                    <GetCustomer methods={(val) => { this.getCustomerId(val) }}  ></GetCustomer>
                   </Form.Item>
                   <Form.Item
                     name="commercialPrice"
@@ -556,7 +592,7 @@ class BizOpp extends Component {
                   </Form.Item>
                 </div>
                 <div>
-                  <AddedProduct  methods={(val)=>{this.getProductId(val)}} ></AddedProduct>
+                  <AddedProduct methods={(val) => { this.getProductId(val) }} ></AddedProduct>
                 </div>
 
 
@@ -575,7 +611,7 @@ class BizOpp extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
+            <div >
               <Table
 
                 columns={Data.columns}
@@ -596,7 +632,7 @@ class BizOpp extends Component {
                 })}
 
               ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+              <div style={{ position: 'absolute', bottom: '60px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
                     defaultPageSize={10}
@@ -634,27 +670,10 @@ class BizOpp extends Component {
                       ]}
                     >
                       <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", width: '263px', margin: '0 auto', alignItems: 'center' }}>
+                          <span>变更负责人</span>
+                          <GetEmployee contentResponsible={(val) => { this.changeEmpRespon(val) }}  ></GetEmployee>
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
                         </div>
                       </div>
 
@@ -839,18 +858,7 @@ class BizOpp extends Component {
                             <TabPane tab="跟进记录" key="1">
                               1
                             </TabPane>
-                            <TabPane tab="日志" key="2">
-                              2
-                            </TabPane>
-                            <TabPane tab="审批" key="3">
-                              3
-                            </TabPane>
-                            <TabPane tab="任务" key="4">
-                              4
-                            </TabPane>
-                            <TabPane tab="日程" key="5">
-                              5
-                            </TabPane>
+
                           </Tabs>
                         </div>
                       </TabPane>

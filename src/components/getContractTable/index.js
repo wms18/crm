@@ -189,127 +189,116 @@ function GetContractTable(props) {
 
     return (
 
-        <Form.Item
-            // name="clientId"
-            label="合同名称"
-            rules={[
-                {
-                    required: true,
-                    message: '合同姓名不能为空',
-                },
-            ]}
-        >
 
-            <div style={{ position: 'relative', height: '40px' }} >
-                <Select
-                    placeholder='+添加'
-                    disabled={hasBizOpp}
-                    dropdownClassName="hiddenDropdown"
-                    mode='tags'
-                    value={tags}
-                    allowClear={true}
-                    onClear={() => {
-                        arrTags = ''
-                        setArrTags(arrTags)
-                        tags = undefined
-                        setTags(tags)
-                        // selectedRows = ''
-                        // setSelectedRows(selectedRows)
-                        sendContractCoding()
-                    }}
+        <div style={{ position: 'relative', height: '40px' }} >
+            <Select
+                placeholder='+添加'
+                disabled={hasBizOpp}
+                dropdownClassName="hiddenDropdown"
+                mode='tags'
+                value={tags}
+                allowClear={true}
+                onClear={() => {
+                    arrTags = ''
+                    setArrTags(arrTags)
+                    tags = undefined
+                    setTags(tags)
+                    // selectedRows = ''
+                    // setSelectedRows(selectedRows)
+                    sendContractCoding()
+                }}
 
-                    style={{ position: 'absolute', right: '0px' }} style={{ width: 184 }}
+                style={{ position: 'absolute', right: '0px' }} style={{ width: 184 }}
 
-                    onClick={() => {
-                        console.log(arr);
-                        if (hasBizOpp) {
+                onClick={() => {
+                    console.log(arr);
+                    if (hasBizOpp) {
 
-                        } else {
-                            setModalProVisible(true)
+                    } else {
+                        setModalProVisible(true)
 
-                        }
-                    }} >添加产品</Select>
-                <Modal
-                    destroyOnClose={true}
-                    mask={false}
-                    title={'合同'}
-                    visible={modalProVisible}
-                    width={600}
-                    bodyStyle={{ height: 350, position: 'relative' }}
+                    }
+                }} >添加产品</Select>
+            <Modal
+                destroyOnClose={true}
+                mask={false}
+                title={'合同'}
+                visible={modalProVisible}
+                width={600}
+                bodyStyle={{ height: 350, position: 'relative' }}
 
-                    // height={500}
-                    // style={{height:500}}
-                    style={{ position: "absolute", right: 10 }}
-                    okText="保存"
-                    cancelText="取消"
-                    onOk={() => {
-                        setModalProVisible(false)
-                        // sendBizOppID()
-                        tags = arrTags
-                        setTags(tags)
-                        console.log(tags);
-                        sendContractCoding(selectedRows)
-                    }}
-                    onCancel={() => { setModalProVisible(false) }}
+                // height={500}
+                // style={{height:500}}
+                style={{ position: "absolute", right: 10 }}
+                okText="保存"
+                cancelText="取消"
+                onOk={() => {
+                    setModalProVisible(false)
+                    // sendBizOppID()
+                    tags = arrTags
+                    setTags(tags)
+                    console.log(tags);
+                    sendContractCoding(selectedRows)
+                }}
+                onCancel={() => { setModalProVisible(false) }}
 
-                >
-                    <div style={{ textAlign: 'center', padding: '0px 0px  15px 0' }}>
-                        <Search style={{ width: '200px' }} placeholder='请输入合同名称' ></Search>
-                    </div>
-                    <Spin style={{ display: visibleLoading }} indicator={antIcon} />
+            >
+                <div style={{ textAlign: 'center', padding: '0px 0px  15px 0' }}>
+                    <Search style={{ width: '200px' }} placeholder='请输入合同名称' ></Search>
+                </div>
+                <Spin style={{ display: visibleLoading }} indicator={antIcon} />
 
-                    <ConfigProvider locale={zhCN}>
-                        <Table
-                            style={{ display: visibleTable }}
-                            rowSelection={{
-                                type: selectionType,
-                                ...rowSelection
-                            }}
+                <ConfigProvider locale={zhCN}>
+                    <Table
+                        style={{ display: visibleTable }}
+                        rowSelection={{
+                            type: selectionType,
+                            ...rowSelection
+                        }}
 
-                            columns={Data.columns}
-                            dataSource={arr}
-                            scroll={{ y: 130 }}
-                            // style={{  height: 200 }}
+                        columns={Data.columns}
+                        dataSource={arr}
+                        scroll={{ y: 130 }}
+                        // style={{  height: 200 }}
 
-                            //点击行显示表格行信息
-                            onRow={(record) => ({
-                                onClick: () => {
-                                    console.log(record);
-                                    record = record
-                                    setRecord(record)
-                                },
-                            })}
+                        //点击行显示表格行信息
+                        onRow={(record) => ({
+                            onClick: () => {
+                                console.log(record);
+                                record = record
+                                setRecord(record)
+                            },
+                        })}
 
-                        />
-                    </ConfigProvider>
+                    />
+                </ConfigProvider>
 
-                    <div style={{ position: 'absolute', bottom: '20px' }} >
-                        <Button type='primary' style={{ marginRight: '20px' }}
-                            onClick={() => {
-                                console.log(1);
-                                if (currentPage == 1) {
-                                    message.warning('已是第一页')
-                                }
-                            }}
-                            disabled={hasData}
-                        >上一页</Button>
-                        <Button type='default'
-                            onClick={() => {
-                                console.log(1);
-                                if (currentPage == pagination.totalPage) {
-                                    message.warning('已是最后一页')
-                                }
-                            }}
-                            disabled={hasData}
-                        >下一页</Button>
-                    </div>
+                <div style={{ position: 'absolute', bottom: '20px' }} >
+                    <Button type='primary' style={{ marginRight: '20px' }}
+                        onClick={() => {
+                            console.log(1);
+                            if (currentPage == 1) {
+                                message.warning('已是第一页')
+                            }
+                        }}
+                        disabled={hasData}
+                    >上一页</Button>
+                    <Button type='default'
+                        onClick={() => {
+                            console.log(1);
+                            if (currentPage == pagination.totalPage) {
+                                message.warning('已是最后一页')
+                            }
+                        }}
+                        disabled={hasData}
+                    >下一页</Button>
+                </div>
 
-                </Modal>
+            </Modal>
 
 
 
-            </div>
-        </Form.Item>
+        </div>
 
     )
 
