@@ -6,17 +6,18 @@ import './style.css'
 import GetBizOpp from './GetBizOpp'
 import GetCustomer from '../../../../../components/getCustomer';
 import MapControl from '../../../../../components/mapControl'
+import GetEmployee from "../../../../../components/getEmployee";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Popconfirm, Tag
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import Data from "./js/index";
 
 const { TabPane } = Tabs
-const { Option, TextArea } = Select
-const { Search } = Input
+const { Option } = Select
+const { Search, TextArea } = Input
 const { Content, Footer, Header } = Layout
 
 class Contacts extends Component {
@@ -54,11 +55,21 @@ class Contacts extends Component {
       detailAddr: '', //新建时传入的详细地址
       pagination: '',
       currentPage: 1,
-      limit: 5,
+      limit: 10,
       tableArr: '',
 
       employeeArr: '',
 
+      //转移负责人
+      empResponseID: '',  //负责人id
+
+
+      //跟进记录
+      followUpRecordArr: "",
+      followUpnextTIme: '',
+      remind: '',
+      followRecord: '',
+      recordType: "",
       // 表格行点击时产品信息
       record: "",
 
@@ -80,10 +91,200 @@ class Contacts extends Component {
     this.onSearch = this.onSearch.bind(this)
     this.setTransferVisible = this.setTransferVisible.bind(this)
     this.getEmployeeName = this.getEmployeeName.bind(this)
-    this.onChangeDate = this.onChangeDate.bind(this)
     this.getCustomerID = this.getCustomerID.bind(this)
     this.editContactInfo = this.editContactInfo.bind(this)
+    this.deleteContacts = this.deleteContacts.bind(this)
+    this.onChangeDate = this.onChangeDate.bind(this)
+    this.onChangeRemind = this.onChangeRemind.bind(this)
+    this.onChangeFollowRecord = this.onChangeFollowRecord.bind(this)
+    this.onChangeRecordType = this.onChangeRecordType.bind(this)
+    this.createFollowUpRecord = this.createFollowUpRecord.bind(this)
+    this.getFollowUpRecord = this.getFollowUpRecord.bind(this)
+    this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
+    this.changeEmpRespon = this.changeEmpRespon.bind(this)
+    this.transferSubmit = this.transferSubmit.bind(this)
+    this.alterEmpRespon = this.alterEmpRespon.bind(this)
   }
+
+
+
+  //转移负责人
+  alterEmpRespon() {
+
+
+    // //获取联系人id
+    // axios({
+    //   method:'get',
+    //   url:`${base.url}/linkman/information`,
+    //   params:{
+    //     id :this.state.record.id
+    //   }
+    // })
+    // .then((res)=>{
+    //   console.log(res);
+    //   // if(res.data.code=='ERROR'){
+
+    //   // }else{
+    //   //   this.setState({
+    //   //     employeeResponsibleId:res.data.data.employeeResponsibleId
+    //   //   })
+    //   // }
+    // })
+    // .catch((res)=>{
+
+    // })
+
+    axios({
+      method: 'post',
+      url: `${base.url}/linkman/tranfer?linkmanIds=` + this.state.record.id,
+      params: {
+        token: this.state.token,
+        employeeResponsibleId: this.state.empResponseID
+      }
+    })
+      .then((res) => {
+        // console.log(res);
+        if (res.data.code == 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已转移负责人')
+          // this.setState({
+          //   transferVisible: !this.state.transferVisible
+          // })
+          this.getContacts()
+          this.setTransferVisible()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+
+  //转移负责人弹窗保存
+  transferSubmit() {
+    // setTransferVisible
+    this.alterEmpRespon()
+  }
+
+  //转移负责人组件获取负责人id
+  changeEmpRespon(val) {
+    this.setState({
+      empResponseID: val
+    })
+
+
+  }
+
+  //删除跟进记录
+  deleteFollowUpRecord(id) {
+    console.log(id);
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/delete`,
+      params: {
+        token: this.state.token,
+        followId: id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success(res.data.message)
+          this.getFollowUpRecord()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+
+  }
+
+  //获取跟进记录
+  getFollowUpRecord() {
+    axios({
+      method: 'get',
+      url: `${base.url}/follow/get-record`,
+      params: {
+        token: this.state.token,
+        businessId: this.state.record.id,
+        businessTypeId: 2  //联系人类型，id为1
+      },
+
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == 'ERROR') {
+
+        } else {
+          this.setState({
+            followUpRecordArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+  //创建跟进记录
+  createFollowUpRecord() {
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/add?`,
+      params: {
+        token: this.state.token
+      },
+      data: qs.stringify({
+        businessId: this.state.record.id,
+        businessTypeId: 2, //联系人类型id为1
+        followRecord: this.state.followRecord,
+        nextTime: this.state.followUpnextTIme,
+        recordType: this.state.recordType,
+        remind: this.state.remind
+      })
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.message == '保存成功') {
+          message.success('新增成功')
+          this.getFollowUpRecord()
+        } else {
+          message.warning('请重试')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+  //跟进记录类型
+  onChangeRecordType(val) {
+    console.log(val);
+    this.setState({
+      recordType: val
+    })
+  }
+
+  //跟进记录内容
+  onChangeFollowRecord(e) {
+    this.setState({
+      followRecord: e.target.value
+    })
+  }
+
+  //是否添加到日程提醒
+  onChangeRemind(e) {
+    let remind = e.target.checked ? 1 : 0
+    this.setState({
+      remind: remind
+    })
+  }
+
 
   //编辑客户信息
   editContactInfo() {
@@ -173,8 +374,14 @@ class Contacts extends Component {
     })
   }
 
+
+  //跟进记录日期
   onChangeDate(date, dateString) {
     console.log(date, dateString);
+    this.setState({
+      followUpnextTIme: dateString
+    })
+
   }
   dropdownMenu() {
     const menu = (
@@ -258,9 +465,7 @@ class Contacts extends Component {
     })
   }
 
-  transferSubmit() {
-    // setTransferVisible
-  }
+
 
 
   getContacts() {
@@ -327,15 +532,36 @@ class Contacts extends Component {
             // this.onCancel()
           } else {
             message.success(res.data.message);
-            // this.onCancel()
-
             this.getContacts()
+            this.onCancel()
           }
         }).catch((error) => {
           console.log(error);
         })
     }
 
+  }
+
+  deleteContacts() {
+    axios({
+      method: 'post',
+      url: `${base.url}/linkman/delete?ids=` + this.state.record.id,
+      params: {
+        token: this.state.token,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == "ERROR") {
+          message.error('请重试');
+          // this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.getContacts()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
   }
 
 
@@ -350,19 +576,20 @@ class Contacts extends Component {
   }
 
 
+
+
+  //搜索联系人
   onSearch(val) {
-    console.log(val);
-    console.log(typeof (val));
 
-    
-
-
-    //获取联系人
-    axios.get(`${base.url}/linkman/search?currentPage=` + this.state.currentPage + `&limit=` + this.state.limit, {
+    axios({
+      method: 'get',
+      url: `${base.url}/linkman/search`,
       params: {
         token: this.state.token,
-        keyword: val
-      },
+        keyWord: val,
+        currentPage: this.state.currentPage,
+        limit: this.state.limit
+      }
     })
       .then((res) => {
         console.log(res);
@@ -637,7 +864,7 @@ class Contacts extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
+            <div >
               <Table
 
                 columns={Data.columns}
@@ -648,20 +875,25 @@ class Contacts extends Component {
                 onRow={(record) => ({
                   onClick: () => {
                     console.log(record);
+                    this.getFollowUpRecord()
                     this.setState({
                       drawerVisible: true,
                       record: record,
-                      linkmanName: record.linkmanName
+                      linkmanName: record.linkmanName,
+                      detailAddr: record.detailAddress
 
                     })
                   },
                 })}
 
               ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+              <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    responsive={true}
+                    showSizeChanger
                     defaultPageSize={10}
+                    size={'small'}
                     showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
                 </ConfigProvider>
               </div>
@@ -699,27 +931,10 @@ class Contacts extends Component {
                       ]}
                     >
                       <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", width: '263px', margin: '0 auto', alignItems: 'center' }}>
+                          <span>变更负责人</span>
+                          <GetEmployee contentResponsible={(val) => { this.changeEmpRespon(val) }}  ></GetEmployee>
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
                         </div>
                       </div>
 
@@ -751,7 +966,8 @@ class Contacts extends Component {
                           cancelText: '否',
                           onOk: () => {
                             // this.handleOk(id)//确认按钮的回调方法，在下面
-                            message.success('已成功刪除')
+                            // message.success('已成功刪除')
+                            this.deleteContacts()
                           }
                           ,
                           onCancel() {
@@ -766,8 +982,8 @@ class Contacts extends Component {
                   <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: "40vw", padding: '0 30px 30px', alignItems: 'baseline' }}>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
-                      <span style={{ fontSize: 12, color: '#777' }}>联系人级别</span>
-                      <span style={{ fontSize: 14 }}>{this.state.record.clientLevel}</span>
+                      <div style={{ fontSize: 12, color: '#777' }}>联系人级别</div>
+                      <div style={{ fontSize: 14 }}>{this.state.record.clientLevel ? this.state.record.clientLevel : ' '}</div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: "column", height: '5vw', alignItems: 'left', justifyContent: 'space-evenly' }}>
@@ -865,14 +1081,18 @@ class Contacts extends Component {
                       <TabPane tab="跟进记录" key="2">
 
                         <div style={{ padding: '0 0 20px 0' }}>
-                          <Input style={{ height: 100 }}></Input>
+                          <TextArea style={{ height: 100 }}
+                            onChange={this.onChangeFollowRecord}
+                          ></TextArea>
                         </div>
                         <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div>
                             记录类型
                             &nbsp;
                             &nbsp;
-                            <Select style={{ width: 200 }}>
+                            <Select style={{ width: 200 }}
+                              onChange={this.onChangeRecordType}
+                            >
                               <Option value='上门拜访'>上门拜访</Option>
                               <Option value='电话邀约'>电话邀约</Option>
                               <Option value='线下单杀'>线下单杀</Option>
@@ -887,31 +1107,94 @@ class Contacts extends Component {
                                 <DatePicker onChange={this.onChangeDate} />
                               </Space>,
                             </ConfigProvider>
-                            <Checkbox style={{ fontSize: 12 }}>
+                            <Checkbox style={{ fontSize: 12 }} onChange={this.onChangeRemind} >
                               添加到日常提醒
                             </Checkbox>
                           </div>
                           <div>
-                            <Button size={'small'}>发布</Button>
+                            <Button size={'small'}
+                              onClick={this.createFollowUpRecord}
+                            >发布</Button>
                           </div>
                         </div>
                         <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
                           <Tabs defaultActiveKey="1" >
                             <TabPane tab="跟进记录" key="1">
-                              1
+
+                              {
+                                this.state.followUpRecordArr ? this.state.followUpRecordArr.map((item, index) => {
+                                  return (
+                                    <div key={index} style={{ margin: '30px 0' }}>
+                                      <div style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                        <div>
+                                          <span>跟进记录</span>
+                                          &nbsp;
+                                          &nbsp;
+                                          <Popconfirm
+                                            title="你确定要删除这条记录么?"
+                                            onConfirm={() => {
+                                              this.deleteFollowUpRecord(item.id)
+                                            }
+                                            }
+                                            onCancel={() => {
+                                              message.warning('已取消')
+                                            }}
+                                            okText="删除"
+                                            cancelText="取消"
+                                          >
+
+                                            <span className='iconfont icon-lajitong' ></span>
+                                          </Popconfirm>
+                                        </div>
+
+                                        <div style={{
+                                          display: 'flex',
+                                          flexDirection: 'row',
+                                          alignItems: 'center'
+                                        }}>
+                                          <div
+                                            style={{
+                                              width: '34px',
+                                              height: '34px',
+                                              backgroundColor: 'blue',
+                                              borderRadius: '50%',
+                                              color: 'white',
+                                              textAlign: 'center',
+                                              lineHeight: '34px',
+                                              marginRight: '8px'
+                                            }} F
+                                          >
+                                            {item.employeeAvatar ?
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                              :
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                            }
+                                          </div>
+                                          <div>
+
+
+                                            <div style={{ fontSize: '13px' }}>{item.employeeName}</div>
+                                            <div style={{ color: 'rgb(153, 153, 153)', marginTop: '3px', fontSize: '12px' }} >{item.createTime}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.followRecord}
+                                      </div>
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.recordType ? <Tag>{item.recordType}</Tag> : ''}
+                                        {item.nextTime ? <Tag>{item.nextTime}</Tag> : ''}
+                                      </div>
+                                    </div>
+                                  )
+                                })
+                                  :
+                                  ""
+                              }
+
                             </TabPane>
-                            <TabPane tab="日志" key="2">
-                              2
-                            </TabPane>
-                            <TabPane tab="审批" key="3">
-                              3
-                            </TabPane>
-                            <TabPane tab="任务" key="4">
-                              4
-                            </TabPane>
-                            <TabPane tab="日程" key="5">
-                              5
-                            </TabPane>
+
                           </Tabs>
                         </div>
                       </TabPane>

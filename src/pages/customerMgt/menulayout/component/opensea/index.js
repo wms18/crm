@@ -325,7 +325,7 @@ class Opensea extends Component {
       params: {
         token: this.state.token,
         businessId: this.state.record.id,
-        businessTypeId: 1  //公海类型，id为1
+        businessTypeId: 6  //公海类型，id为6  
       },
 
     })
@@ -399,7 +399,7 @@ class Opensea extends Component {
       },
       data: qs.stringify({
         businessId: this.state.record.id,
-        businessTypeId: 1, //公海类型id为1
+        businessTypeId: 6, //公海类型id为6
         followRecord: this.state.followRecord,
         nextTime: this.state.nextTime,
         recordType: this.state.recordType,
@@ -830,37 +830,41 @@ class Opensea extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
-              <Table
+            <div >
+              <ConfigProvider locale={zhCN}>
+                <Table
 
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '300px' }}
-                // pagination={{ pageSize: this.state.pagination.limit }}
-                defaultCurrent={1}
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      drawerTitle: record.clientFrom,
-                      dealStatus: record.dealStatus
+                  columns={Data.columns}
+                  dataSource={this.state.tableArr}
+                  scroll={{ x: 1500, y: '300px' }}
+                  // pagination={{ pageSize: this.state.pagination.limit }}
+                  defaultCurrent={1}
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        drawerTitle: record.clientFrom,
+                        dealStatus: record.dealStatus
 
 
-                    }, () => {
-                      let isCreate = 'create'
-                      let isResponsible = 'responsible'
-                      console.log(this.state.record.id);
-                      this.getFollowUpRecord()
-                    })
-                  },
-                })}
+                      }, () => {
+                        let isCreate = 'create'
+                        let isResponsible = 'responsible'
+                        console.log(this.state.record.id);
+                        this.getFollowUpRecord()
+                      })
+                    },
+                  })}
 
-              ></Table>
-              <div style={{ position: 'absolute', bottom: '-30vw', right: '0px' }}>
+                ></Table>
+              </ConfigProvider>
+              <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    size={'small'}
+                    responsive={true}
                     showSizeChanger
                     defaultPageSize={10}
                     showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.pagination.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />

@@ -1,7 +1,7 @@
 const Data = {
   columns: [
     {
-      width: 100,
+      width: 150,
       title: '商机名称',
       dataIndex: 'name',
       key: 'name',
@@ -150,40 +150,6 @@ const Data = {
     },
   ],
 
-  options: [
-    {
-      value: 'zhejiang',
-      label: 'Zhejiang',
-      children: [
-        {
-          value: 'hangzhou',
-          label: 'Hangzhou',
-          children: [
-            {
-              value: 'xihu',
-              label: 'West Lake',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      value: 'jiangsu',
-      label: 'Jiangsu',
-      children: [
-        {
-          value: 'nanjing',
-          label: 'Nanjing',
-          children: [
-            {
-              value: 'zhonghuamen',
-              label: 'Zhong Hua Men',
-            },
-          ],
-        },
-      ],
-    },
-  ]
 }
 
 export default Data

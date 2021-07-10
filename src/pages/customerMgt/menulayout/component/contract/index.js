@@ -11,7 +11,8 @@ import GetBizOppTable from "../../../../../components/getBizOppTable";
 import GetPayment from "./getPayment";
 import {
   Table, Button, Select, Input, Pagination, Layout, Modal, Form, Drawer, message
-  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps
+  , Dropdown, Menu, ConfigProvider, Tabs, Checkbox, Row, Col, Alert, DatePicker, Space, Steps,
+  Popconfirm, Tag
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
@@ -19,8 +20,8 @@ import Data from "./js/index";
 
 const { Step } = Steps;
 const { TabPane } = Tabs
-const { Option, TextArea } = Select
-const { Search } = Input
+const { Option, } = Select
+const { Search, TextArea } = Input
 const { Content, Footer, Header } = Layout
 
 
@@ -32,6 +33,7 @@ class Contract extends Component {
 
     // console.log(111);
     this.getContract()
+    this.getFollowUpRecord()
     // this.getEmployeeName()
   }
 
@@ -68,6 +70,13 @@ class Contract extends Component {
 
       employeeArr: '',
 
+      //跟进记录
+      followRecord: '',
+      remind: '',
+      recordType: '',
+      nextTime: "",
+      followUpRecordArr: "",
+
       // 表格行点击时产品信息
       record: "",
 
@@ -96,7 +105,102 @@ class Contract extends Component {
     this.getBizOppID = this.getBizOppID.bind(this)
     this.getEemployeeCheckId = this.getEemployeeCheckId.bind(this)
     this.getEmployeeSignId = this.getEmployeeSignId.bind(this)
+    this.onChangeFollowRecord = this.onChangeFollowRecord.bind(this)
+    this.onChangeRemind = this.onChangeRemind.bind(this)
+    this.onChangeRecordType = this.onChangeRecordType.bind(this)
+    this.createFollowUpRecord = this.createFollowUpRecord.bind(this)
+    this.onChangeFollowDate = this.onChangeFollowDate.bind(this)
+    this.getFollowUpRecord = this.getFollowUpRecord.bind(this)
+    this.deleteFollowUpRecord = this.deleteFollowUpRecord.bind(this)
 
+  }
+
+
+  //删除跟进记录
+  deleteFollowUpRecord(id) {
+    console.log(id);
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/delete`,
+      params: {
+        token: this.state.token,
+        followId: id
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success(res.data.message)
+          this.getFollowUpRecord()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+
+  }
+
+
+  //获取跟进记录
+  getFollowUpRecord() {
+    axios({
+      method: 'get',
+      url: `${base.url}/follow/get-record`,
+      params: {
+        token: this.state.token,
+        businessId: this.state.record.id,
+        businessTypeId: 4  //合同类型，id为4
+      },
+
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == 'ERROR') {
+
+        } else {
+          this.setState({
+            followUpRecordArr: res.data.data
+          })
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+  //跟进记录时间
+  onChangeFollowDate(date, dateString) {
+    console.log(typeof (dateString));
+    this.setState({
+      nextTime: dateString
+    })
+  }
+
+
+  //跟进记录内容
+  onChangeFollowRecord(e) {
+    this.setState({
+      followRecord: e.target.value
+    })
+  }
+
+  //是否添加到日程提醒
+  onChangeRemind(e) {
+    let remind = e.target.checked ? 1 : 0
+    this.setState({
+      remind: remind
+    })
+  }
+
+
+  //跟进记录类型
+  onChangeRecordType(val) {
+    console.log(val);
+    this.setState({
+      recordType: val
+    })
   }
 
 
@@ -142,6 +246,8 @@ class Contract extends Component {
 
 
 
+
+
   // 获取客户id
   getCustomerID(val) {
     console.log(val);
@@ -151,22 +257,38 @@ class Contract extends Component {
     })
   }
 
-  createFollowupRecord() {
-    axios.post(`${base.url}/follow/add`, {
+
+
+  //创建跟进记录
+  createFollowUpRecord() {
+    axios({
+      method: 'post',
+      url: `${base.url}/follow/add`,
       params: {
         token: this.state.token
       },
       data: qs.stringify({
         businessId: this.state.record.id,
-        businessTypeId: 1,
+        businessTypeId: 4, //合同类型id为1
         followRecord: this.state.followRecord,
-        nextTime: this.state.nextTalkTime,
-        recordType: '上门拜访',
-        remind: 0
-
+        nextTime: this.state.nextTime,
+        recordType: this.state.recordType,
+        remind: this.state.remind
       })
-
     })
+      .then((res) => {
+        console.log(res);
+        if (res.data.code == 'SUCCESS') {
+          message.success('新增成功')
+          this.getFollowUpRecord()
+
+        } else {
+          message.warning('请重试')
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
   }
 
   onChangeDate(date, dateString) {
@@ -240,19 +362,20 @@ class Contract extends Component {
 
   createContract() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    console.log(data);
-    console.log(this.state.submissionTime);
-    var reg = /\s/;
     if (
-      0 > 1
-      // data.nextTalkTime == undefined || data.clientLevel == undefined
-      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
-      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
-      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
-
+      !this.state.getLinkBizOppCustomerId || data.contractCoding == undefined
+      || data.contractPrice == undefined || data.orderTime == undefined
+      || !this.state.employeeCheckId
     ) {
-      message.error('请填写必填选项并不要输入空格');
-    } else {
+      message.error('请填写必填选项');
+    } else if (data.contractPrice.indexOf(' ') == 0 || data.orderTime.indexOf(' ') == 0
+      || data.contractCoding.indexOf(' ') == 0
+    ) {
+      message.warning('请不要输入空格');
+    } else if (!this.state.produceIds || this.state.produceIds == [] || this.state.produceIds == undefined) {
+      message.warning('请添加产品信息')
+    }
+    else {
       axios({
         method: "post",
         url: `${base.url}/contract/createContract`,
@@ -273,7 +396,6 @@ class Contract extends Component {
           contractEndTime: data.contractEndTime,
           orderTime: data.orderTime,
           produceIds: this.state.produceIds,
-          // totalPrice: data.totalPrice,
           contractPrice: data.contractPrice,
         })
       }).then((res) => {
@@ -285,7 +407,14 @@ class Contract extends Component {
           message.success('新增成功');
           // this.onCancel()
 
-          this.getContractt()
+          this.getContract()
+          this.setState({
+            employeeCheckId: '',
+            employeeSignId: '',
+            getLinkBizOppCustomerId: '',
+            commercialOpportunityId: '',
+            produceIds: '',
+          })
         }
       }).catch((error) => {
         console.log(error);
@@ -296,17 +425,19 @@ class Contract extends Component {
   editContract() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data);
-    console.log(this.state.submissionTime);
-    var reg = /\s/;
+    console.log(this.state.produceIds)
     if (
-      0 > 1
-      // data.nextTalkTime == undefined || data.clientLevel == undefined
-      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
-      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
-      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
-
+      !this.state.getLinkBizOppCustomerId || data.contractCoding == undefined
+      || data.contractPrice.toString() == undefined || data.orderTime == undefined
+      || !this.state.employeeCheckId
     ) {
-      message.error('请填写必填选项并不要输入空格');
+      message.error('请填写必填选项');
+    } else if (data.contractPrice.toString().indexOf(' ') == 0 || data.orderTime.indexOf(' ') == 0
+      || data.contractCoding.indexOf(' ') == 0
+    ) {
+      message.warning('请不要输入空格');
+    } else if (!this.state.produceIds || this.state.produceIds == [] || this.state.produceIds == undefined) {
+      message.warning('请添加产品信息')
     } else {
       axios({
         method: "post",
@@ -314,7 +445,6 @@ class Contract extends Component {
         params: {
           token: this.state.token,
         },
-        // .replace(/\s+/g,'')
         data: qs.stringify({
           contractId: this.state.record.id,
           contractBeginTime: data.contractBeginTime,
@@ -361,12 +491,11 @@ class Contract extends Component {
       console.log(res);
       if (res.data.code === "ERROR") {
         message.error('请重试');
-        // this.onCancel()
+        this.getContract()
       } else {
         message.success('删除成功');
         // this.onCancel()
-
-        this.getContractt()
+        this.getContract()
       }
     }).catch((error) => {
       console.log(error);
@@ -506,6 +635,8 @@ class Contract extends Component {
               onClick={this.setVisible}
             >新建合同</Button>
             <Modal
+              destroyOnClose={true}
+              maskStyle={{ backgroundColor: '#fff' }}
               bodyStyle={{ height: '380px', overflowY: 'auto' }}
               visible={this.state.visible}
               title={this.state.isCreate ? '新建合同' : '编辑合同'}
@@ -556,6 +687,12 @@ class Contract extends Component {
                   <Form.Item
                     name="cilentId"
                     label="客户名称"
+                    rules={[
+                      {
+                        required: true,
+                        message: "请选择客户"
+                      }
+                    ]}
                   >
                     <GetCustomer methods={(val) => {
                       this.getCustomerID(val)
@@ -585,7 +722,7 @@ class Contract extends Component {
                       }
                     ]}
                   >
-                    <Input type='number' />
+                    <Input />
                   </Form.Item>
 
                 </div>
@@ -674,31 +811,36 @@ class Contract extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
-              <Table
+            <div >
+              <ConfigProvider locale={zhCN}>
+                <Table
 
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                pagination={{ pageSize: this.state.pagination.limit }}
-                defaultCurrent={1}
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      name: record.name,
-                      contractId: record.id
+                  columns={Data.columns}
+                  dataSource={this.state.tableArr}
+                  scroll={{ x: 1500, y: '26vw' }}
+                  pagination={{ pageSize: this.state.pagination.limit }}
+                  defaultCurrent={1}
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        name: record.name,
+                        contractId: record.id
 
-                    })
-                  },
-                })}
+                      })
+                    },
+                  })}
 
-              ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+                ></Table>
+              </ConfigProvider>
+              <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    showSizeChanger
+                    responsive={true}
+                    size={'small'}
                     defaultPageSize={10}
                     showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
                 </ConfigProvider>
@@ -888,14 +1030,18 @@ class Contract extends Component {
                       <TabPane tab="跟进记录" key="2">
 
                         <div style={{ padding: '0 0 20px 0' }}>
-                          <Input style={{ height: 100 }}></Input>
+                          <TextArea style={{ height: 100 }}
+                            onChange={this.onChangeFollowRecord}
+                          ></TextArea>
                         </div>
                         <div style={{ fontSize: 12, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div>
                             记录类型
                             &nbsp;
                             &nbsp;
-                            <Select style={{ width: 200 }}>
+                            <Select style={{ width: 200 }}
+                              onChange={this.onChangeRecordType}
+                            >
                               <Option value='上门拜访'>上门拜访</Option>
                               <Option value='电话邀约'>电话邀约</Option>
                               <Option value='线下单杀'>线下单杀</Option>
@@ -907,22 +1053,97 @@ class Contract extends Component {
                             &nbsp;
                             <ConfigProvider locale={zhCN}>
                               <Space direction="vertical" style={{ marginRight: "20px" }}>
-                                <DatePicker onChange={this.onChangeDate} />
+                                <DatePicker onChange={this.onChangeFollowDate} />
                               </Space>,
                             </ConfigProvider>
-                            <Checkbox style={{ fontSize: 12 }}>
+                            <Checkbox style={{ fontSize: 12 }} onChange={this.onChangeRemind} >
                               添加到日常提醒
                             </Checkbox>
                           </div>
                           <div>
-                            <Button size={'small'}>发布</Button>
+                            <Button size={'small'}
+                              onClick={this.createFollowUpRecord}
+                            >发布</Button>
                           </div>
                         </div>
                         <div style={{ border: '1px solid rgb(230, 230, 230)', marginTop: '20px' }}>
                           <Tabs defaultActiveKey="1" >
                             <TabPane tab="跟进记录" key="1">
-                              1
+
+                              {
+                                this.state.followUpRecordArr ? this.state.followUpRecordArr.map((item, index) => {
+                                  return (
+                                    <div key={index} style={{ margin: '30px 0' }}>
+                                      <div style={{ display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                        <div>
+                                          <span>跟进记录</span>
+                                          &nbsp;
+                                          &nbsp;
+                                          <Popconfirm
+                                            title="你确定要删除这条记录么?"
+                                            onConfirm={() => {
+                                              this.deleteFollowUpRecord(item.id)
+                                            }
+                                            }
+                                            onCancel={() => {
+                                              message.warning('已取消')
+                                            }}
+                                            okText="删除"
+                                            cancelText="取消"
+                                          >
+
+                                            <span className='iconfont icon-lajitong' ></span>
+                                          </Popconfirm>
+                                        </div>
+
+                                        <div style={{
+                                          display: 'flex',
+                                          flexDirection: 'row',
+                                          alignItems: 'center'
+                                        }}>
+                                          <div
+                                            style={{
+                                              width: '34px',
+                                              height: '34px',
+                                              backgroundColor: 'blue',
+                                              borderRadius: '50%',
+                                              color: 'white',
+                                              textAlign: 'center',
+                                              lineHeight: '34px',
+                                              marginRight: '8px'
+                                            }} F
+                                          >
+                                            {item.employeeAvatar ?
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                              :
+                                              <span>{item.employeeName.slice(0, 2)}</span>
+                                            }
+                                          </div>
+                                          <div>
+
+
+                                            <div style={{ fontSize: '13px' }}>{item.employeeName}</div>
+                                            <div style={{ color: 'rgb(153, 153, 153)', marginTop: '3px', fontSize: '12px' }} >{item.createTime}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.followRecord}
+                                      </div>
+                                      <div style={{ padding: '20px 0px 0px 40px' }}>
+                                        {item.recordType ? <Tag>{item.recordType}</Tag> : ''}
+                                        {item.nextTime ? <Tag>{item.nextTime}</Tag> : ''}
+                                      </div>
+                                    </div>
+                                  )
+                                })
+                                  :
+                                  ""
+                              }
+
                             </TabPane>
+
                           </Tabs>
                         </div>
                       </TabPane>

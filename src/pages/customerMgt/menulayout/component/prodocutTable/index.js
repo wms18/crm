@@ -38,7 +38,7 @@ class ProductTable extends Component {
       token: window.localStorage.getItem('token'),
 
       editProVisible: false,
-      transferVisible:false,    //转移框显示
+      transferVisible: false,    //转移框显示
 
 
 
@@ -147,7 +147,8 @@ class ProductTable extends Component {
       }
     })
       .then((res) => {
-        if (!res.data.code === "SUCCESS") {
+        console.log(res);
+        if (!res.data.code == "SUCCESS") {
 
         } else {
           this.setState({
@@ -389,13 +390,14 @@ class ProductTable extends Component {
               onClick={this.setVisible}
             >新建产品</Button>
             <Modal
+              maskStyle={{ backgroundColor: "#fff" }}
               visible={this.state.visible}
               title={this.state.isCreate ? '新建产品' : '编辑产品'}
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
               onOk={this.submit}
-              bodyStyle={{height:350,overflowY:'auto'}}
+              bodyStyle={{ height: 350, overflowY: 'auto' }}
             >
               <Form
                 layout="vertical"
@@ -531,27 +533,29 @@ class ProductTable extends Component {
           >
           </div  >
 
-          <div style={{ position: 'relative' }}>
+          <div >
             <div>
-              <Table
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: 300 }}
-                pagination={{ pageSize: this.state.pagination.limit }}
+              <ConfigProvider locale={zhCN}>
+                <Table
+                  columns={Data.columns}
+                  dataSource={this.state.tableArr}
+                  scroll={{ x: 1500, y: 300 }}
+                  pagination={{ pageSize: this.state.pagination.limit }}
 
-                //点击行显示表格行信息
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      drawerTitle: record.produceName
-                    })
-                  },
-                })}
+                  //点击行显示表格行信息
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        drawerTitle: record.produceName
+                      })
+                    },
+                  })}
 
-              />
+                />
+              </ConfigProvider>
               <Drawer
                 title={this.state.drawerTitle}
                 placement="right"
@@ -567,7 +571,7 @@ class ProductTable extends Component {
                 <div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 10 }}>
-                   
+
 
                     <Button type='primary' size={'small'}
                       onClick={() => {
@@ -689,9 +693,12 @@ class ProductTable extends Component {
 
               </Drawer>
             </div>
-            <div style={{ position: 'absolute', bottom: '-374px', right: '0px' }}>
+            <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
               <ConfigProvider locale={zhCN}>
                 <Pagination showQuickJumper
+                  showSizeChanger
+                  responsive={true}
+                  size={'small'}
                   defaultPageSize={10}
                   showTotal={total => `共 ${total} 项`} defaultCurrent={1} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
               </ConfigProvider>

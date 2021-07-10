@@ -112,6 +112,7 @@ class Customer extends Component {
     this.changeEmpRespon = this.changeEmpRespon.bind(this)
     this.alterEmpRespon = this.alterEmpRespon.bind(this)
     this.transferSubmit = this.transferSubmit.bind(this)
+    this.onChangeSize = this.onChangeSize.bind(this)
 
   }
 
@@ -291,6 +292,7 @@ class Customer extends Component {
     })
   }
 
+  //删除跟进记录
   deleteFollowUpRecord(id) {
     console.log(id);
     axios({
@@ -314,7 +316,7 @@ class Customer extends Component {
       })
 
   }
-
+  //获取跟进记录
   getFollowUpRecord() {
     axios({
       method: 'get',
@@ -341,6 +343,8 @@ class Customer extends Component {
       })
   }
 
+
+  //跟进记录内容
   onChangeFollowRecord(e) {
     this.setState({
       followRecord: e.target.value
@@ -355,6 +359,8 @@ class Customer extends Component {
     })
   }
 
+
+  //跟进记录类型
   onChangeRecordType(val) {
     console.log(val);
     this.setState({
@@ -596,16 +602,19 @@ class Customer extends Component {
 
   createCustomer() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
-    var reg = /\s/;
+    // var reg = /\s/;
     if (
-      0 > 1
-      // data.nextTalkTime == undefined || data.clientLevel == undefined
-      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
-      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
-      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
-
+      // 0 > 1
+      data.certificate == undefined || data.clientFrom == undefined
+      || data.clientLevel == undefined || data.clientName == undefined || data.phone == undefined
     ) {
-      message.error('请填写必填选项并不要输入空格');
+      message.error('请填写必填选项');
+    } else if (
+      data.certificate.indexOf(' ') == 0 || data.clientFrom.indexOf(' ') == 0
+      || data.clientLevel.indexOf(' ') == 0 || data.clientName.indexOf(' ') == 0
+      || data.phone.indexOf(' ') == 0
+    ) {
+      message.error('请不要包含空格');
     } else {
       axios({
         method: "post",
@@ -677,6 +686,9 @@ class Customer extends Component {
           message.warning('请重试')
         } else {
           message.success('编辑成功')
+          this.setState({
+            visible: false
+          })
           this.getCustomer()
         }
       })
@@ -742,7 +754,7 @@ class Customer extends Component {
 
   //表格分页
   onChange(page, pageSize) {
-    console.log(page, pageSize);
+
     this.setState({
       currentPage: page,
       limit: pageSize
@@ -750,7 +762,14 @@ class Customer extends Component {
       this.getCustomer()
     })
 
-
+  }
+  onChangeSize(current, size) {
+    this.setState({
+      // currentPage: page,
+      limit: size
+    }, () => {      //setstate异步回调箭头函数
+      this.getCustomer()
+    })
 
   }
 
@@ -838,6 +857,7 @@ class Customer extends Component {
             >新建客户</Button>
             <Modal
               visible={this.state.visible}
+              maskStyle={{ backgroundColor: "#fff" }}
               title={this.state.isCreate ? '新建客户' : '编辑客户'}
               okText="确认"
               cancelText="取消"
@@ -893,6 +913,12 @@ class Customer extends Component {
                   <Form.Item
                     name="clientLevel"
                     label="客户级别"
+                    rules={[
+                      {
+                        required: true,
+                        message: '客户等级不能为空',
+                      },
+                    ]}
                   >
                     <Input />
                   </Form.Item>
@@ -1026,44 +1052,52 @@ class Customer extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
-              <Table
+            <div >
+              <ConfigProvider locale={zhCN}>
+                <Table
 
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '300px' }}
-                // pagination={{ pageSize: this.state.pagination.limit }}
-                defaultCurrent={1}
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      drawerTitle: record.clientFrom,
-                      dealStatus: record.dealStatus
+                  columns={Data.columns}
+                  dataSource={this.state.tableArr}
+                  scroll={{ x: 1500, y: '300px' }}
+                  // pagination={{ pageSize: this.state.pagination.limit }}
+                  defaultCurrent={1}
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        drawerTitle: record.clientFrom,
+                        dealStatus: record.dealStatus
 
 
-                    }, () => {
-                      let isCreate = 'create'
-                      let isResponsible = 'responsible'
-                      console.log(this.state.record.id);
-                      this.getFollowUpRecord()
-                    })
-                  },
-                })}
+                      }, () => {
+                        let isCreate = 'create'
+                        let isResponsible = 'responsible'
+                        console.log(this.state.record.id);
+                        this.getFollowUpRecord()
+                      })
+                    },
+                  })}
 
-              ></Table>
-              <div style={{ position: 'absolute', bottom: '-30vw', right: '0px' }}>
+                ></Table>
+              </ConfigProvider>
+              <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    responsive={true}
+                    size={'small'}
                     showSizeChanger
                     defaultPageSize={10}
-                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.pagination.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
+                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.pagination.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }}
+                    onChange={this.onChange}
+                  // onShowSizeChange={this.onChangeSize}
+                  />
+
                 </ConfigProvider>
               </div>
               <Drawer
-                title={this.state.record.clientName}
+                title={this.state.record.clientName ? this.state.record.clientName : '   '}
                 placement="right"
                 closable={true}
                 onClose={this.onClose}

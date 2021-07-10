@@ -14,7 +14,7 @@ const Data = {
     },
     {
       title: '手机号',
-      width: 100,
+      width: 150,
       dataIndex: 'phone',
       key: '1',
       sorter: {
@@ -23,7 +23,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '客户证件号',
       dataIndex: 'certificateId',
       key: '2',
@@ -63,7 +63,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 250,
       title: '详细地址',
       dataIndex: 'detailAddress',
       key: '6',
@@ -84,8 +84,8 @@ const Data = {
     },
     {
       width: 100,
-      title: '创建人ID',
-      dataIndex: 'employeeCreateId',
+      title: '创建人姓名',
+      dataIndex: 'employeeCreateName',
       key: '8',
       sorter: {
         compare: (a, b) => a.employeeCreateId - b.employeeCreateId,
@@ -93,7 +93,7 @@ const Data = {
       },
     },
     {
-      width: 100,
+      width: 150,
       title: '下次联系时间',
       dataIndex: 'nextTalkTime',
       key: '9',
@@ -102,28 +102,7 @@ const Data = {
         multiple: 3,
       },
     },
-    {
-      width: 100,
-      title: '负责人ID',
-      dataIndex: 'employeeResponsibleId',
-      key: 'employeeResponsibleId',
-      fixed: 'right',
-      sorter: {
-        compare: (a, b) => a.employeeResponsibleId - b.employeeResponsibleId,
-        multiple: 3,
-      },
-    },
-    {
-      width: 100,
-      title: '距进入公海时间',
-      dataIndex: 'intoSeaTime',
-      key: 'intoSeaTime',
-      fixed: 'right',
-      sorter: {
-        compare: (a, b) => a.intoSeaTime - b.intoSeaTime,
-        multiple: 3,
-      },
-    },
+   
   ],
   columnsBizOpp: [
     {

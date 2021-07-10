@@ -51,6 +51,8 @@ function Dashboaedlayout() {
 
     let [record, setRecord] = useState([])
     let [showInfo, setShowInfo] = useState(false)
+    let [chartsPaymentData, setChartsPaymentData] = useState(false)
+    let [chartsContractData, setChartsContractData] = useState(false)
     useEffect(() => {
 
         getPpt()
@@ -62,6 +64,7 @@ function Dashboaedlayout() {
         getPptDetail(3)
         getPptDetail(4)
         getPptDetail(5)
+        getPptDetail(6)
         getDep()
 
 
@@ -113,10 +116,11 @@ function Dashboaedlayout() {
             .then((res) => {
                 console.log(res);
                 if (res.data.code == 'SUCCESS') {
-                    status == 0 ?
-                        setContractGoal(res.data.data.contractGoal)
+
+                    status == 0 ?  //回款
+                        setChartsPaymentData(res.data.data)
                         :
-                        setReturnMoneyGoal(res.data.data.returnMoneyGoal)
+                        setChartsContractData(res.data.data)
                 }
             })
             .catch((res) => {
@@ -160,43 +164,13 @@ function Dashboaedlayout() {
             }
         })
             .then((res) => {
-                console.log(res);
-                if (res.data.data) {
-                    salesKit = res.data.data
-                    setSalesKit(salesKit)
-                    console.log(salesKit);
-                    let arr = []
-                    for (let name in salesKit) {//遍历对象属性名
-                        arr.push({ type: name, qty: salesKit[name] })
-                    }
-                    console.log(arr);
-                    arr.map((item) => {
-                        if (item.type == '联系人') {
-                            contactsQty = item.qty
-                            setContactsQty(contactsQty)
-                            console.log(contactsQty);
-                        } else if (item.type == '合同') {
-                            contractQty = item.qty
-                            setContractQty(contractQty)
-                            console.log(contractQty);
-                        } else if (item.type == '跟进记录') {
-                            followRecordQty = item.qty
-                            setFollowRecordQty(followRecordQty)
-                            console.log(followRecordQty);
-                        } else if (item.type == '回款') {
-                            paymentQty = item.qty
-                            setPaymentQty(paymentQty)
-                            console.log(paymentQty);
-                        } else if (item.type == '客户') {
-                            customerQty = item.qty
-                            setCustomerQty(customerQty)
-                            console.log(customerQty);
-                        } else if (item.type == '商机') {
-                            bizOppQty = item.qty
-                            setBizOppQty(bizOppQty)
-                            console.log(bizOppQty);
-                        }
-                    })
+                if (res.data.code == 'SUCCESS') {
+                    setContactsQty(res.data.data.linkman)
+                    setContractQty(res.data.data.contract)
+                    setFollowRecordQty(res.data.data.followRecord)
+                    setPaymentQty(res.data.data.returnMoney)
+                    setCustomerQty(res.data.data.client)
+                    setBizOppQty(res.data.data.commercialOpportunity)
                 }
             })
             .catch((res) => {
@@ -222,26 +196,26 @@ function Dashboaedlayout() {
             },
         })
             .then((res) => {
-               
+
                 switch (type) {
                     case 1:
-                        console.log('合同',res);
+                        console.log('合同', res);
                         break;
                     case 2:
-                        console.log('联系人',res);
-                        
+                        console.log('联系人', res);
+
                         break;
                     case 3:
-                        console.log('商机',res);
+                        console.log('商机', res);
                         break;
                     case 4:
-                        console.log('跟进记录',res);
+                        console.log('跟进记录', res);
                         break;
                     case 5:
-                        console.log('合同',res);
+                        console.log('合同', res);
                         break;
                     case 6:
-                        console.log('回款',res);
+                        console.log('回款', res);
                         break;
                 }
                 if (res.data.code == 'SUCCESS') {
@@ -259,10 +233,8 @@ function Dashboaedlayout() {
                             setBizOppData(bizOppData)
                             break;
                         case 4:
-                            console.log('跟进');
                             followUpRecordData = res.data.data
                             setFollowUpRecordData(res.data.data)
-                            console.log('跟进记录', res.data.data);
                             break;
                         case 5:
                             contractData = res.data.data
@@ -354,10 +326,7 @@ function Dashboaedlayout() {
                     </div>
 
                     <div style={{ position: 'relative' }}>
-                        <EchartsTest data={{
-                            rG: returnMoneyGoal,
-                            cG: contractGoal
-                        }}  ></EchartsTest>
+                        <EchartsTest data={{ payment: chartsPaymentData, contract: chartsContractData }}  ></EchartsTest>
                         {/* <Toprightt></Toprightt> */}
                     </div>
 
@@ -370,7 +339,7 @@ function Dashboaedlayout() {
                     </div>
 
                     <div style={{ position: 'relative' }}>
-                        <SalesTrend></SalesTrend>
+                        <SalesTrend data={{ payment: chartsPaymentData, contract: chartsContractData }} ></SalesTrend>
                         {/* <Footright></Footright> */}
                     </div>
 
@@ -378,7 +347,7 @@ function Dashboaedlayout() {
 
             </div>
 
-        </div>
+        </div >
 
     )
 

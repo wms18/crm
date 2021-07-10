@@ -14,6 +14,7 @@ import {
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import zhCN from 'antd/es/locale/zh_CN';
 import locale from 'antd/es/date-picker/locale/zh_CN';
+import GetEmployee from "../../components/getEmployee";
 import Data from "./js/index";
 
 const { Step } = Steps;
@@ -23,9 +24,9 @@ const { Search } = Input
 const { Content, Footer, Header } = Layout
 
 
-
-
 class BizOpp extends Component {
+
+
 
   componentDidMount() {
 
@@ -87,16 +88,8 @@ class BizOpp extends Component {
       // 搜素商机名称
       keyword: '',
 
-
-      // 新增产品信息
-      number: '',
-      price: '',
-      produceCoding: '',
-      produceIntroduce: '',
-      produceName: '',
-      produceType: '',
-      putaway: "",
-      specification: ''
+      //转移负责人
+      empResponseID: '',
 
 
     }
@@ -114,7 +107,139 @@ class BizOpp extends Component {
     this.onChangeDate = this.onChangeDate.bind(this)
     this.setModalProVisible = this.setModalProVisible.bind(this)
     this.getCustomerId = this.getCustomerId.bind(this)
+    this.alterEmpRespon = this.alterEmpRespon.bind(this)
+    this.transferSubmit = this.transferSubmit.bind(this)
+    this.transferSubmit = this.transferSubmit.bind(this)
+    this.editBizopp = this.editBizopp.bind(this)
   }
+
+  formRef = React.createRef()
+
+
+
+
+  editBizopp() {
+
+    const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
+    console.log(data);
+    console.log(this.state.submissionTime);
+    var reg = /\s/;
+    if (
+      // 0 > 1
+      // data.nextTalkTime == undefined || data.clientLevel == undefined
+      //   || data.clientName == undefined || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+      //   || reg.exec(data.nextTalkTime) != null || reg.exec(data.clientLevel) != null
+      //   || reg.exec(data.clientName) != null || reg.exec(data.clientType) != null || reg.exec(data.clueFrom) != null || reg.exec(data.company) != null
+      !this.state.customerId || !data.commercialStage || !data.commercialStatusGroup ||
+      data.name == undefined || !this.state.submissionTime
+
+    ) {
+      message.error('请填写必填选项');
+    } else if (data.name.indexOf(' ') == 0) {
+      message.error('请不要输入空格');
+    }
+    else {
+      axios({
+        method: "post",
+        url: `${base.url}/commercialOpportunity/update`,
+        params: {
+          token: this.state.token,
+          id: this.state.record.commercialOpportunityId
+        },
+        data: qs.stringify({
+          clientId: this.state.customerId,
+          commercialPrice: data.commercialPrice,
+          commercialStage: data.commercialStage,
+          commercialStatusGroup: data.commercialStatusGroup,
+          content: data.content,
+          // id: data.id,
+          discount: data.discount,
+          name: data.name,
+          produceIds: this.state.productArr,
+          submissionTime: this.state.submissionTime,
+          totalPrice: data.totalPrice,
+        })
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code === "ERROR") {
+          message.error('请重试');
+          // this.onCancel()
+        } else {
+          message.success(res.data.message);
+          this.onCancel()
+          this.getBizOpp()
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+
+  }
+
+  deleteBizOpp() {
+    axios({
+      method: 'delete',
+      url: `${base.url}/commercialOpportunity/delete`,
+      params: {
+        token: this.state.token,
+        id: this.state.record.commercialOpportunityId
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning('请重试')
+        } else {
+          message.success('删除成功')
+          this.getBizOpp()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+
+  //转移负责人组件获取负责人id
+  changeEmpRespon(val) {
+    this.setState({
+      empResponseID: val
+    })
+
+  }
+
+  //转移负责人请求
+  alterEmpRespon() {
+
+    axios({
+      method: 'post',
+      url: `${base.url}/commercialOpportunity/modifyPrincipal`,
+      params: {
+        token: this.state.token,
+        commercialOpportunityId: this.state.record.commercialOpportunityId,
+        employeeId: this.state.empResponseID
+      }
+    })
+      .then((res) => {
+        if (res.data.code == 'ERROR') {
+          message.warning(res.data.message)
+        } else {
+          message.success('已转移负责人')
+          this.getBizOpp()
+          this.setTransferVisible()
+        }
+      })
+      .catch((res) => {
+        console.log(res);
+      })
+  }
+
+  //转移负责人弹窗保存
+  transferSubmit() {
+    // setTransferVisible
+
+    this.alterEmpRespon()
+  }
+
 
   getCustomerId(val) {
     // console.log(val[0].id);
@@ -208,9 +333,7 @@ class BizOpp extends Component {
     })
   }
 
-  transferSubmit() {
-    // setTransferVisible
-  }
+
 
   getBizOpp() {
     //获取商机
@@ -237,7 +360,6 @@ class BizOpp extends Component {
   createBizOpp() {
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data);
-    console.log(this.state.submissionTime);
     var reg = /\s/;
     if (
       0 > 1
@@ -289,12 +411,16 @@ class BizOpp extends Component {
 
 
 
-  formRef = React.createRef()
   submit() {
+
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createBizOpp()
+    this.state.isCreate ?
+      this.createBizOpp()
+      :
+      this.editBizopp()
+
 
   }
 
@@ -351,27 +477,30 @@ class BizOpp extends Component {
   }
 
   setVisible() {
+
+    // formRef = React.createRef()
     this.setState({
       visible: !this.state.visible
     })
     setTimeout(() => {
-      console.log('record', this.state.record);
+      // console.log('record', this.state.record);
       if (this.state.isCreate) {
-        this.formRef.current.resetFields();
+        // this.formRef.current.resetFields();
       } else {
 
+        console.log('编辑商机');
+
         this.formRef.current.setFieldsValue({
-          clientId: this.state.record.clientId,
+          // clientId: this.state.record.clientId,
           commercialPrice: this.state.record.commercialPrice,
           commercialStage: this.state.record.commercialStage,
           commercialStatusGroup: this.state.record.commercialStatusGroup,
           content: this.state.record.content,
           discount: this.state.record.discount,
           name: this.state.record.name,
-          produceIds: this.state.record.produceIds,
-          // submissionTime: this.state.record.submissionTime,
+          // produceIds: this.state.record.produceIds,
           totalPrice: this.state.record.totalPrice,
-          // record: this.state.record.record,
+          // submissionTime: this.state.record.submissionTime
         })
       }
     }, 100);
@@ -437,7 +566,9 @@ class BizOpp extends Component {
               okText="确认"
               cancelText="取消"
               onCancel={this.onCancel}
-              onOk={this.submit}
+              onOk={
+                this.submit
+              }
 
             >
 
@@ -529,15 +660,15 @@ class BizOpp extends Component {
 
                 <div>
 
-               
+
                   <Form.Item
                     name="submissionTime"
                     label="预计成交时间"
-                   
+
                   >
-                    <DatePicker  
-     
-                    placeholder={this.state.dataPickerValue} locale={locale}  onChange={this.onChangeDate} />
+                    <DatePicker
+
+                      placeholder={this.state.dataPickerValue} locale={locale} onChange={this.onChangeDate} />
                   </Form.Item>
                   <Form.Item
                     name="phone"
@@ -582,14 +713,20 @@ class BizOpp extends Component {
           </div  >
 
           <div >
-            <div style={{ position: 'relative' }}>
+            <div>
               <Table
 
                 columns={Data.columns}
                 dataSource={this.state.tableArr}
                 scroll={{ x: 1500, y: '26vw' }}
+                // height={{}}
+                style={{ minHeight: '500px !important' }}
+                // className={'-ssss'}
+
                 pagination={{ pageSize: this.state.pagination.limit }}
                 defaultCurrent={1}
+                style={{
+                }}
                 onRow={(record) => ({
                   onClick: () => {
                     console.log(record);
@@ -603,11 +740,15 @@ class BizOpp extends Component {
                 })}
 
               ></Table>
-              <div style={{ position: 'absolute', bottom: '-32vw', right: '0px' }}>
+              <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
+                    showSizeChanger
+                    responsive={true}
+                    size={'small'}
                     defaultPageSize={10}
-                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }} onChange={this.onChange} />
+                    showTotal={total => `共 ${total} 项`} defaultCurrent={this.state.currentPage} total={this.state.pagination.total} style={{ marginLeft: '20PX' }}
+                    onChange={this.onChange} />
                 </ConfigProvider>
               </div>
               <Drawer
@@ -641,27 +782,10 @@ class BizOpp extends Component {
                       ]}
                     >
                       <div>
-                        变更负责人
-                        <div>
-                          <span>+点击选择</span>
-                          <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            mode='multiple'
-                            optionLabelProp="label"
-                          >
-                            {this.state.employeeArr.length ? this.state.employeeArr.map((item, index) => {
-                              return (<Option value={index} >
-                                <Checkbox>
-                                  <div>
-                                    <img src={item.arr} style={{ display: "inline-block", width: '20px', height: '20px', borderRadius: '100%', marginRight: '10px' }} />
-                                    <Row style={{ display: 'inline' }}>{item.username}</Row>
-                                  </div>
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "space-between", width: '263px', margin: '0 auto', alignItems: 'center' }}>
+                          <span>变更负责人</span>
+                          <GetEmployee contentResponsible={(val) => { this.changeEmpRespon(val) }}  ></GetEmployee>
 
-                                </Checkbox>
-                              </Option>)
-                            }) : ''}
-                          </Select>
                         </div>
                       </div>
 
@@ -673,7 +797,6 @@ class BizOpp extends Component {
                         this.setState({
                           isCreate: false,
                           formTitle: '新建商机'
-
                         })
                       }}
 
@@ -691,8 +814,7 @@ class BizOpp extends Component {
                           okType: '',
                           cancelText: '否',
                           onOk: () => {
-                            // this.handleOk(id)//确认按钮的回调方法，在下面
-                            message.success('已成功刪除')
+                            this.deleteBizOpp()
                           }
                           ,
                           onCancel() {
@@ -808,7 +930,7 @@ class BizOpp extends Component {
                           </div>
                         </div>
                       </TabPane>
-                      <TabPane tab="跟进记录" key="2">
+                      {/* <TabPane tab="跟进记录" key="2">
 
                         <div style={{ padding: '0 0 20px 0' }}>
                           <Input style={{ height: 100 }}></Input>
@@ -860,7 +982,7 @@ class BizOpp extends Component {
                             </TabPane>
                           </Tabs>
                         </div>
-                      </TabPane>
+                      </TabPane> */}
                       <TabPane tab="产品" key="5">
                         <GetProduct value={this.state.record.commercialOpportunityId}></GetProduct>
                       </TabPane>

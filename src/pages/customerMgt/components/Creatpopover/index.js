@@ -8,7 +8,7 @@ import CreateCustomer from '../../../../components/createCustomer';
 import CreateContacts from '../../../../components/createContacts';
 import CreateBizOpp from '../../../../components/createBizOpp';
 import CreatePayment from '../../../../components/createPayment';
-
+import PopCreateProduct from '../../../../components/popCreateProduct'
 function Creatpopover() {
 
   let [showcreateContract, setShowcreateContract] = useState(false)
@@ -17,6 +17,7 @@ function Creatpopover() {
   let [showcreateContacts, setShowcreateContacts] = useState(false)
   let [showcreateBizOpp, setShowcreateBizOpp] = useState(false)
   let [showcreatePayment, setShowcreatePayment] = useState(false)
+  let [showcreateProduct, setShowcreateProduct] = useState(false)
 
 
   function hidden() {
@@ -26,6 +27,7 @@ function Creatpopover() {
     setShowcreateContacts(false)
     setShowcreateBizOpp(false)
     setShowcreatePayment(false)
+    setShowcreateProduct(false)
   }
 
   let content = (
@@ -70,7 +72,11 @@ function Creatpopover() {
         >回款</span>
       </div>
       <div>
-        <span>产品</span>
+        <span
+        onClick={()=>{
+          setShowcreateProduct(true)
+        }}
+        >产品</span>
         &nbsp;&nbsp;
       </div>
 
@@ -90,7 +96,7 @@ function Creatpopover() {
       <CreateContacts show={showcreateContacts} method={hidden}  ></CreateContacts>
       <CreateBizOpp show={showcreateBizOpp} method={hidden}  ></CreateBizOpp>
       <CreatePayment show={showcreatePayment} method={hidden}  ></CreatePayment>
-
+      <PopCreateProduct show={showcreateProduct} method={hidden}   ></PopCreateProduct>
 
     </div>
 
