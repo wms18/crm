@@ -34,7 +34,6 @@ function FollowUp(props) {
   let [openSea, setOpenSea] = useState([])
 
   useEffect(() => {
-    console.log('跟进记录：', props.data);
     if (props.data.data) {
 
       let arr = {
@@ -80,7 +79,6 @@ function FollowUp(props) {
       })
       recordArr = newAray
       setRecordArr(recordArr)
-      console.log(recordArr);
 
       let newArr = []
       newArr.push(

@@ -31,9 +31,8 @@ function Contacts(props) {
   let [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    console.log('联系人',props.data);
 
-  }, [props.data])
+  }, [props])
 
   const showDrawer = () => {
     setVisible(true)
@@ -95,9 +94,9 @@ function Contacts(props) {
 
 
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: '20px' }}>
+          {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: '20px' }}>
             <Search style={{ width: 250 }} placeholder='请输入联系人名称/手机/电话' ></Search>
-          </div>
+          </div> */}
           <div>
             <Table columns={Data.columns} dataSource={props.data.data.data} scroll={{ x: 1500, y: 380 }} />
           </div>

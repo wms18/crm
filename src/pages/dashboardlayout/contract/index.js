@@ -25,8 +25,6 @@ function Contract(props) {
   let [record,setRecord]=useState([])
   let [showInfo,setShowInfo]=useState(false)
   useEffect(() => {
-    console.log('客户：', props.data);
-
 
   }, [props])
 
@@ -91,9 +89,9 @@ function Contract(props) {
 
 
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: '20px' }}>
+          {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: '20px' }}>
             <Search style={{ width: 250 }} placeholder='请输入合同编号' ></Search>
-          </div>
+          </div> */}
           <div>
             <Table columns={Data.columns} dataSource={props.data.data.data} scroll={{ x: 1500, y: 380 }}
               onRow={(record) => ({
