@@ -117,7 +117,7 @@ function EchartsTest(props) {
 
 
 
-    }, [props,finishRate])
+    }, [props, finishRate])
 
     function changeData(val) {
         console.log(val);
@@ -158,12 +158,15 @@ function EchartsTest(props) {
     return (
         <div >
             <div style={{ padding: '10px 10px 0 0', width: '100%', textAlign: 'right' }} >
-                <Select style={{ width: 100 }}
-                    onChange={changeData}
-                >
-                    <Option value='回款金额'>回款金额</Option>
-                    <Option value='合同金额' >合同金额</Option>
-                </Select >
+                <div style={{zIndex:999}} >
+                    <Select style={{ width: 100 }}
+                        onChange={changeData}
+                    >
+                        <Option value='回款金额'>回款金额</Option>
+                        <Option value='合同金额' >合同金额</Option>
+                    </Select >
+                </div>
+
             </div>
 
 
@@ -172,6 +175,7 @@ function EchartsTest(props) {
                 position: 'absolute',
                 top: 0, left: 0, right: 0, bottom: 0,
                 margin: 'auto',
+                zIndex:1
                 // border: '1px solid red'
             }}></div>
 

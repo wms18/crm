@@ -91,9 +91,9 @@ function Customer(props) {
 
 
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: '20px' }}>
+          {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: '20px' }}>
             <Search style={{ width: 250 }} placeholder='请输入客户名称/手机/电话' ></Search>
-          </div>
+          </div> */}
           <div>
             <Table columns={Data.columns} dataSource={props.data.data.data} scroll={{ x: 1500, y: 380 }}
               onRow={(record) => ({

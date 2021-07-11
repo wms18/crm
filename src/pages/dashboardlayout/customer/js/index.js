@@ -76,7 +76,6 @@ const Data = {
       dataIndex: 'clientName',
       key: 'clientName',
       fixed: 'left',
-      render: () => <a>客户名称</a>
       // sorter: {
       //   compare: (a, b) => a.clientName.charCodeAT(0) - b.clientName.charCodeAT(0),
       //   multiple: 3,

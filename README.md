@@ -1,3 +1,26 @@
+```
+出现`'AMap' is not defined '`
+
+请在
+
+node_modules/react-script/config/webpack.config.dev.js 文件中
+
+
+module.exports = {
+　　//entry
+　　//output等
+加入
+　　externals: {
+    　　'AMap': 'AMap',
+
+　　}
+}
+
+
+```
+
+
+
 目录结构
 
 ```
