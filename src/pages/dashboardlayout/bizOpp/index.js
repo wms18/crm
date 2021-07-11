@@ -25,10 +25,8 @@ function BizOpp(props) {
   let [showInfo, setShowInfo] = useState(false)
 
   useEffect(() => {
-    console.log(props.data);
 
-
-  }, [props.data])
+  }, [props])
 
   const showDrawer = () => {
     setVisible(true)
@@ -113,7 +111,7 @@ function BizOpp(props) {
           </div>
         </div>
       </Drawer>
-      <DrawerBizOpp record={{ show: showInfo, record: record }}  ></DrawerBizOpp>
+      {/* <DrawerBizOpp record={{ show: showInfo, record: record }}  ></DrawerBizOpp> */}
     </div>
   );
 }

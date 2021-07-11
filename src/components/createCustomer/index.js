@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, Form, Input } from 'antd'
 import MapControl from '../mapControl'
 import GetEmployee from '../getEmployee'
+import { Modal, Form, Input, message } from 'antd'
+import axios from 'axios'
+import qs from 'qs'
+import base from '../../axios/axios'
+
 function CreateCustomer(props) {
 
+
+    let formRef = React.createRef()
+
     let [visible, setVisible] = useState(false)
+    let [clientName, setClientName] = useState('')
+    let [token, setToken] = useState(window.localStorage.getItem("token"))
+    let [employeeResponsibleId, setEmployeeResponsibleId] = useState()
+    let [employeeCreateId, setEmployeeCreateId] = useState()
+    let [CsrAddr, setCsrAddr] = useState()
 
 
     useEffect(() => {
@@ -20,22 +32,93 @@ function CreateCustomer(props) {
     }
 
     function submit() {
+
+        createCustomer()
+
         props.method(false)
     }
 
+
+
+
     //创建人
     function giveMethCreate(val) {
-        console.log(val);
+        employeeCreateId = val
+        setEmployeeCreateId(employeeCreateId)
     }
+
+
+
     //负责人
     function giveMethResponsible(val) {
-        console.log(val);
+        employeeResponsibleId = val
+        setEmployeeResponsibleId(employeeResponsibleId)
     }
+
+
 
     function getAddr(val) {
-        console.log(val);
+        CsrAddr = val
+        setCsrAddr(CsrAddr)
     }
 
+
+
+    function createCustomer() {
+        const data = formRef.current.getFieldsValue();  //拿到form表单的值
+        // var reg = /\s/;
+        if (
+            // 0 > 1
+            data.certificate == undefined || data.clientFrom == undefined
+            || data.clientLevel == undefined || data.clientName == undefined || data.phone == undefined
+        ) {
+            message.error('请填写必填选项');
+        } else if (
+            data.certificate.indexOf(' ') == 0 || data.clientFrom.indexOf(' ') == 0
+            || data.clientLevel.indexOf(' ') == 0 || data.clientName.indexOf(' ') == 0
+            || data.phone.indexOf(' ') == 0
+        ) {
+            message.error('请不要包含空格');
+        } else {
+            axios({
+                method: "post",
+                url: `${base.url}/client/create?`,
+                params: {
+                    token: token,
+                },
+                // .replace(/\s+/g,'')
+                data: qs.stringify({
+                    certificate: data.certificate,
+                    certificateId: data.certificateId,
+                    clientFrom: data.clientFrom,
+                    clientName: data.clientName,
+                    clientLevel: data.clientLevel,
+                    content: data.content,
+                    dingtalk: data.dingtalk,
+                    nextTalkTime: data.nextTalkTime,
+                    phone: data.phone,
+                    employeeCreateId: employeeCreateId,
+                    employeeResponsibleId: employeeResponsibleId,
+                    detailAddress: CsrAddr
+
+
+                })
+            }).then((res) => {
+                console.log(res);
+                if (res.data.code === "ERROR") {
+                    message.error('请重试');
+                    // this.onCancel()
+                } else {
+                    message.success(res.data.message);
+                    onCancel()
+
+                }
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+
+    }
 
 
     return (
@@ -58,7 +141,7 @@ function CreateCustomer(props) {
                     initialValues={{
                         modifier: 'public',
                     }}
-                // ref={formRef}
+                    ref={formRef}
                 >
                     <div>
                         <Form.Item
@@ -161,37 +244,17 @@ function CreateCustomer(props) {
                         >
                             <Input />
                         </Form.Item>
-                        <Form.Item
-                            name="content"
-                            label="备注"
-                        >
-                            <Input />
-                        </Form.Item>
-
-
-                    </div>
-                    <div>
 
                         <Form.Item
                             name="nextTalkTime"
                             label="下次联系时间"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: '下次联系时间不能为空'
-                                }
-                            ]}
                         >
                             <Input />
                         </Form.Item>
-                        <Form.Item
-                            name="nextTalkTime"
-                            label="下次联系时间"
-                        >
-                            <Input />
-                        </Form.Item>
+
                     </div>
                     <div>
+
                         <Form.Item
                             name="address"
                             label="详细地址"
@@ -201,6 +264,7 @@ function CreateCustomer(props) {
                             <MapControl method={(val) => { getAddr(val) }}  ></MapControl>
                             {/* <GdMap></GdMap> */}
                         </Form.Item>
+
                         <Form.Item
                             name="phone"
                             label="客户手机号"
@@ -213,8 +277,8 @@ function CreateCustomer(props) {
                         >
                             <Input />
                         </Form.Item>
-
                     </div>
+
                 </Form>
             </Modal>
         </div>

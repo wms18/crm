@@ -1,6 +1,12 @@
-import React,{useState,useEffect} from 'react'
-import {Modal,Form,Input} from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Modal, Form, Input, message } from 'antd'
+import axios from 'axios'
+import qs from 'qs'
+import base from '../../axios/axios'
+import GetCustomer from '../getCustomer'
 function CreateClue(props) {
+
+    let formRef = React.createRef()
 
     useEffect(() => {
 
@@ -11,8 +17,70 @@ function CreateClue(props) {
     }, [props])
 
     let [visible, setVisible] = useState(false)
-    function submit() {
+    let [clientName, setClientName] = useState('')
+    let [token, setToken] = useState(window.localStorage.getItem("token"))
 
+
+    function getCustomerId(val) {
+        console.log(val);
+        clientName = val ? val[0].clientName : ''
+        setClientName(clientName)
+    }
+
+    function createClue() {
+        const data = formRef.current.getFieldsValue();  //拿到form表单的值
+        console.log(data);
+        var reg = /\s/;
+        if (data.nextTalkTime == undefined || data.clientLevel == undefined
+            || data.clientType == undefined || data.clueFrom == undefined || data.company == undefined
+            || !clientName
+        ) {
+            message.warning('请填写必填选项');
+        } else if (data.nextTalkTime.indexOf(' ') == 0 || data.clientLevel.indexOf(' ') == 0
+            || data.clientType.indexOf(' ') == 0 || data.clueFrom.indexOf(' ') == 0 || data.company.indexOf(' ') == 0) {
+            message.warning('请勿输入空格')
+        } else {
+            axios({
+                method: "post",
+                url: `${base.url}/clue/add`,
+                params: {
+                    token: token,
+                },
+
+                data: qs.stringify({
+                    address: data.address,
+                    clientLevel: data.clientLevel,
+                    clientName: clientName,
+                    clientType: data.clientType,
+                    clueFrom: data.clueFrom,
+                    company: data.company,
+                    content: data.content,
+                    currency: data.currency,
+                    mobile: data.mobile,
+                    nextTalkTime: data.nextTalkTime,
+                    phone: data.phone,
+                })
+            }).then((res) => {
+                console.log(res);
+                if (res.data.code === "ERROR") {
+                    message.error('请重试');
+                    // this.onCancel()
+                } else {
+                    message.success(res.data.message);
+                    onCancel()
+                    // getClue()
+                }
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+
+    }
+
+    function submit() {
+        createClue()
+
+        props.method(false)
     }
     function onCancel() {
         setVisible(false)
@@ -21,9 +89,12 @@ function CreateClue(props) {
     }
 
 
+
+
     return (
         <div>
             <Modal
+                destroyOnClose={true}
                 // mask={false}
                 maskStyle={{ backgroundColor: "#fff" }}
                 visible={visible}
@@ -43,7 +114,7 @@ function CreateClue(props) {
                     initialValues={{
                         modifier: 'public',
                     }}
-                    // ref={this.formRef}
+                    ref={formRef}
                 >
                     <div>
                         <Form.Item
@@ -56,7 +127,7 @@ function CreateClue(props) {
                                 },
                             ]}
                         >
-                            <Input />
+                            <GetCustomer methods={(val) => { getCustomerId(val) }}  ></GetCustomer>
                         </Form.Item>
                         <Form.Item
                             name="mobile"

@@ -27,9 +27,7 @@ function Customer(props) {
   let [showInfo, setShowInfo] = useState(false)
 
   useEffect(() => {
-    console.log(props.data);
-
-  }, [props.data])
+  }, [props])
 
   const showDrawer = () => {
     setVisible(true)
@@ -112,7 +110,7 @@ function Customer(props) {
         </div>
       </Drawer>
 
-      <DrawerCustomer record={{ show: showInfo, record: record }}   ></DrawerCustomer>
+      {/* <DrawerCustomer record={{ show: showInfo, record: record }}   ></DrawerCustomer> */}
     </div>
   );
 }

@@ -5,15 +5,12 @@ import './style.css';
 import Alertmodal from '../../components/alertmodal'
 import EchartsTest from '../../components/echarts';
 import SalesTrend from '../../components/salesTrend';
-import Topright from './component/topright'
-import Footleft from './component/footleft'
 import Customer from './customer'
 import Contacts from './contacts'
 import BizOpp from './bizOpp';
 import Contract from './contract'
 import FollowUp from './followup'
 import Payment from './payment'
-import Footright from './component/footright'
 import base from '../../axios/axios'
 import { AlignCenterOutlined, HomeOutlined } from '@ant-design/icons';
 import { Layout, Button, Select, DatePicker, ConfigProvider } from 'antd';
@@ -68,7 +65,7 @@ function Dashboaedlayout() {
         getDep()
 
 
-    }, [empDepId])
+    }, [])
 
     //获得所有部门
     function getDep() {
@@ -196,28 +193,6 @@ function Dashboaedlayout() {
             },
         })
             .then((res) => {
-
-                switch (type) {
-                    case 1:
-                        console.log('合同', res);
-                        break;
-                    case 2:
-                        console.log('联系人', res);
-
-                        break;
-                    case 3:
-                        console.log('商机', res);
-                        break;
-                    case 4:
-                        console.log('跟进记录', res);
-                        break;
-                    case 5:
-                        console.log('合同', res);
-                        break;
-                    case 6:
-                        console.log('回款', res);
-                        break;
-                }
                 if (res.data.code == 'SUCCESS') {
                     switch (type) {
                         case 1:
@@ -291,10 +266,6 @@ function Dashboaedlayout() {
                     </ConfigProvider>
 
                 </div>
-
-                <div>
-                    <Button icon={<AlignCenterOutlined />} width={100} style={{ backgroundColor: '#3e84e9', color: '#fff' }} >数据查重</Button>
-                </div>
             </div>
 
 
@@ -325,25 +296,17 @@ function Dashboaedlayout() {
                         </div>
                     </div>
 
-                    <div style={{ position: 'relative' }}>
+
+                    <div style={{ position: 'relative', padding: '20px' }}>
+                        <div style={{ display: "flex", alignItems: 'center'}} >
+                            <i className='iconfont icon-yejizhibiao' style={{ color: '#FF6767', fontSize: 15 }} ></i>
+                            <span style={{ fontSize: 14 }} >&nbsp;业绩指标</span>
+                        </div>
                         <EchartsTest data={{ payment: chartsPaymentData, contract: chartsContractData }}  ></EchartsTest>
-                        {/* <Toprightt></Toprightt> */}
                     </div>
 
                 </div>
 
-                <div>
-
-                    <div>
-                        <Footleft></Footleft>
-                    </div>
-
-                    <div style={{ position: 'relative' }}>
-                        <SalesTrend data={{ payment: chartsPaymentData, contract: chartsContractData }} ></SalesTrend>
-                        {/* <Footright></Footright> */}
-                    </div>
-
-                </div>
 
             </div>
 

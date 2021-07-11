@@ -31,10 +31,7 @@ function Payment(props) {
   let [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    console.log('回款：',props.qty);
-
-
-  }, [props.qty])
+  }, [props])
 
   const showDrawer = () => {
     setVisible(true)

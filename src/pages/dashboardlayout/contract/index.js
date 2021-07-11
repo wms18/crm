@@ -25,8 +25,6 @@ function Contract(props) {
   let [record,setRecord]=useState([])
   let [showInfo,setShowInfo]=useState(false)
   useEffect(() => {
-    console.log('客户：', props.data);
-
 
   }, [props])
 

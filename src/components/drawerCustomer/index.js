@@ -17,7 +17,6 @@ function DrawerCustomer(props) {
     let [drawerVisible, setDrawerVisible] = useState(false)
 
     useEffect(() => {
-        console.log(props.record);
         // ? props.record.show : ''
         drawerVisible = props.record.show
         setDrawerVisible(drawerVisible)

@@ -16,20 +16,45 @@ const { Option } = Select
 function EchartsTest(props) {
 
 
-    let [finishRate, setFinishRate] = useState()
-    let [contractGoal, setContractGoal] = useState()
+
+    let [finishRate, setFinishRate] = useState(
+        Math.ceil(props.data.contract.finishRate)
+    )
+    let [contractGoal, setContractGoal] = useState(
+        props.data.contract.returnMoneyGoal
+    )
+    let [returnMoneyTotal, setReturnMoneyTotal] = useState(
+        props.data.contract.returnMoneyTotal
+    )
+    let [contractPrice, setContractPrice] = useState(
+        props.data.contract.contractPrice
+    )
+    let [data, setData] = useState([])
     useEffect(() => {
 
-        console.log('图表数据', props.data);
-        // finishRate = props.data.contract ?
-        //     props.data.contract.finishRate : 0
+        props.data ? setData(props.data) : setData([])
+
+
+        // finishRate = data.contract ? data.contract.finishRate : 0
         // setFinishRate(finishRate)
-        // contractGoal = props.contract ? props.contract.returnMoneyGoal : 0
+
+        // contractGoal = data.contract ? data.contract.returnMoneyGoal : 0
         // setContractGoal(contractGoal)
+
+        // returnMoneyTotal = data.contract ? data.contract.returnMoneyTotal : 0
+        // setReturnMoneyTotal(returnMoneyTotal)
+
+
+        // contractPrice = data.contract ? data.contract.contractPrice : 0
+        // setContractPrice(contractPrice)
+
+
 
 
         const echarts = require('echarts/lib/echarts');
         require('echarts/lib/chart/gauge');
+
+
 
         // var chartDom = document.getElementById('main');
         if (document.getElementById('echarts-main')) {
@@ -92,20 +117,40 @@ function EchartsTest(props) {
 
 
 
-    }, [props, finishRate, contractGoal])
+    }, [props,finishRate])
 
     function changeData(val) {
         console.log(val);
-        if (val == '回款金额') {
-            contractGoal = props.data.contract.returnMoneyGoal
+        if (val == '合同金额') {
+
+            contractGoal = data.payment.contractGoal
             setContractGoal(contractGoal)
-            finishRate = Math.ceil(props.data.contract.finishRate)
+
+            finishRate = Math.ceil(data.payment.finishRate)
             setFinishRate(finishRate)
+
+            contractPrice = data.payment.contractPrice
+            setContractPrice(contractPrice)
+
+            returnMoneyTotal = data.payment.returnMoneyTotal
+            setReturnMoneyTotal(returnMoneyTotal)
+
+
         } else {
-            contractGoal = props.data.payment.contractGoal
+
+            finishRate = data.contract ? data.contract.finishRate : 0
+            setFinishRate(Math.ceil(finishRate))
+
+            contractGoal = data.contract ? data.contract.returnMoneyGoal : 0
             setContractGoal(contractGoal)
-            finishRate = Math.ceil(props.data.payment.finishRate)
-            setFinishRate(finishRate)
+
+            returnMoneyTotal = data.contract ? data.contract.returnMoneyTotal : 0
+            setReturnMoneyTotal(returnMoneyTotal)
+
+
+            contractPrice = data.contract ? data.contract.contractPrice : 0
+            setContractPrice(contractPrice)
+
         }
     }
 
@@ -115,11 +160,10 @@ function EchartsTest(props) {
             <div style={{ padding: '10px 10px 0 0', width: '100%', textAlign: 'right' }} >
                 <Select style={{ width: 100 }}
                     onChange={changeData}
-                // defaultValue='回款金额'
                 >
                     <Option value='回款金额'>回款金额</Option>
                     <Option value='合同金额' >合同金额</Option>
-                </Select>
+                </Select >
             </div>
 
 
@@ -133,8 +177,8 @@ function EchartsTest(props) {
 
             <div style={{ position: 'absolute', display: 'flex', bottom: "0", width: '100%', flexDirection: 'row', justifyContent: 'space-around', padding: '0 0 10px 0' }} >
                 <div style={{ display: 'inline-block', padding: "0 10px" }} >目标：{contractGoal}元</div>
-                <div style={{ display: 'inline-block', padding: "0 10px" }}  >回款金额：{props.data.contract.returnMoneyTotal}元</div>
-                <div style={{ display: 'inline-block', padding: "0 10px" }} >合同金额：{props.data.payment.contractPrice}元</div>
+                <div style={{ display: 'inline-block', padding: "0 10px" }}  >回款金额：{returnMoneyTotal}元</div>
+                <div style={{ display: 'inline-block', padding: "0 10px" }} >合同金额：{contractPrice}元</div>
             </div>
         </div>
     );
