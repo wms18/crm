@@ -1,18 +1,18 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Tooltip } from 'antd';
+import { Tooltip,Button } from 'antd';
 import Creat from "./creat";
 import './right.css'
 const text = <span><Creat/></span>;
 
 function Right() {
     return(
-        <div className="demo ">
-            <div className={'right_demo'}>
-                <Tooltip placement="right" title={text} zIndex={100}>
-                    <span className={'right_fast'}>快速创建
-                    <span className={'right_sp'}> > </span>
-                    </span>
+        <div >
+            <div className={'creatpopover'}>
+                <Tooltip placement="rightTop" title={text} zIndex={100}>
+                    <Button >快速创建</Button>
+                    {/*<span className={'right_sp'}> > </span>*/}
+
                 </Tooltip>
             </div>
         </div>

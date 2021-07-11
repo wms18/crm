@@ -33,9 +33,10 @@ function NewTask(props) {
     const {Search} = Input;
     let [searchMan, setSearchMan] = useState('')
     const onSearch = value => {
-        console.log(value);
         searchMan = value
         setSearchMan(searchMan)
+        console.log(value);
+        all()
     }
     //参与人
     useEffect(() => {

@@ -5,10 +5,8 @@ import NewTask from "../../task/newtask";
 import NewSchedule from "../../calendar/newSchedule";
 import {Modal} from "antd";
 import Newnotice from "../../notice/newnotice";
-import {Link}   from 'react-router-dom'
 import axios from "axios";
 import base from "../../../../axios/axios";
-
 function Creat() {
     let token = window.localStorage.getItem('token')
     // //写日志

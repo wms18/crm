@@ -33,7 +33,6 @@ function MenuLeft(props) {
             if (pathname === value) {
                 number = index + 1
                 number = number.toString()
-                console.log(number)
             }
         })
     return (
