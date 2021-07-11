@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Select } from 'antd';
+import { Gauge } from '@ant-design/charts';
 
 
 // 引入 ECharts 主模块
@@ -30,6 +31,7 @@ function EchartsTest(props) {
         props.data.contract.contractPrice
     )
     let [data, setData] = useState([])
+    let [config, setConfig] = useState()
     useEffect(() => {
 
         props.data ? setData(props.data) : setData([])
@@ -51,68 +53,96 @@ function EchartsTest(props) {
 
 
 
-        const echarts = require('echarts/lib/echarts');
-        require('echarts/lib/chart/gauge');
+        // const echarts = require('echarts/lib/echarts');
+        // require('echarts/lib/chart/gauge');
 
 
 
-        // var chartDom = document.getElementById('main');
-        if (document.getElementById('echarts-main')) {
-            var myChart = echarts.init(document.getElementById('echarts-main'))
-        }
-        var option;
+        // // var chartDom = document.getElementById('main');
+        // if (document.getElementById('echarts-main')) {
+        //     var myChart = echarts.init(document.getElementById('echarts-main'))
+        // }
+        // var option;
 
-        option = {
-            series: [{
-                type: 'gauge',
-                progress: {
-                    show: true,
-                    width: 18
+        // option = {
+        //     series: [{
+        //         type: 'gauge',
+        //         progress: {
+        //             show: true,
+        //             width: 18
+        //         },
+        //         axisLine: {
+        //             lineStyle: {
+        //                 width: 18
+        //             }
+        //         },
+        //         axisTick: {
+        //             show: false
+        //         },
+        //         splitLine: {
+        //             length: 15,
+        //             lineStyle: {
+        //                 width: 2,
+        //                 color: '#999'
+        //             }
+        //         },
+        //         axisLabel: {
+        //             distance: 20,
+        //             color: '#999',
+        //             fontSize: 15
+        //         },
+        //         anchor: {
+        //             show: true,
+        //             showAbove: true,
+        //             size: 20,
+        //             itemStyle: {
+        //                 borderWidth: 10
+        //             }
+        //         },
+        //         title: {
+        //             show: false
+        //         },
+        //         detail: {
+        //             valueAnimation: true,
+        //             fontSize: 40,
+        //             offsetCenter: [0, '70%']
+        //         },
+        //         data: [{
+        //             value:
+        //                 finishRate ? finishRate : 0
+        //         }]
+        //     }]
+        // };
+
+        // option && myChart.setOption(option);
+
+
+
+        var config = {
+            percent: finishRate/100,
+            limitInPlot:true,
+            type: 'meter',
+            // innerRadius: 0.75,
+            range: {
+                ticks: [0, 1 / 3, 2 / 3, 1],
+                color: ['#F4664A', '#FAAD14', '#30BF78'],
+            },
+            indicator: {
+                pointer: { style: { stroke: '#D0D0D0' } },
+                pin: { style: { stroke: '#D0D0D0' } },
+            },
+            statistic: {
+                content: {
+                    style: {
+                        fontSize: '25px',
+                        lineHeight: '25px',
+                    },
                 },
-                axisLine: {
-                    lineStyle: {
-                        width: 18
-                    }
-                },
-                axisTick: {
-                    show: false
-                },
-                splitLine: {
-                    length: 15,
-                    lineStyle: {
-                        width: 2,
-                        color: '#999'
-                    }
-                },
-                axisLabel: {
-                    distance: 20,
-                    color: '#999',
-                    fontSize: 15
-                },
-                anchor: {
-                    show: true,
-                    showAbove: true,
-                    size: 20,
-                    itemStyle: {
-                        borderWidth: 10
-                    }
-                },
-                title: {
-                    show: false
-                },
-                detail: {
-                    valueAnimation: true,
-                    fontSize: 40,
-                    offsetCenter: [0, '70%']
-                },
-                data: [{
-                    value:
-                        finishRate ? finishRate : 0
-                }]
-            }]
+            },
         };
 
-        option && myChart.setOption(option);
+        // setConfig({...config})
+
 
 
 
@@ -135,6 +165,31 @@ function EchartsTest(props) {
             returnMoneyTotal = data.payment.returnMoneyTotal
             setReturnMoneyTotal(returnMoneyTotal)
 
+            var config = {
+                percent: finishRate/100,
+                limitInPlot:true,
+                type: 'meter',
+                // innerRadius: 0.75,
+                range: {
+                    ticks: [0, 1 / 3, 2 / 3, 1],
+                    color: ['#F4664A', '#FAAD14', '#30BF78'],
+                },
+                indicator: {
+                    pointer: { style: { stroke: '#D0D0D0' } },
+                    pin: { style: { stroke: '#D0D0D0' } },
+                },
+                statistic: {
+                    content: {
+                        style: {
+                            fontSize: '25px',
+                            lineHeight: '25px',
+                        },
+                    },
+                },
+            };
+    
+            setConfig(config)
+
 
         } else {
 
@@ -151,6 +206,31 @@ function EchartsTest(props) {
             contractPrice = data.contract ? data.contract.contractPrice : 0
             setContractPrice(contractPrice)
 
+            var config = {
+                percent: finishRate/100,
+                limitInPlot:true,
+                type: 'meter',
+                // innerRadius: 0.75,
+                range: {
+                    ticks: [0, 1 / 3, 2 / 3, 1],
+                    color: ['#F4664A', '#FAAD14', '#30BF78'],
+                },
+                indicator: {
+                    pointer: { style: { stroke: '#D0D0D0' } },
+                    pin: { style: { stroke: '#D0D0D0' } },
+                },
+                statistic: {
+                    content: {
+                        style: {
+                            fontSize: '25px',
+                            lineHeight: '25px',
+                        },
+                    },
+                },
+            };
+    
+            setConfig(config)
+
         }
     }
 
@@ -158,7 +238,7 @@ function EchartsTest(props) {
     return (
         <div >
             <div style={{ padding: '10px 10px 0 0', width: '100%', textAlign: 'right' }} >
-                <div style={{zIndex:999}} >
+                <div style={{ zIndex: 999 }} >
                     <Select style={{ width: 100 }}
                         onChange={changeData}
                     >
@@ -171,15 +251,18 @@ function EchartsTest(props) {
 
 
             <div id="echarts-main" style={{
-                width: 400, height: 300,
+                width: 300, height: 300,
                 position: 'absolute',
                 top: 0, left: 0, right: 0, bottom: 0,
                 margin: 'auto',
-                zIndex:1
+                zIndex: 1
                 // border: '1px solid red'
-            }}></div>
+            }}>
+                <Gauge {...config} />;
 
-            <div style={{ position: 'absolute', display: 'flex', bottom: "0", width: '100%', flexDirection: 'row', justifyContent: 'space-around', padding: '0 0 10px 0' }} >
+            </div>
+
+            <div style={{ position: 'absolute', display: 'flex', bottom: "0", flexDirection: 'row', justifyContent: 'space-between', padding: '0 0 10px 0' }} >
                 <div style={{ display: 'inline-block', padding: "0 10px" }} >目标：{contractGoal}元</div>
                 <div style={{ display: 'inline-block', padding: "0 10px" }}  >回款金额：{returnMoneyTotal}元</div>
                 <div style={{ display: 'inline-block', padding: "0 10px" }} >合同金额：{contractPrice}元</div>
