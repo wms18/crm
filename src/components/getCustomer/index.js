@@ -106,6 +106,7 @@ function GetCustomer(props) {
                     pagination = res.data.data.pagination
                     setPagination(pagination)
 
+                    res.data.data.data?
                     res.data.data.data.map((item, index) => {
                         arr.push({
                             key: (index + 1).toString(),
@@ -120,6 +121,8 @@ function GetCustomer(props) {
 
 
                     })
+                    :
+                    console.log('');
                     // arr=res.data.data.data
 
 

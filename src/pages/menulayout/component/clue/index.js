@@ -728,6 +728,7 @@ class Clue extends Component {
 
           <div >
             <div>
+            <ConfigProvider locale={zhCN}>
               <Table
 
                 columns={Data.columns}
@@ -751,6 +752,7 @@ class Clue extends Component {
                 })}
 
               ></Table>
+              </ConfigProvider>
                       <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
 
                 <ConfigProvider locale={zhCN}>

@@ -982,16 +982,6 @@ class Customer extends Component {
                   >
                     <Input />
                   </Form.Item>
-                  <Form.Item
-                    name="content"
-                    label="备注"
-                  >
-                    <Input />
-                  </Form.Item>
-
-
-                </div>
-                <div>
 
                   <Form.Item
                     name="nextTalkTime"
@@ -1005,12 +995,7 @@ class Customer extends Component {
                   >
                     <Input />
                   </Form.Item>
-                  <Form.Item
-                    name="nextTalkTime"
-                    label="下次联系时间"
-                  >
-                    <Input />
-                  </Form.Item>
+
                 </div>
                 <div>
                   <Form.Item

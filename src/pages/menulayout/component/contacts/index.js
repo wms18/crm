@@ -318,6 +318,7 @@ class Contacts extends Component {
           phone: data.phone,
           role: data.role,
           sex: data.sex,
+          id: this.state.record.id
         })
       })
         .then((res) => {
@@ -571,7 +572,7 @@ class Contacts extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-      this.createContacts()
+    this.createContacts()
 
   }
 
@@ -752,7 +753,7 @@ class Contacts extends Component {
                       },
                     ]}
                   >
-                    <GetCustomer  methods={(val) => { this.getCustomerID(val) }} ></GetCustomer>
+                    <GetCustomer methods={(val) => { this.getCustomerID(val) }} ></GetCustomer>
 
                   </Form.Item>
                   <Form.Item
@@ -865,28 +866,30 @@ class Contacts extends Component {
 
           <div >
             <div >
-              <Table
+              <ConfigProvider locale={zhCN}>
+                <Table
 
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                pagination={{ pageSize: this.state.pagination.limit }}
-                defaultCurrent={1}
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.getFollowUpRecord()
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      linkmanName: record.linkmanName,
-                      detailAddr: record.detailAddress
+                  columns={Data.columns}
+                  dataSource={this.state.tableArr}
+                  scroll={{ x: 1500, y: '26vw' }}
+                  pagination={{ pageSize: this.state.pagination.limit }}
+                  defaultCurrent={1}
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.getFollowUpRecord()
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        linkmanName: record.linkmanName,
+                        detailAddr: record.detailAddress
 
-                    })
-                  },
-                })}
+                      })
+                    },
+                  })}
 
-              ></Table>
+                ></Table>
+              </ConfigProvider>
               <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper
