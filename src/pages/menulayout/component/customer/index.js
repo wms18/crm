@@ -685,9 +685,7 @@ class Customer extends Component {
           message.warning('请重试')
         } else {
           message.success('编辑成功')
-          this.setState({
-            visible: false
-          })
+          this.onCancel()
           this.getCustomer()
         }
       })
