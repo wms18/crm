@@ -571,7 +571,7 @@ class Contacts extends Component {
 
     const data = this.formRef.current.getFieldsValue();  //拿到form表单的值
     console.log(data)
-    this.createContacts()
+      this.createContacts()
 
   }
 
