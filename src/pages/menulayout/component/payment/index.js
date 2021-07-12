@@ -92,7 +92,26 @@ class Payment extends Component {
     this.onChangeDate = this.onChangeDate.bind(this)
     this.getCustomerID = this.getCustomerID.bind(this)
     this.deletePayment = this.deletePayment.bind(this)
+    this.getPaymentInfo = this.getPaymentInfo.bind(this)
 
+  }
+
+   //获取回款信息
+   getPaymentInfo(id){
+    axios({
+      method:"get",
+      url:`${base.url}/return-money/get-information`,
+      params:{
+        token:this.state.token,
+        id :id,
+      }
+    })
+    .then((res)=>{
+      console.log(res);
+    })
+    .catch((res)=>{
+      console.log(res);
+    })
   }
 
 
@@ -615,6 +634,7 @@ class Payment extends Component {
               <ConfigProvider locale={zhCN}>
                 <Table
                   columns={Data.columns}
+                  bordered={true}
                   dataSource={this.state.tableArr}
                   scroll={{ x: 1500, y: '26vw' }}
                   pagination={{
@@ -632,6 +652,8 @@ class Payment extends Component {
                         record: record,
                         returnNumber: record.returnNumber
 
+                      },()=>{
+                        this.getPaymentInfo(record.id)
                       })
                     },
                   })}

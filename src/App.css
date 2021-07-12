@@ -18,4 +18,6 @@
 .ant-table-tbody>tr:nth-child(n+2)>td:nth-child(1) {
     position: sticky !important;
     left: 0px !important;
+
+    /* 阿萨啊啊 */
 }

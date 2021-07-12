@@ -14,11 +14,11 @@ import {
     Table,
     DatePicker
 } from 'antd';
-import {Calendar, Select, Radio, Typography} from 'antd';
+import { Calendar, Select, Radio, Typography } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import LinkBusiness from "../../task/link";
 import axios from "axios";
 import base from "../../../../axios/axios";
@@ -85,16 +85,16 @@ function MenuRight(props) {
         })
     }
     //备注
-    const {TextArea} = Input;
+    const { TextArea } = Input;
     //参与人
-    const {SHOW_PARENT} = TreeSelect;
+    const { SHOW_PARENT } = TreeSelect;
     const treeData = [];
-    for (let j = 0; j < allStaff.length; j++) {
-        treeData.push({
-            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
-            value: allStaff[j].id,
-        })
-    }
+    for (let j = 0; j < allStaff?allStaff.length:1; j++) {
+            treeData.push({
+                title: <span><img style={{ width: '15px', height: '15px', marginRight: '10px' }} src={allStaff[j]?allStaff[j].avatar:''} alt="" />{allStaff[j]?allStaff[j].username:''}</span>,
+                value: allStaff[j]?allStaff[j].id:'',
+            })
+        }
     let onChangeStaff = value => {
         console.log('onChange ', value);
         selectStaff = value
@@ -125,7 +125,7 @@ function MenuRight(props) {
         setIsModalVisible(false);
     };
     //新建日程
-    let newSchedule = () =>{
+    let newSchedule = () => {
         axios({
             method: 'post',
             url: base.url + '/schedule/add',
@@ -155,7 +155,7 @@ function MenuRight(props) {
                 setTimeValue([null, null])
                 setSelectStaff([])
                 setContent('')
-                form.setFieldsValue({"title": ""}) // 清空标题
+                form.setFieldsValue({ "title": "" }) // 清空标题
                 setData(ids)
                 props.onHandle(1)
             }
@@ -168,12 +168,12 @@ function MenuRight(props) {
         setTimeValue([null, null])
         setSelectStaff([])
         setContent('')
-        form.setFieldsValue({"title": ""}) // 清空标题
+        form.setFieldsValue({ "title": "" }) // 清空标题
         setData(ids)
     };
 
     //开始时间，结束时间
-    const {RangePicker} = DatePicker;
+    const { RangePicker } = DatePicker;
     let onChangeTime = (value, dateString) => {
         console.log('Selected Time: ', value);
         console.log('Formatted Selected Time: ', dateString);
@@ -226,38 +226,38 @@ function MenuRight(props) {
         console.log(id)
         if (window.confirm("确定删除吗")) {
             axios({
-                method:'post',
-                url:base.url+'/schedule/remove?token='+token,
-                params:{
-                    id:id
+                method: 'post',
+                url: base.url + '/schedule/remove?token=' + token,
+                params: {
+                    id: id
                 }
-            }).then((response)=>{
+            }).then((response) => {
                 console.log(response)
-                if (response.data.code ==='ERROR'){
+                if (response.data.code === 'ERROR') {
                     console.log(response.data.message)
-                }else {
+                } else {
                     alert('删除成功')
                     schedule()
                 }
-            }).catch((error)=>{
+            }).catch((error) => {
                 alert(error)
             })
         }
     }
     return (
         <div className={'middle_right'}>
-            <div style={{width: '370px', height: '300px', marginBottom: '20px'}}>
-                <Card title="日程" style={{width: 370, height: '300px'}}>
+            <div style={{ width: '370px', height: '300px', marginBottom: '20px' }}>
+                <Card title="日程" style={{ width: 370, height: '300px' }}>
                     <p className={'right_one'}>
                         <p className={'right_two'}>
                             {scheduleNum === null ? '' : scheduleNum.map((item, index) => {
                                 return (
                                     <p key={index} className={'scheduleList'}>
                                         <span>{item.content}</span>
-                                        <span style={{color:'#1890FF'}}>
-                                            <i className="fa fa-trash-o" aria-hidden="true" onClick={()=>{
+                                        <span style={{ color: '#1890FF' }}>
+                                            <i className="fa fa-trash-o" aria-hidden="true" onClick={() => {
                                                 deleteSchedule(item.id)
-                                        }}></i>
+                                            }}></i>
                                         </span>
                                     </p>
                                 )
@@ -271,7 +271,7 @@ function MenuRight(props) {
                 <ConfigProvider locale={zhCN}>
                     <Calendar
                         fullscreen={false}
-                        headerRender={({value, type, onChange, onTypeChange}) => {
+                        headerRender={({ value, type, onChange, onTypeChange }) => {
                             const start = 0;
                             const end = 12;
                             const monthOptions = [];
@@ -302,18 +302,18 @@ function MenuRight(props) {
                                 );
                             }
                             return (
-                                <div style={{padding: 8}}>
+                                <div style={{ padding: 8 }}>
                                     <div className={'right_calendar'}>
                                         <span>日程</span>
                                         <div type="primary" onClick={showModal}>
-                                            <span style={{color: '#3E84E9'}}>+创建</span>
+                                            <span style={{ color: '#3E84E9' }}>+创建</span>
                                         </div>
                                         <Modal title="创建日程"
-                                               maskStyle={{backgroundColor: '#fff'}}
-                                               width={550}
-                                               visible={isModalVisible}
-                                               onOk={handleOk}
-                                               onCancel={handleCancel}>
+                                            maskStyle={{ backgroundColor: '#fff' }}
+                                            width={550}
+                                            visible={isModalVisible}
+                                            onOk={handleOk}
+                                            onCancel={handleCancel}>
                                             {/*输入内容*/}
                                             <Form
                                                 {...layout}
@@ -338,62 +338,62 @@ function MenuRight(props) {
                                                 >
                                                     <Input placeholder={'请输入内容'} value={title} onChange={(e) => {
                                                         handleTitle(e.target.value)
-                                                    }}/>
+                                                    }} />
                                                 </Form.Item>
                                             </Form>
                                             {/*时间*/}
-                                            <div style={{marginTop: '20px'}}>
+                                            <div style={{ marginTop: '20px' }}>
                                                 <span>选择时间</span>
                                             </div>
-                                            <div style={{margin: '10px 0'}}>
+                                            <div style={{ margin: '10px 0' }}>
                                                 <Space direction="vertical" size={12}>
                                                     <ConfigProvider locale={zhCN}>
                                                         <RangePicker
                                                             // bordered={false}
-                                                            showTime={{format: 'HH:mm'}}
+                                                            showTime={{ format: 'HH:mm' }}
                                                             format="YYYY-MM-DD HH:mm"
                                                             onChange={onChangeTime}
                                                             value={timeValue}
                                                             onOk={onOk}
-                                                            style={{width: '130%'}}
+                                                            style={{ width: '130%' }}
                                                         />
                                                     </ConfigProvider>
                                                 </Space>
                                             </div>
                                             {/*参与人*/}
-                                            <div style={{marginBottom: '10px'}}>
+                                            <div style={{ marginBottom: '10px' }}>
                                                 <span>参与人</span>
                                             </div>
                                             <TreeSelect {...tProps} />
-                                            <div style={{margin: '20px 0'}}>
+                                            <div style={{ margin: '20px 0' }}>
                                                 <span>备注</span>
                                             </div>
                                             <TextArea rows={4} value={content} onChange={(e) => {
                                                 handleContent(e.target.value)
-                                            }} placeholder={'请输入内容'}/>
-                                            <div style={{margin: '20px 0 0 0', color: '#3E84E9'}}>
+                                            }} placeholder={'请输入内容'} />
+                                            <div style={{ margin: '20px 0 0 0', color: '#3E84E9' }}>
                                                 <Button type="primary" onClick={showBusinessModal}
-                                                        style={{cursor: 'pointer'}}>
+                                                    style={{ cursor: 'pointer' }}>
                                                     关联业务
                                                 </Button>
                                                 <Modal title="关联业务模块"
-                                                       width={800}
-                                                       bordered={true}
-                                                       bodyStyle={{padding: 0}}
-                                                       visible={isBusinessModalVisible}
-                                                       footer={null}
-                                                       onOk={() => {
-                                                           setIsBusinessModalVisible(false);
-                                                       }}
-                                                       onCancel={() => {
-                                                           setIsBusinessModalVisible(false);
-                                                       }}>
+                                                    width={800}
+                                                    bordered={true}
+                                                    bodyStyle={{ padding: 0 }}
+                                                    visible={isBusinessModalVisible}
+                                                    footer={null}
+                                                    onOk={() => {
+                                                        setIsBusinessModalVisible(false);
+                                                    }}
+                                                    onCancel={() => {
+                                                        setIsBusinessModalVisible(false);
+                                                    }}>
                                                     <LinkBusiness onOk={(value) => {
                                                         console.log(value)
                                                         data = value
                                                         setData(data || ids)
                                                         setIsBusinessModalVisible(false);
-                                                    }}/>
+                                                    }} />
                                                 </Modal>
                                             </div>
                                         </Modal>
@@ -401,7 +401,7 @@ function MenuRight(props) {
                                     <Row gutter={8}>
                                         <Col>
                                             <Radio.Group size="small" onChange={e => onTypeChange(e.target.value)}
-                                                         value={type}>
+                                                value={type}>
                                                 <Radio.Button value="month">月</Radio.Button>
                                                 <Radio.Button value="year">年</Radio.Button>
                                             </Radio.Group>
