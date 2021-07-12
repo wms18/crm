@@ -161,6 +161,7 @@ function Dashboaedlayout() {
             }
         })
             .then((res) => {
+                console.log(res);
                 if (res.data.code == 'SUCCESS') {
                     setContactsQty(res.data.data.linkman)
                     setContractQty(res.data.data.contract)
@@ -202,6 +203,7 @@ function Dashboaedlayout() {
                         case 2:
                             contactsData = res.data.data
                             setContactsData(contactsData)
+                            console.log(res);
                             break;
                         case 3:
                             bizOppData = res.data.data

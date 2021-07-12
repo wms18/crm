@@ -709,32 +709,34 @@ class BizOpp extends Component {
 
           <div >
             <div>
-              <Table
+              <ConfigProvider locale={zhCN}>
+                <Table
 
-                columns={Data.columns}
-                dataSource={this.state.tableArr}
-                scroll={{ x: 1500, y: '26vw' }}
-                // height={{}}
-                style={{ minHeight: '500px !important' }}
-                // className={'-ssss'}
+                  columns={Data.columns}
+                  dataSource={this.state.tableArr}
+                  scroll={{ x: 1500, y: '26vw' }}
+                  // height={{}}
+                  style={{ minHeight: '500px !important' }}
+                  // className={'-ssss'}
 
-                pagination={{ pageSize: this.state.pagination.limit }}
-                defaultCurrent={1}
-                style={{
-                }}
-                onRow={(record) => ({
-                  onClick: () => {
-                    console.log(record);
-                    this.setState({
-                      drawerVisible: true,
-                      record: record,
-                      name: record.name
+                  pagination={{ pageSize: this.state.pagination.limit }}
+                  defaultCurrent={1}
+                  style={{
+                  }}
+                  onRow={(record) => ({
+                    onClick: () => {
+                      console.log(record);
+                      this.setState({
+                        drawerVisible: true,
+                        record: record,
+                        name: record.name
 
-                    })
-                  },
-                })}
+                      })
+                    },
+                  })}
 
-              ></Table>
+                ></Table>
+              </ConfigProvider>
               <div style={{ position: 'absolute', bottom: '30px', right: '20px' }}>
                 <ConfigProvider locale={zhCN}>
                   <Pagination showQuickJumper

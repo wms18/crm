@@ -129,7 +129,7 @@ function GetBizOppTable(props) {
 
             .then((res) => {
                 console.log(res);
-                if (res.data.code === "ERROR") {
+                if (res.data.code == "ERROR") {
 
                     visibleLoading = 'none'
                     setVisibleLoading(visibleLoading)
@@ -139,10 +139,11 @@ function GetBizOppTable(props) {
                     setArr(arr)
 
                 } else {
-                    console.log('商机信息存在')
                     arr = []
                     setArr(arr)
                     let temp=[...arr]  //解構對象，再set,不让指向同一内存地址导致Table组件不更新    
+
+                    res.data.data?
                     res.data.data.map((item, index) => {
                         temp.push({
                             key: (index + 1).toString(),
@@ -156,6 +157,8 @@ function GetBizOppTable(props) {
                             // setArr(temp)
                             setArr(temp)
                     })
+                    :
+                    console.log('');
 
 
 

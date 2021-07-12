@@ -404,16 +404,6 @@ const Data = {
     },
     {
       width: 100,
-      title: '客户签约人',
-      dataIndex: 'clientSignName',
-      key: '5',
-      sorter: {
-        compare: (a, b) => a.clientSignName.charCodeAt(0) - b.clientSignName.charCodeAt(0),
-        multiple: 3,
-      },
-    },
-    {
-      width: 100,
       title: '公司签约人',
       dataIndex: 'employeeSignName',
       key: 'employeeSignName',
