@@ -313,7 +313,7 @@ class TodoList extends Component {
         </div >
 
         <div>
-          <div style={{ display: 'flex', flexDirection: 'row',justifyContent:'space-between'}} >
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
             <div>
               <Menu
                 theme={"light"}
@@ -352,6 +352,7 @@ class TodoList extends Component {
               <div >
                 <ConfigProvider locale={zhCN}>
                   <Table
+                    bordered={true}
                     columns={this.state.Data}
                     dataSource={this.state.tableArr}
                     style={{ width: '58vw' }}
