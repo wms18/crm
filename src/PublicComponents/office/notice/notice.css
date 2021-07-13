@@ -49,18 +49,17 @@
     border-radius: 17px;
     float: left;
 }
-.middle_one1{
+.notice_one1{
     width:100%;
     height: calc(100vh - 221px);
     overflow: hidden;
     margin-top: 20px;
-
 }
-.middle_two{
-    width: calc(100% + 20px);
+.notice_two{
+    width: calc(100% + 13px);
     overflow-y:scroll ;
     overflow-x: hidden;
-    height: 600px;
+    height: 480px;
 }
 .site-layout{
     background-color: #f0f2f5;

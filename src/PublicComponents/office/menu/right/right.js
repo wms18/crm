@@ -12,7 +12,6 @@ function Right() {
                 <Tooltip placement="rightTop" title={text} zIndex={100}>
                     <Button >快速创建</Button>
                     {/*<span className={'right_sp'}> > </span>*/}
-
                 </Tooltip>
             </div>
         </div>

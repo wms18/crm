@@ -15,8 +15,8 @@ import Login from "./PublicComponents/login/login";
 import MenuLeft from "./PublicComponents/office/menu/menu-left";
 import ReceptionTop from "./PublicComponents/top";
 import { useEffect } from 'react';
-import { useState } from 'react';
-
+import store from "./store/store";
+import {Provider} from "react-redux";
 function App() {
     // const history = useHistory()
     useEffect(() => {
@@ -28,9 +28,11 @@ function App() {
     }, [])
 
     return (
+        <Provider store={store}>
         <div>
             <HashRouter>
                 <Switch>
+
                     {/*<Top></Top>*/}
                     <Route path={'/person'} component={PersonalInfo}></Route>
                     {/* <PersonalInfo></PersonalInfo> */}
@@ -42,9 +44,11 @@ function App() {
                     {/*<Login></Login>*/}
                     <Route path={'/office'} component={MenuLeft}></Route>
                     {/* <Redirect from="/*" to="/" /> */}
+
                 </Switch>
             </HashRouter>
         </div>
+        </Provider>
     );
 }
 export default App;

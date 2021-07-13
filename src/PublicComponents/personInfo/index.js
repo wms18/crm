@@ -56,8 +56,7 @@ function PersonalInfo(props) {
         })
     }
     return (
-        <div className='personalinfoMain'>
-
+        <div className='personalinfoMain'>· 
             {/* 按钮部分 */}
             <div>
                 <div style={{ textAlign: 'right' }} className='perinfoBtn'>

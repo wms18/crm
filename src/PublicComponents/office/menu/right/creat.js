@@ -7,7 +7,14 @@ import {Modal} from "antd";
 import Newnotice from "../../notice/newnotice";
 import axios from "axios";
 import base from "../../../../axios/axios";
-function Creat() {
+import {connect} from "react-redux";
+
+
+function Creat(props) {
+    let handle = () =>{
+        props.sendAction()
+    }
+
     let token = window.localStorage.getItem('token')
     // //写日志
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -18,6 +25,7 @@ function Creat() {
 
     const journalOk = () => {
         setIsModalVisible(false);
+        handle()
     };
 
     const journalCancel = () => {
@@ -85,6 +93,7 @@ function Creat() {
                 alert(response.data.message)
             } else {
                 alert('新建任务成功')
+                handle()
             }
         }).catch((error) => {
             alert(error)
@@ -98,6 +107,7 @@ function Creat() {
         setIsModalVisibleSchedule(true);
     };
     const handleOkSchedule = () => {
+        handle()
         setIsModalVisibleSchedule(false);
     };
 
@@ -178,6 +188,7 @@ function Creat() {
                         <Newapproval onCancel={()=>{
                             setIsModalVisibleApproval(false);
                         }} onOk={()=>{
+                            handle()
                             setIsModalVisibleApproval(false);
                         }}/>
                     </Modal>
@@ -221,6 +232,7 @@ function Creat() {
                             setMesObj(mesObj)
                             handleNotice()
                             setIsModalVisibleNotice(false);
+                            handle()
                         }} onCancel={()=>{
                             setIsModalVisibleNotice(false);
                         }}/>
@@ -230,5 +242,13 @@ function Creat() {
         </div>
     )
 }
-
-export default Creat
+const mapDispatchToProps = dispatch =>{
+    return {
+        sendAction:()=>{
+            dispatch({
+                type: 'journal'
+            })
+        }
+    }
+}
+export default connect(null,mapDispatchToProps)(Creat)

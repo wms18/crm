@@ -30,7 +30,7 @@ function Newjournal(props) {
                 url: base.url + '/log/create',
                 data: qs.stringify({
                     token: token,
-                    contentType: dateActive,
+                    contentType: dateActive+1,
                     employeeIds: selectStaff,
                     nextContent: next,
                     problem: problem,

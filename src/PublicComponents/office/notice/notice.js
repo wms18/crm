@@ -1,5 +1,5 @@
 import './notice.css'
-import {Avatar, Button, ConfigProvider, DatePicker, Form, Image, Input, Modal, Select, Space, TreeSelect} from "antd";
+import {Avatar, Spin,Alert,Button, ConfigProvider, DatePicker, Form, Image, Input, Modal, Select, Space, TreeSelect} from "antd";
 import React, {useState, useEffect} from 'react';
 import avatar from "../work/middle/3.jpg";
 import {ScheduleOutlined} from "@ant-design/icons";
@@ -27,6 +27,7 @@ function Notice(props) {
     let [noticeTime, setNoticeTime] = useState([])   //公告时间
     let [content, setContent] = useState('')  //公告内容
     let [theme, setTheme] = useState('') //公告详情
+    let [spin,setSpin] = useState(true)
     useEffect(() => {
         if (!window.localStorage.getItem('token')){
             props.history.push('/')
@@ -48,6 +49,7 @@ function Notice(props) {
             } else {
                 allList = response.data.data.noticeList
                 setAllList(allList)
+                setSpin(false)
             }
         }).catch((error) => {
             alert(error)
@@ -254,11 +256,15 @@ function Notice(props) {
                 alert(response.data.message)
             }else {
                 alert('新建成功')
+                setSpin(true)
                 all()
+                setIsModalVisible(false);
+                setSpin(false)
             }
         }).catch((error)=>{
             alert(error)
         })
+
     }
     return (
         <div style={{ width: '930px'}}>
@@ -279,15 +285,19 @@ function Notice(props) {
                            footer={null}
                            onCancel={handleCancel}
                     >
+                        {spin === true?<Spin style={{width:'700px',height:'321px',marginTop:'160px'}}  spinning={spin} />:
                         <Newnotice onOk={(value)=>{
                             console.log(value)
                             mesObj = value
                             setMesObj(mesObj)
-                            setIsModalVisible(false);
+
                             handleNotice()
+
+
                         }} onCancel={()=>{
                             setIsModalVisible(false);
-                        }}></Newnotice>
+                            setSpin(false)
+                        }}></Newnotice>}
                     </Modal>
                 </span>
                 </div>
@@ -298,9 +308,11 @@ function Notice(props) {
                         <Option value="已结束">已结束</Option>
                     </Select>
                 </div>
-                <div className={'middle_one1'}>
-                    <div className={'middle_two'}>
-                        {allList.map((item, index) => {
+                <div className={'notice_one1'}>
+                    <div className={'notice_two'}>
+                        {spin===true? <div style={{width:'900px',height:'400px',textAlign:"center",lineHeight:'500px'}}><Spin  spinning={spin}></Spin></div>  :
+                            <div>
+                            {allList.map((item, index) => {
                             return (
                                 <div key={index} className={'message'}>
                                     <div className={'middle_mes'}>
@@ -325,6 +337,7 @@ function Notice(props) {
                                             {item.title}
                                         </div>
                                         <Modal title="公告详情"
+                                               maskStyle={{backgroundColor: '#fff'}}
                                                visible={isModalVisibleTheme}
                                                onOk={() => {
                                                    handleOkTheme()
@@ -352,6 +365,7 @@ function Notice(props) {
                                                }}
                                                width={700}
                                                cancelText={'取消'}
+                                               maskStyle={{backgroundColor: '#fff'}}
                                                okText={'提交'}
                                                onCancel={handleCancelEdit}>
                                             <div>
@@ -414,7 +428,7 @@ function Notice(props) {
                                     <div className={'middle_content'}>{item.content}</div>
                                 </div>
                             )
-                        })}
+                        })}</div>}
                     </div>
                 </div>
             </div>

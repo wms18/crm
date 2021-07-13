@@ -2,12 +2,16 @@ import avatar from './3.jpg'
 import {ProfileOutlined, ScheduleOutlined,ClearOutlined,CarryOutOutlined,MailOutlined} from '@ant-design/icons';
 import './middle.css'
 import React, {useEffect, useState} from 'react';
-import {Avatar, Image} from 'antd';
+import {Avatar, Image,Spin} from 'antd';
 import MenuRight from "../right/right";
 import base from "../../../../axios/axios";
 import axios from "axios";
-
+import {connect} from "react-redux";
+const mapStateToProps = state =>{
+    return state
+}
 function Middle(props) {
+    let state = props.state
     let token = window.localStorage.getItem('token')
     let arr = ['全部', '日志', '审批', '任务', '日程', '公告']
     let [active, setActive] = useState(0)
@@ -16,14 +20,14 @@ function Middle(props) {
     let [listTask, setListTask] = useState([]) //任务列表
     let [listSchedule, setListSchedule] = useState([])   //日程列表
     let [listApprove, setListApprove] = useState([]) //审批列表
+    let [spin,setSpin] = useState(true)
     useEffect(() => {
         if (!window.localStorage.getItem('token')){
             props.history.push('/')
             return
         }
         all()
-
-    }, [active])
+    }, [active, state])
     //全部
     let all = () => {
         axios({
@@ -80,7 +84,9 @@ function Middle(props) {
                     setListApprove([])
                     setListTask([])
                     setListSchedule([])
+
                 }
+                setSpin(false)
             }
         }).catch((error) => {
             alert(error)
@@ -90,6 +96,7 @@ function Middle(props) {
         <div style={{width:'1192px'}}>
             <div className={'middle'}>
                 <div className={'middle_sp'}>
+
                     {arr.map((item, index) => {
                         return (
                             <span key={index}
@@ -105,6 +112,8 @@ function Middle(props) {
                 <div className={'middle_one'}>
                     <div className={'middle_two'}>
                         {/*日志*/}
+                        {spin === true? <div style={{width:'800px',height:'500px',textAlign:'center',lineHeight:'500px'}}><Spin></Spin> </div>:
+                            <div>
                         {listLogDtoList === null ? '' : listLogDtoList.map((item, index) => {
                             return (
                                 <div key={index} className={'message'}>
@@ -244,6 +253,7 @@ function Middle(props) {
                                 </div>
                             )
                         })}
+                            </div>}
 
                     </div>
 
@@ -258,4 +268,4 @@ function Middle(props) {
     )
 }
 
-export default Middle
+export default connect(mapStateToProps)(Middle)

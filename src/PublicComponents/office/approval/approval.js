@@ -11,7 +11,8 @@ import {
     Form,
     Input,
     TreeSelect,
-    Tree
+    Tree,
+    Spin
 } from 'antd';
 import React, {useState, useEffect} from "react";
 import zhCN from "antd/lib/locale/zh_CN";
@@ -434,11 +435,11 @@ function Approval(props) {
                     } else {
                         myApproval()
                     }
+                    setIsModalVisible(false);
                 }
             }).catch((error) => {
                 alert(error)
             })
-            setIsModalVisible(false);
             form.setFieldsValue({'type': ''})
             form.setFieldsValue({'content': ''})
             setValueTime([])
