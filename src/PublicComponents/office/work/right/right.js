@@ -92,7 +92,7 @@ function MenuRight(props) {
     for (let j = 0; j < allStaff?allStaff.length:1; j++) {
             treeData.push({
                 title: <span><img style={{ width: '15px', height: '15px', marginRight: '10px' }} src={allStaff[j]?allStaff[j].avatar:''} alt="" />{allStaff[j]?allStaff[j].username:''}</span>,
-                value: allStaff[j]?allStaff[j].id:'',
+                value: allStaff[j]?allStaff[j].id:' ',
             })
         }
     let onChangeStaff = value => {
