@@ -42,8 +42,8 @@ function App() {
                     {/* <BackstageMgt></BackstageMgt>*/}
                     <Route exact path={'/'} component={Login}></Route>
                     {/*<Login></Login>*/}
-                    {/* <Route path={'/office'} component={MenuLeft}></Route> */}
-                    <Route path={'/office'} component={CustomerMgt}></Route>
+                     <Route path={'/office'} component={MenuLeft}></Route>
+                    {/*<Route path={'/office'} component={CustomerMgt}></Route>*/}
                     {/* <Redirect from="/*" to="/" /> */}
 
                 </Switch>

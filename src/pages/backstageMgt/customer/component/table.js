@@ -102,18 +102,20 @@ function Tablelist(props) {
     ];
 
     const data = [];
-    for (let i = 0; i < message.length; i++) {
-        data.push({
-            key: i,
-            name: message[i].name,
-            department: message[i].department,
-            role: message[i].role + '，',
-            position: message[i].position,
-            delete: <i className="system_delete fa fa-trash-o" aria-hidden="true" onClick={() => {
-                handleDelete(message[i].employeeId)
-            }
-            }></i>,
-        });
+    if (message !== null) {
+        for (let i = 0; i < message.length; i++) {
+            data.push({
+                key: i,
+                name: message[i].name,
+                department: message[i].department,
+                role: message[i].role + '，',
+                position: message[i].position,
+                delete: <i className="system_delete fa fa-trash-o" aria-hidden="true" onClick={() => {
+                    handleDelete(message[i].employeeId)
+                }
+                }></i>,
+            });
+        }
     }
     //改变当前页
     let handle = (page, pagesize) => {

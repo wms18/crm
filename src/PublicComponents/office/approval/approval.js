@@ -262,40 +262,46 @@ function Approval(props) {
         },
     };
     const treeData1 = []
-    for (let i = 0; i < allStaff.length; i++) {
-        if (searchMan !== ''){
-            if (searchMan === allStaff[i].username){
-                treeData1.push({
-                    title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
-                                      alt=""/>{allStaff[i].username}</span>,
-                    key: allStaff[i].id,
-                    value: allStaff[i].username
-                })
-            }
-        }else {
-            if (manValue.length === 0){
-                treeData1.push({
-                    title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
-                                      alt=""/>{allStaff[i].username}</span>,
-                    key: allStaff[i].id,
-                    value: allStaff[i].username,
-                })
-            }else{
-                if (manValue[0] === allStaff[i].username){
+    if (allStaff !== null) {
+        for (let i = 0; i < allStaff.length; i++) {
+            if (searchMan !== '') {
+                if (searchMan === allStaff[i].username) {
                     treeData1.push({
-                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}}
+                                          src={allStaff[i].avatar}
                                           alt=""/>{allStaff[i].username}</span>,
                         key: allStaff[i].id,
                         value: allStaff[i].username
                     })
-                }else {
+                }
+            } else {
+                if (manValue.length === 0) {
                     treeData1.push({
-                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[i].avatar}
+                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}}
+                                          src={allStaff[i].avatar}
                                           alt=""/>{allStaff[i].username}</span>,
                         key: allStaff[i].id,
                         value: allStaff[i].username,
-                        disableCheckbox: true,
                     })
+                } else {
+                    if (manValue[0] === allStaff[i].username) {
+                        treeData1.push({
+                            title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}}
+                                              src={allStaff[i].avatar}
+                                              alt=""/>{allStaff[i].username}</span>,
+                            key: allStaff[i].id,
+                            value: allStaff[i].username
+                        })
+                    } else {
+                        treeData1.push({
+                            title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}}
+                                              src={allStaff[i].avatar}
+                                              alt=""/>{allStaff[i].username}</span>,
+                            key: allStaff[i].id,
+                            value: allStaff[i].username,
+                            disableCheckbox: true,
+                        })
+                    }
                 }
             }
         }

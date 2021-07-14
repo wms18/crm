@@ -13,7 +13,7 @@ function Login(props) {
     let [password, setPassword] = useState('')
     useEffect(()=>{
         if (window.localStorage.getItem('token')){
-            props.history.push('/office')
+            props.history.push('/customerMgt/')
         }
     },[])
     //登录

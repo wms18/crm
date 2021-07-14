@@ -89,12 +89,13 @@ function MenuRight(props) {
     //参与人
     const { SHOW_PARENT } = TreeSelect;
     const treeData = [];
-    for (let j = 0; j < allStaff?allStaff.length:1; j++) {
-            treeData.push({
-                title: <span><img style={{ width: '15px', height: '15px', marginRight: '10px' }} src={allStaff[j]?allStaff[j].avatar:''} alt="" />{allStaff[j]?allStaff[j].username:''}</span>,
-                value: allStaff[j]?allStaff[j].id:'',
-            })
-        }
+   if (allStaff !== null){
+    allStaff.forEach((item,index)=>{
+        treeData.push({
+            title: <span><img style={{ width: '15px', height: '15px', marginRight: '10px' }} src={item.avatar} alt="" />{item.username}</span>,
+            value: item.id,
+        })
+    })}
     let onChangeStaff = value => {
         console.log('onChange ', value);
         selectStaff = value

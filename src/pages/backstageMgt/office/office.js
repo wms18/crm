@@ -152,7 +152,7 @@ function Office() {
                 classifyRoleId: 1
             }
         }).then((response) => {
-            console.log(response.data.data.length)
+            // console.log(response.data.data.length)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
@@ -164,11 +164,14 @@ function Office() {
     }
     //添加员工
     const treeData = [];
-    for (let i = 0; i < getStaff.length; i++) {
-        treeData.push({
-            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={getStaff[i].avatar} alt=""/>{getStaff[i].username}</span>  ,
-            value: getStaff[i].id,
-        })
+    if (getStaff !== null) {
+        for (let i = 0; i < getStaff.length; i++) {
+            treeData.push({
+                title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={getStaff[i].avatar}
+                                  alt=""/>{getStaff[i].username}</span>,
+                value: getStaff[i].id,
+            })
+        }
     }
     let onChange = value => {
         console.log('onChange ', value);

@@ -27,24 +27,29 @@ function Newapproval(props) {
     const {SHOW_PARENT} = TreeSelect;
     //选择员工
     const treeData = [];
-    for (let j = 0; j < allStaff.length; j++) {
-        if (selectStaff.length===0){
+    if (allStaff !== null) {
+        for (let j = 0; j < allStaff.length; j++) {
+            if (selectStaff.length === 0) {
                 treeData.push({
-                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
+                    title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}}
+                                      src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>,
                     value: allStaff[j].id,
                 })
-        }else {
-            if (selectStaff[0].value===allStaff[j].id){
-                treeData.push({
-                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
-                    value: allStaff[j].id,
-                })
-            }else {
-                treeData.push({
-                    title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
-                    value: allStaff[j].id,
-                    disableCheckbox:true
-                })
+            } else {
+                if (selectStaff[0].value === allStaff[j].id) {
+                    treeData.push({
+                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}}
+                                          src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>,
+                        value: allStaff[j].id,
+                    })
+                } else {
+                    treeData.push({
+                        title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}}
+                                          src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>,
+                        value: allStaff[j].id,
+                        disableCheckbox: true
+                    })
+                }
             }
         }
     }

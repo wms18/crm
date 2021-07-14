@@ -7,8 +7,6 @@ import {TreeSelect} from 'antd';
 import axios from "axios";
 import base from '../../../axios/axios';
 import qs from 'qs'
-
-
 function SystemMgt() {
     let token = window.localStorage.getItem('token')
     let [arr, setArr] = useState([])
@@ -135,14 +133,16 @@ function SystemMgt() {
 
     //关联员工列表
     const treeData = [];
-    for (let i = 0; i < getStaff.length; i++) {
-        treeData.push({
-            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={getStaff[i].avatar} alt=""/>{getStaff[i].username}</span>  ,
-            value: getStaff[i].id,
-            key:getStaff[i].username
-        })
+    if (getStaff !== null) {
+        for (let i = 0; i < getStaff.length; i++) {
+            treeData.push({
+                title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={getStaff[i].avatar}
+                                  alt=""/>{getStaff[i].username}</span>,
+                value: getStaff[i].id,
+                key: getStaff[i].username
+            })
+        }
     }
-
     let onChange = value => {
         console.log(value);
         setValue(value)

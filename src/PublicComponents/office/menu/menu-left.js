@@ -45,7 +45,7 @@ function MenuLeft(props) {
                         <Right/>
                         <Menu theme="dark" defaultSelectedKeys={[number]} mode="inline">
                             <Menu.Item key="1" icon={<DesktopOutlined/>}>
-                                <Link to={'/office'}>工作台</Link>
+                                <Link  to={'/office'}>工作台</Link>
                             </Menu.Item>
                             <Menu.Item key="2" icon={<ScheduleOutlined/>}>
                                 <Link to={'/office/schedule'}>日程</Link>

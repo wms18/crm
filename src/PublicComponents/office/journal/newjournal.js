@@ -77,11 +77,14 @@ function Newjournal(props) {
     }
     //选择员工
     const treeData = [];
-    for (let j = 0; j < allStaff.length; j++) {
-        treeData.push({
-            title:<span><img style={{width:'15px',height:'15px',marginRight:'10px'}} src={allStaff[j].avatar} alt=""/>{allStaff[j].username}</span>  ,
-            value: allStaff[j].id,
-        })
+    if (allStaff !== null) {
+        for (let j = 0; j < allStaff.length; j++) {
+            treeData.push({
+                title: <span><img style={{width: '15px', height: '15px', marginRight: '10px'}} src={allStaff[j].avatar}
+                                  alt=""/>{allStaff[j].username}</span>,
+                value: allStaff[j].id,
+            })
+        }
     }
     let onChangeStaff = value => {
         console.log('onChange ', value);
