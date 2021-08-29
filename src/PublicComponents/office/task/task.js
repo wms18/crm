@@ -11,7 +11,7 @@ import 'moment/locale/zh-cn';
 import axios from "axios";
 import base from "../../../axios/axios";
 import qs from 'qs'
-
+import PubSub from "pubsub-js";
 moment.locale('zh-cn');
 
 function Task(props) {
@@ -64,6 +64,12 @@ function Task(props) {
         getInformation()
         allLabels()
         allLabel()
+        let pub = PubSub.subscribe("message", (msg, data) => {
+            console.log('data',data)
+        });
+        return (()=>{
+            PubSub.unsubscribe(pub)
+        })
     }, [taskId])
     //新建任务
     let handleMessage = (value) => {
@@ -302,8 +308,8 @@ function Task(props) {
     };
     //关联业务
     let taskclient = () => {
-        console.log(idsObj)
-        console.log(idsObj.clients)
+        // console.log(idsObj)
+        // console.log(idsObj.clients)
         axios({
             method: 'post',
             url: base.url + '/task/linkBusiness?token=' + token,

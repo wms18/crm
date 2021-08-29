@@ -3,7 +3,7 @@ import zhCN from "antd/lib/locale/zh_CN";
 import React, {useState, useEffect} from "react";
 import axios from "axios";
 import base from "../../../axios/axios";
-
+import PubSub from "pubsub-js";
 function LinkBusiness(props) {
     let arr = ['客户', '联系人', '商机', '合同']
 
@@ -531,6 +531,7 @@ function LinkBusiness(props) {
                         setBusinessName([])
                         setManName([])
                         setClientName([])
+                        PubSub.publish('message',{ids})
                     }}>确定</Button>
                 </div>
             </div>

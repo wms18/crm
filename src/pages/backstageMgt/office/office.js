@@ -75,7 +75,9 @@ function Office() {
 
     const content = (
         <div className={'copy'}>
-            <p>复制</p>
+            <div>
+                <p>复制</p>
+            </div>
             <div onClick={showModal2}>
                 <p>编辑</p>
             </div>
@@ -92,8 +94,6 @@ function Office() {
             }}>删除</p>
         </div>
     );
-
-
     //删除角色
     let deleteRole = (id) => {
         if (window.confirm('确定删除吗？')) {
@@ -313,7 +313,6 @@ function Office() {
                                     return (
                                         <div key={index}
                                             className={index === activeInxex ? 'activeIndex system_item1' : 'system_item1'}
-
                                             onClick={() => {
                                                 setActiveIndex(index)
                                                 setHidden('none')
@@ -324,6 +323,7 @@ function Office() {
                                             >{item.name}</span>
                                             <span>
                                                 <span>
+                                                <div className='popover'>
                                                     <Popover placement="bottom"
                                                         content={content}
                                                         onClick={() => {
@@ -331,9 +331,11 @@ function Office() {
                                                             setSelectedRoleId(item.id)
                                                             setEditRoles(item.name)
                                                         }}
-                                                        trigger="click">
+                                                        trigger="click"
+                                                      >
                                                         <div><i className="fa fa-angle-down" aria-hidden="true"></i></div>
                                                     </Popover>
+                                                    </div>
                                                 </span>
                                             </span>
                                         </div>

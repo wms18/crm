@@ -145,11 +145,12 @@ function Project() {
                 classifyRoleId: 3
             }
         }).then((response) => {
-            // console.log(response.data.data.length)
+            // console.log(response.data.data)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
-                length = response.data.data.length+1
+                length = response.data.data[response.data.data.length-1].id+1
+                // console.log(length)
             }
         }).catch((error) => {
             alert(error)

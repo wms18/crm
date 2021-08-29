@@ -148,11 +148,11 @@ function Customer() {
                 classifyRoleId: 2
             }
         }).then((response) => {
-            // console.log(response.data.data.length)
+            // console.log(response.data.data[response.data.data.length-1].id)
             if (response.data.code === 'ERROR') {
                 alert(response.data.message)
             } else {
-                length = response.data.data.length+1
+                length = response.data.data[response.data.data.length-1].id+1
             }
         }).catch((error) => {
             alert(error)
@@ -207,7 +207,7 @@ function Customer() {
     const handleOk1 = () => {
         setIsModalVisible(false);
         //获取选中的员工和id
-        console.log(roleId)
+        // console.log(roleId)
         axios({
             method: 'post',
             url: base.url + '/manager/link-employee',

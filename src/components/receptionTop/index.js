@@ -92,33 +92,27 @@ function ReceptionTop (props) {
             <div>
                 <img src={icon} alt="" style={{ height: '40px' }} />
             </div>
-
             <div className='topicon'>
                 <div>
-
                     <Link to={'/office'}
                           className={pathname==="/office"?'link linkColor':'link'}>
                         <span className='iconfont icon-diannao'></span>
+                        <span></span>
                         <span style={{margin: '0 10px'}}>办公</span>
                     </Link>
                 </div>
-
                 <div>
-
                     <Link to={'/customerMgt/'} className={pathname==="/custom"?'link linkColor':'link'}>
                         <span className='iconfont icon-kehu'></span>
                         <span style={{margin: '0 10px'}}>客户管理</span>
                     </Link>
                 </div>
-
                 {/*<div>*/}
                 {/*    <span className='iconfont icon-xiangmu'></span>*/}
                 {/*    <span>项目管理</span>*/}
                 {/*</div>*/}
-
             </div>
             <div>
-
             </div>
             <div>
                 {/* <span className='personalName'>{username}</span> */}

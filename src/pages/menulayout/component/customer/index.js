@@ -115,7 +115,7 @@ class Customer extends Component {
 
   }
 
- 
+
 
   //更改负责人的id
   changeEmpRespon(val) {
@@ -772,12 +772,13 @@ class Customer extends Component {
 
   }
 
-  setVisible() {
+  setVisible =()=>   {
     this.setState({
       visible: !this.state.visible
     })
     setTimeout(() => {
       console.log('record', this.state.record);
+      console.log(this.formRef)
       if (this.state.isCreate) {
         // this.formRef.current.resetFields();
       } else {
